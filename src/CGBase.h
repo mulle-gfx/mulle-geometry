@@ -31,10 +31,10 @@ enum
 };
 
 typedef struct CGPoint {
-	union 
+	union
    {
 		CGFloat     value[2];
-		struct 
+		struct
       {
 			CGFloat  x;
 			CGFloat  y;
@@ -44,10 +44,10 @@ typedef struct CGPoint {
 
 
 typedef struct CGSize {
-	union 
+	union
    {
 		CGFloat     value[2];
-		struct 
+		struct
       {
 			CGFloat  width;
 			CGFloat  height;
@@ -57,10 +57,10 @@ typedef struct CGSize {
 
 
 typedef struct CGVector {
-	union 
+	union
    {
 		CGFloat     value[2];
-		struct 
+		struct
       {
 			CGFloat  dx;
 			CGFloat  dy;
@@ -74,16 +74,5 @@ typedef struct CGRect {
     CGPoint  origin;
     CGSize   size;
 } CGRect;
-
-
-static inline CGFloat   MulleCGFloatMaximum(float x, CGFloat y)
-{
-   return( x > y ? x : y);
-}
-
-static inline CGFloat   MulleCGFloatMinimum(CGFloat x, CGFloat y)
-{
-   return( x < y ? x : y);
-}
 
 #endif

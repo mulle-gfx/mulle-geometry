@@ -1,112 +1,11 @@
-#ifdef __has_include
-# if __has_include( "CGBase.h")
-#  include "CGBase.h"
-# endif
-#endif
-
-#ifdef __has_include
-# if __has_include( "MulleEdgeInsets.h")
-#  include "MulleEdgeInsets.h"
-# endif
-#endif
-
-
-#include "include.h"
-
-#include <string.h>
-
-
-
-typedef enum
-{
-   UIViewContentModeScaleToFill,
-   UIViewContentModeScaleAspectFit,
-   UIViewContentModeScaleAspectFill,
-
-//   UIViewContentModeRedraw,  // not supported
-
-   UIViewContentModeCenter,
-
-   UIViewContentModeTop,
-   UIViewContentModeBottom,
-   UIViewContentModeLeft,
-   UIViewContentModeRight,
-
-   UIViewContentModeTopLeft,
-   UIViewContentModeTopRight,
-   UIViewContentModeBottomLeft,
-   UIViewContentModeBottomRight
-} UIViewContentMode;
-#define N_UIViewContentModeNames 12
-
-
-extern char       *UIViewContentModeNames[ N_UIViewContentModeNames];
-char              *UIViewContentModeCStringDescription( UIViewContentMode mode);
-UIViewContentMode  UIViewContentModeParseCString( char *s);
-
-
-static inline CGPoint   MulleRectGetCenter( CGRect rect)
-{
-   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
-}
-
-// MulleSize_CenterInRect lesbarer ?
-static inline CGPoint   MulleOriginOfSizeCenteredInRect( CGSize size, CGRect rect)
-{
-   CGPoint   center;
-
-   center.x = CGRectGetMidX( rect) - size.width / 2.0;
-   center.y = CGRectGetMidY( rect) - size.height / 2.0;
-
-   return( center);
-}
-
-CGFloat   MulleSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize);
-CGFloat   MulleSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize);
-
-CGRect  MulleSizeAspectLayoutInRect( CGSize size, CGRect rect, BOOL fill);
-
 //
-// a rect of a certain size is positioned and possibly stretched into a
-// given frame using contentMode. If the size is larger than the frame
-// it may overlap (or shrink)
+// Copyright (c) 2021 Nat!, Mulle kybernetiK
 //
-CGRect   MulleSizeApplyContentModeInRect( CGSize size,
-                                          UIViewContentMode contentMode,
-                                          CGRect rect);
+#ifndef mulle_layout_h__
+#define mulle_layout_h__
 
-//void   MulleRectSplitVertically( CGRect frame, CGRect *frame1, CGRect *frame2)
-//void   MulleRectSplitHorizontally( CGRect frame, CGRect *frame1, CGRect *frame2);
-
-//
-// take frame and partition into 'n' equal sized rects and spaced apart rects
-// n must be >= 1.
-//
-void   MulleRectPartitionVertically( CGRect frame, NSUInteger n, CGRect *rects, CGFloat space);
-void   MulleRectPartitionHorizontally( CGRect frame, NSUInteger n, CGRect *rects, CGFloat space);
-
-
-static inline CGRect   MulleRectCenterInRect( CGRect rect, CGRect otherRect)
-{
-   return( MulleSizeApplyContentModeInRect( rect.size, UIViewContentModeCenter, otherRect));
-}
-
-
-// so adjust x, so that centers align
-static inline CGRect   MulleRectAlignCenterInColumn( CGRect rect,
-                                                     CGPoint otherCenter)
-{
-   rect.origin.x += otherCenter.x - CGRectGetMidX( rect);
-   return( rect);
-}
-
-
-static inline CGRect   MulleRectAlignCenterInRow( CGRect rect,
-                                                  CGPoint otherCenter)
-{
-   rect.origin.y += otherCenter.y - CGRectGetMidY( rect);
-   return( rect);
-}
+#include "CGGeometry.h"
+#include "MulleEdgeInsets.h"
 
 
 //
@@ -133,9 +32,9 @@ struct MulleLayout
 };
 
 
-static inline void  _MulleLayoutInitWithRect( struct MulleLayout *p,
-                                              CGRect rect,
-                                              MulleEdgeInsets margins)
+static inline void  MulleLayoutInit( struct MulleLayout *p,
+                                     CGRect rect,
+                                     MulleEdgeInsets margins)
 {
    // read only (in algorithm)
    p->originalRect    = rect;
@@ -167,7 +66,7 @@ static inline void  MulleLayoutDone( struct MulleLayout *p)
 // # #
 // ###
 
-static inline CGSize  _MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
+static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 {
    CGSize   size;
 
@@ -185,7 +84,7 @@ static inline CGSize  _MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 // |                   |
 // +-------------------+
 //
-static inline void   _MulleLayoutNewRow( struct MulleLayout *p)
+static inline void   MulleLayoutNewRow( struct MulleLayout *p)
 {
    p->margins.top    = p->originalMargins.top > p->margins.bottom
                          ? p->originalMargins.top
@@ -206,147 +105,17 @@ static inline void   _MulleLayoutNewRow( struct MulleLayout *p)
 // which is also the right edge of the space. The larger margin wins.
 // Returns zerosized rect, if it doesn't fit. Does not attempt to change 'y'
 //
-CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
+CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
                                CGSize size,
                                MulleEdgeInsets margins);
 
-CGRect   _MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
+CGRect   MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
                                            CGSize size,
                                            MulleEdgeInsets margins);
 
 
-//
-//    Up
-//    Down
-//    Left
-//    Right
-//
-enum MulleLayoutVerticalPlacement
-{
-   MulleLayoutPlacementKeepY         = 0,    // aligns bottom of rect with other top
-   MulleLayoutPlacementUp            = 1,    // aligns bottom of rect with other top
-   MulleLayoutPlacementDown          = 2,    // aligns top of rect with other bottom
-   MulleLayoutPlacementMiddle        = 3,    // aligns middle (H) of rect with other middle
-   MulleLayoutPlacementTopAligned    = 4,    // aligns top of rect with other top
-   MulleLayoutPlacementBottomAligned = 5,    // aligns bottom of rect with other top
-};
-
-enum MulleLayoutHorizontalPlacement
-{
-   MulleLayoutPlacementKeepX         = 0,    // aligns bottom of rect with other top
-   MulleLayoutPlacementLeft          = 1,    // aligns right edge of rect with other left
-   MulleLayoutPlacementRight         = 2,    // aligns left edge of rect with other right
-   MulleLayoutPlacementCenter        = 3,    // aligns center (V) of rect with other center
-   MulleLayoutPlacementLeftAligned   = 4,    // aligns left edge of rect with other left
-   MulleLayoutPlacementRightAligned  = 5     // aligns right edge of rect with other right
-};
-
-typedef NSUInteger    MulleLayoutPlacement;
-
-#define _MulleLayoutPlacementMake( h, v)     ((NSUInteger) h << 4 | v)
-
-static inline  MulleLayoutPlacement
-   MulleLayoutPlacementMake( enum MulleLayoutHorizontalPlacement h,
-                             enum MulleLayoutVerticalPlacement v)
-{
-   return( (NSUInteger) h << 4 | v);
-}
-
-static inline enum MulleLayoutVerticalPlacement
-   MulleLayoutPlacementGetVerticalPlacement( MulleLayoutPlacement value)
-{
-   return( value & 0xF);
-}
-
-static inline enum MulleLayoutHorizontalPlacement
-   MulleLayoutPlacementGetHorizontalPlacement( MulleLayoutPlacement value)
-{
-   return( value >> 4);
-}
-
-
-//
-// placement allows rect to keep current origin in one of the dimensions
-//
-static inline CGPoint   MullePlaceRectNextToRect( CGRect rect,
-                                                  CGRect other,
-                                                  MulleLayoutPlacement placement)
-{
-   CGPoint      origin;
-   NSUInteger   hAxis;
-   NSUInteger   vAxis;
-
-   assert( placement <= MulleLayoutPlacementMake( MulleLayoutPlacementRightAligned,
-                                                  MulleLayoutPlacementBottomAligned));
-
-   switch( MulleLayoutPlacementGetHorizontalPlacement( placement))
-   {
-   default :
-      origin.x = rect.origin.x;
-      break;
-
-   case MulleLayoutPlacementLeft :
-      origin.x = CGRectGetMinX( other) - rect.size.width;
-      break;
-
-   case MulleLayoutPlacementRight :
-      origin.x = CGRectGetMaxX( other);
-      break;
-
-   case MulleLayoutPlacementMiddle :
-      origin.x = CGRectGetMidX( other) - rect.size.width / 2;
-      break;
-
-   case MulleLayoutPlacementLeftAligned :
-      origin.x = other.origin.x;
-      break;
-
-   case MulleLayoutPlacementRightAligned :
-      origin.x =  CGRectGetMaxX( other) - rect.size.width;
-      break;
-   }
-
-   switch( MulleLayoutPlacementGetVerticalPlacement( placement))
-   {
-   default :
-      origin.y = rect.origin.y;
-      break;
-
-   case MulleLayoutPlacementUp :
-      origin.y = CGRectGetMinY( other) - rect.size.height;
-      break;
-
-   case MulleLayoutPlacementDown :
-      origin.y = CGRectGetMaxY( other);
-      break;
-
-   case MulleLayoutPlacementCenter :
-      origin.y = CGRectGetMidY( other) - rect.size.height / 2;
-      break;
-
-   case MulleLayoutPlacementTopAligned :
-      origin.y = other.origin.y;
-      break;
-
-   case MulleLayoutPlacementBottomAligned :
-      origin.y =  CGRectGetMaxY( other) - rect.size.height;
-      break;
-   }
-
-   return( origin);
-}
-
-
-//
-// position rect at either side of other, if space fits.
-// Gives a list of MulleLayoutPlacement and they are tried until something
-// fits.
-//
-CGPoint   MullePlaceRectNextToRectInSpace( CGRect rect,
-                                           CGRect other,
-                                           CGRect space,
-                                           NSUInteger n_preferences,
-                                           unsigned char *preferences,
-                                           NSInteger fallback);
 
 // TODO: more to come...
+
+
+#endif

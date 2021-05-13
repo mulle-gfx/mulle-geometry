@@ -23,87 +23,64 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
-// TODO: move elsewhere
-// TODO: rename to mulle_intsize
-typedef struct mulle_int_size
+typedef enum
 {
-   int   width;
-   int   height;
-} mulle_int_size;
-
-
-// TODO: move elsewhere
-// TODO: rename to mulle_bitmapsize
-typedef struct mulle_bitmap_size
-{
-   struct mulle_int_size   size;
-   unsigned char           colorComponents;
-} mulle_bitmap_size;
-
-
-typedef enum 
-{ 
-   CGRectMinXEdge, 
-   CGRectMinYEdge, 
-   CGRectMaxXEdge, 
-   CGRectMaxYEdge 
+   CGRectMinXEdge,
+   CGRectMinYEdge,
+   CGRectMaxXEdge,
+   CGRectMaxYEdge
 } CGRectEdge;
 
-extern const CGRect CGRectInfinite;
-extern const CGPoint CGPointZero;
-extern const CGRect CGRectZero;
-extern const CGSize CGSizeZero;
-extern const CGRect CGRectNull;
-extern const CGVector CGVectorZero;  // compatible ?
 
-/**
-@Status Interoperable
-*/
-static inline CGRect CGRectMake(CGFloat x, CGFloat y, CGFloat width, CGFloat height) {
-    CGRect result = { { x, y }, { width, height } };
-    return result;
-}
-
-/**
-@Status Interoperable
-*/
-static inline CGPoint CGPointMake(CGFloat x, CGFloat y) {
-    CGPoint result = { x, y };
-    return result;
-}
+// MEMO: Using extern const is probably the worst way to initialize to zero
+//       as it can't be inlined, forces read/write though we only need to
+//       write. Now you can't take the address anymore,,
+#define CGRectInfinite   CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
+#define CGPointZero      CGPointMake( 0, 0)
+#define CGRectZero       CGRectMake( 0, 0, 0, 0)
+#define CGSizeZero       CGSizeMake( 0, 0)
+#define CGVectorZero     CGVectorMake( 0, 0)
+#define CGRectNull       CGRectMake( -INFINITY, -INFINITY, 0.0f, 0.0)
 
 
 
-static inline CGPoint  MulleCGPointClampToSize( CGPoint offset, CGSize size)
+static inline CGFloat   MulleLayoutFloatMaximum( CGFloat x, CGFloat y)
 {
-   if( offset.x < 0.0)
-      offset.x = 0.0;
-   if( offset.x >= size.width)
-      offset.x = size.width;
+   return( x > y ? x : y);
+}
 
-   if( offset.y < 0.0)
-      offset.y = 0.0;
-   if( offset.y >= size.height)
-      offset.y = size.height;   
-   return( offset);
+
+static inline CGFloat   MulleLayoutFloatMinimum( CGFloat x, CGFloat y)
+{
+   return( x < y ? x : y);
+}
+
+
+static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
+{
+   return( (CGRect){
+                     .origin = (CGPoint) { .x = x, .y = y },
+                     .size   = (CGSize)  { .width = w, .height = h }
+                   });
+}
+
+
+static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
+{
+   return( (CGPoint){ .x = x, .y = y });
 }
 
 
 
-/**
-@Status Interoperable
-*/
-static inline CGSize CGSizeMake(CGFloat x, CGFloat y) {
-    CGSize result = { x, y };
-    return result;
+
+static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
+{
+   return( (CGSize){ .width = w, .height = h });
 }
 
-/**
-@Status Interoperable
-*/
-static inline CGVector CGVectorMake(CGFloat dx, CGFloat dy) {
-    CGVector result = { dx, dy };
-    return result;
+static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
+{
+   return( (CGVector){ .dx = dx, .dy = dy });
 }
 
 /**
@@ -250,95 +227,24 @@ static inline int CGRectIsInfinite(CGRect rect) {
 @Status Interoperable
 */
 static inline int CGRectContainsRect(CGRect a, CGRect b) {
-    return( CGRectGetMinX(b) >= CGRectGetMinX(a) && 
-            CGRectGetMaxX(b) <= CGRectGetMaxX(a) && 
+    return( CGRectGetMinX(b) >= CGRectGetMinX(a) &&
+            CGRectGetMaxX(b) <= CGRectGetMaxX(a) &&
             CGRectGetMinY(b) >= CGRectGetMinY(a) &&
             CGRectGetMaxY(b) <= CGRectGetMaxY(a));
 }
 
+// CGRectIntegral rounds the rectangle’s origin downward and its size upward
+// to the nearest whole integers, such that the result contains the original
+// rectangle
 CGRect CGRectIntegral(CGRect rect);
 CGRect CGRectIntersection(CGRect r1, CGRect r2);
+
+// turns negative width/height rect, into positive with different x/y
+// mathematically its the same
 CGRect CGRectStandardize(CGRect rect);
 CGRect CGRectUnion(CGRect a, CGRect b);
 
 void CGRectDivide(CGRect rect, CGRect* slice, CGRect* remainder, CGFloat amount, CGRectEdge edge);
 
-unsigned int   MulleRectSubdivideByRect( CGRect rect, CGRect other, CGRect output[ 4]);
-
-
-typedef struct MulleQuadratic
-{
-   CGFloat   value[ 4];
-} MulleQuadratic;  
-
-
-static inline void   MulleQuadraticInit( MulleQuadratic *q,
-                                         CGFloat p0,
-                                         CGFloat p1,
-                                         CGFloat p2,
-                                         CGFloat p3)
-{
-   assert( p0 >= 0.0 && p0 <= 1.0);
-   assert( p1 >= 0.0 && p1 <= 1.0);
-   assert( p2 >= 0.0 && p2 <= 1.0);
-   assert( p3 >= 0.0 && p3 <= 1.0);
-
-   q->value[ 0] = p0;
-   q->value[ 1] = p1;
-   q->value[ 2] = p2;
-   q->value[ 3] = p3;
-}
-
-
-static inline CGFloat   MulleQuadraticGetValueForNormalizedDistance( MulleQuadratic *b,
-                                                                     CGFloat t)
-{
-   CGFloat   value;
-
-   assert( t >= 0.0 && t <= 1.0);
-
-   value = (1 - t) * (1 - t) * (1 - t) * b->value[0] +
-       3 * (1 - t) * (1 - t) * t * b->value[1] +
-       3 * (1 - t) * t * t * b->value[2] +
-       t * t * t * b->value[3];
-   return( value);
-}
-
-
-typedef struct MulleQuadraticBezier
-{
-   MulleQuadratic   x;
-   MulleQuadratic   y;
-} MulleQuadraticBezier;  // not CGPoint for supposed improved CPU caching
-
-
-static inline void   MulleQuadraticBezierInit( MulleQuadraticBezier *b,
-                                               CGPoint p0,
-                                               CGPoint p1,
-                                               CGPoint p2,
-                                               CGPoint p3)
-{
-   MulleQuadraticInit( &b->x, p0.x, p1.x, p2.x, p3.x);
-   MulleQuadraticInit( &b->y, p0.y, p1.y, p2.y, p3.y);
-}
-
-CGPoint   MulleQuadraticBezierGetPointForNormalizedDistance( MulleQuadraticBezier *b, 
-                                                             CGFloat t);
-
-
-
-
-static inline CGRect   MulleCGRectCenterInRect( CGRect rect, CGRect bounds) 
-{  
-   CGPoint   center;
-
-   center.x = CGRectGetMidX( bounds);
-   center.y = CGRectGetMidY( bounds);
-
-   rect.origin.x = center.x - rect.size.width / 2.0;
-   rect.origin.y = center.y - rect.size.height / 2.0;
-
-   return( rect);
-}
 
 #endif

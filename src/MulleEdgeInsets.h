@@ -4,13 +4,11 @@
 #ifndef mulle_edge_insets_h__
 #define mulle_edge_insets_h__
 
-#include <MulleObjC/MulleObjCIntegralType.h>  // for BOOL
+#include "include.h"
+
 #include "CGGeometry.h"
 #include <string.h>
 
-
-// typedef this off something like CGEdgeInsets, so we can use this
-// in layers...
 
 typedef struct MulleEdgeInsets
 {
@@ -23,11 +21,11 @@ typedef struct MulleEdgeInsets
 
 static inline MulleEdgeInsets   MulleEdgeInsetsMake( CGFloat top, CGFloat left, CGFloat bottom, CGFloat right)
 {
-	return( (MulleEdgeInsets){ .top = top, .left = left, .bottom = bottom, .right = right });	
+	return( (MulleEdgeInsets){ .top = top, .left = left, .bottom = bottom, .right = right });
 }
 
 
-static inline BOOL   MulleEdgeInsetsEqualToEdgeInsets( MulleEdgeInsets insets1, MulleEdgeInsets insets2)
+static inline int   MulleEdgeInsetsEqualToEdgeInsets( MulleEdgeInsets insets1, MulleEdgeInsets insets2)
 {
 	return( ! memcmp( &insets1, &insets2, sizeof( MulleEdgeInsets)));
 }
@@ -53,6 +51,6 @@ static inline CGRect   MulleEdgeInsetsExtrudeRect( MulleEdgeInsets insets, CGRec
 }
 
 
-extern const MulleEdgeInsets   MulleEdgeInsetsZero;
+#define MulleEdgeInsetsZero      MulleEdgeInsetsMake( 0.0f, 0.0f, 0.0f, 0.0f)
 
 #endif
