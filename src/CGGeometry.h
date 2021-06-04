@@ -23,65 +23,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
-typedef enum
-{
-   CGRectMinXEdge,
-   CGRectMinYEdge,
-   CGRectMaxXEdge,
-   CGRectMaxYEdge
-} CGRectEdge;
 
 
-// MEMO: Using extern const is probably the worst way to initialize to zero
-//       as it can't be inlined, forces read/write though we only need to
-//       write. Now you can't take the address anymore,,
-#define CGRectInfinite   CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
-#define CGPointZero      CGPointMake( 0, 0)
-#define CGRectZero       CGRectMake( 0, 0, 0, 0)
-#define CGSizeZero       CGSizeMake( 0, 0)
-#define CGVectorZero     CGVectorMake( 0, 0)
-#define CGRectNull       CGRectMake( -INFINITY, -INFINITY, 0.0f, 0.0)
-
-
-
-static inline CGFloat   MulleLayoutFloatMaximum( CGFloat x, CGFloat y)
-{
-   return( x > y ? x : y);
+/**
+@Status Interoperable
+*/
+static inline int CGPointEqualToPoint(CGPoint a, CGPoint b) {
+    return( (a.x == b.x) && (a.y == b.y));
 }
 
-
-static inline CGFloat   MulleLayoutFloatMinimum( CGFloat x, CGFloat y)
-{
-   return( x < y ? x : y);
-}
-
-
-static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
-{
-   return( (CGRect){
-                     .origin = (CGPoint) { .x = x, .y = y },
-                     .size   = (CGSize)  { .width = w, .height = h }
-                   });
-}
-
-
-static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
-{
-   return( (CGPoint){ .x = x, .y = y });
-}
-
-
-
-
-static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
-{
-   return( (CGSize){ .width = w, .height = h });
-}
-
-static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
-{
-   return( (CGVector){ .dx = dx, .dy = dy });
-}
 
 /**
 @Status Interoperable
@@ -92,6 +42,16 @@ static inline int CGSizeEqualToSize(CGSize a, CGSize b) {
 
 /**
 @Status Interoperable
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//  ^
+//  CGRectGetMinX
+
 */
 static inline CGFloat CGRectGetMinX(CGRect rect) {
     return rect.origin.x;
@@ -99,7 +59,17 @@ static inline CGFloat CGRectGetMinX(CGRect rect) {
 
 /**
 @Status Interoperable
-GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//                 ^
+//                 CGRectGetMaxX
+//
+// GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
 */
 static inline CGFloat CGRectGetMaxX(CGRect rect) {
     return rect.origin.x + rect.size.width;
@@ -107,6 +77,15 @@ static inline CGFloat CGRectGetMaxX(CGRect rect) {
 
 /**
 @Status Interoperable
+//  .-------------.
+//  |      |      |
+//  |      |      |
+//  |      |      |
+//  |      |      |
+//  |      |      |
+//  '-------------'
+//         ^
+//         CGRectGetMidX
 */
 static inline CGFloat CGRectGetMidX(CGRect rect) {
     return( rect.origin.x + rect.size.width / 2);
@@ -114,6 +93,14 @@ static inline CGFloat CGRectGetMidX(CGRect rect) {
 
 /**
 @Status Interoperable
+//  .-------------. < CGRectGetMinY
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//
 */
 static inline CGFloat CGRectGetMinY(CGRect rect) {
     return rect.origin.y;
@@ -121,14 +108,30 @@ static inline CGFloat CGRectGetMinY(CGRect rect) {
 
 /**
 @Status Interoperable
-GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//                  < CGRectGetMaxY
+//
+// GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
 */
 static inline CGFloat CGRectGetMaxY(CGRect rect) {
     return(rect.origin.y + rect.size.height);
 }
 
 /**
-@Status Interoperable
+
+//  .-------------.
+//  |             |
+//  |             |
+//  |-------------| < CGRectGetMidY
+//  |             |
+//  |             |
+//  '-------------'
 */
 static inline CGFloat CGRectGetMidY(CGRect rect) {
     return( rect.origin.y + rect.size.height / 2);
@@ -148,6 +151,24 @@ static inline CGFloat CGRectGetHeight(CGRect rect) {
     return rect.size.height;
 }
 
+
+
+//  .-------------.
+//  |             |
+//  |             |
+//  |      *      | < CGRectGetCenterPoint().y
+//  |             |
+//  |             |
+//  '-------------'
+//         ^
+//         CGRectGetCenterPoint().x
+//
+static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
+}
+
+
 /**
 @Status Interoperable
 */
@@ -156,17 +177,22 @@ static inline int CGRectContainsPoint(CGRect rect, CGPoint point) {
            (point.y >= CGRectGetMinY(rect) && point.y < CGRectGetMaxY(rect));
 }
 
-/**
-@Status Interoperable
-*/
-static inline int CGPointEqualToPoint(CGPoint a, CGPoint b) {
-    return( (a.x == b.x) && (a.y == b.y));
-}
 
-/**
-@Status Interoperable
-*/
-static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy) {
+/*
+ *   .................................
+ *   . input         dy              .
+ *   .    .---------------------.    .
+ *   .    | output              |    .
+ *   .    |                     |    .
+ *   .  dx|                     |dx  .
+ *   .    |                     |    .
+ *   .    |                     |    .
+ *   .    '---------------------'    .
+ *   .               dy              .
+ *   .................................
+ */
+static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
+{
     rect.origin.x    += dx;
     rect.origin.y    += dy;
     rect.size.width  -= dx * 2;
@@ -174,10 +200,22 @@ static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy) {
     return rect;
 }
 
-/**
-@Status Interoperable
-*/
-static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy) {
+/*
+ * Translate rect origin.
+ *
+ *     ...............
+ *     . input       . dy
+ *     .      .-------------.
+ *     .      | output      |
+ *     .      |             |
+ *     .      |             |
+ *     .......|             |
+ *       dx   |             |
+ *            '-------------'
+ *
+ */
+static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy)
+{
     rect.origin.x += dx;
     rect.origin.y += dy;
     return rect;
@@ -186,7 +224,8 @@ static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy) {
 /**
 @Status Interoperable
 */
-static inline int CGRectIsEmpty(CGRect rect) {
+static inline int CGRectIsEmpty(CGRect rect)
+{
     return ((rect.size.width == 0) && (rect.size.height == 0));
 }
 
@@ -197,7 +236,8 @@ static inline int CGRectIsEmpty(CGRect rect) {
    This is so that "adjacent" rectangles are not considered intersecting.
    CGRectIntersection will return an intersection of 0 width or height though!
 */
-static inline int CGRectIntersectsRect(CGRect a, CGRect b) {
+static inline int CGRectIntersectsRect(CGRect a, CGRect b)
+{
     return !((b.origin.x >= CGRectGetMaxX( a)) || (b.origin.y >= CGRectGetMaxY( a)) ||
              (a.origin.x >= CGRectGetMaxX( b)) || (a.origin.y >= CGRectGetMaxY( b)));
 }
@@ -205,28 +245,32 @@ static inline int CGRectIntersectsRect(CGRect a, CGRect b) {
 /**
 @Status Interoperable
 */
-static inline int CGRectEqualToRect(CGRect a, CGRect b) {
+static inline int CGRectEqualToRect(CGRect a, CGRect b)
+{
     return CGPointEqualToPoint(a.origin, b.origin) && CGSizeEqualToSize(a.size, b.size);
 }
 
 /**
 @Status Interoperable
 */
-static inline int CGRectIsNull(CGRect rect) {
+static inline int CGRectIsNull(CGRect rect)
+{
     return CGRectEqualToRect(rect, CGRectNull);
 }
 
 /**
 @Status Interoperable
 */
-static inline int CGRectIsInfinite(CGRect rect) {
+static inline int CGRectIsInfinite(CGRect rect)
+{
     return (isinf(rect.origin.x) || isinf(rect.origin.y) || isinf(rect.size.width) || isinf(rect.size.height));
 }
 
 /**
 @Status Interoperable
 */
-static inline int CGRectContainsRect(CGRect a, CGRect b) {
+static inline int CGRectContainsRect(CGRect a, CGRect b)
+{
     return( CGRectGetMinX(b) >= CGRectGetMinX(a) &&
             CGRectGetMaxX(b) <= CGRectGetMaxX(a) &&
             CGRectGetMinY(b) >= CGRectGetMinY(a) &&
@@ -242,9 +286,28 @@ CGRect CGRectIntersection(CGRect r1, CGRect r2);
 // turns negative width/height rect, into positive with different x/y
 // mathematically its the same
 CGRect CGRectStandardize(CGRect rect);
-CGRect CGRectUnion(CGRect a, CGRect b);
 
-void CGRectDivide(CGRect rect, CGRect* slice, CGRect* remainder, CGFloat amount, CGRectEdge edge);
+
+
+// Combine two rectangles to form another
+//
+// 1.
+//      ........      .------.
+//      .   a  .      |      |
+//      ........      |      |
+//                    |      |
+//      ,===,     ->  |      |
+//      # b #         |      |
+//      ´===`         '------'
+//
+// 2.
+//      .....==.      .------.
+//      . a .  #      |      |
+//      '...'  #  ->  |      |
+//      #   b  #      |      |
+//      '======'      '------'
+
+CGRect CGRectUnion(CGRect a, CGRect b);
 
 
 #endif

@@ -11,7 +11,7 @@
 // placement allows rect to keep current origin in one of the dimensions
 // assume "placement" is a constant, then this all boils down to very little
 //
-CGPoint   MullePlaceRectNextToRect( CGRect rect,
+CGPoint   CGRectPlaceNextToRect( CGRect rect,
                                     CGRect other,
                                     MulleLayoutPlacement placement)
 {
@@ -83,7 +83,7 @@ CGPoint   MullePlaceRectNextToRect( CGRect rect,
 // Gives a list of MulleLayoutPlacement and they are tried until something
 // fits.
 //
-CGPoint   MullePlaceRectNextToRectInSpace( CGRect rect,
+CGPoint   CGRectPlaceNextToRectInSpace( CGRect rect,
                                            CGRect other,
                                            CGRect space,
                                            uintptr_t n_preferences,
@@ -104,13 +104,13 @@ CGPoint   MullePlaceRectNextToRectInSpace( CGRect rect,
    placed.size = rect.size;
    while( p < sentinel)
    {
-      placed.origin = MullePlaceRectNextToRect( rect, other, *p);
+      placed.origin = CGRectPlaceNextToRect( rect, other, *p);
       if( CGRectContainsRect( space, placed))
          return( placed.origin);
       ++p;
    }
    if( fallback >= 0)
-      return( MullePlaceRectNextToRect( rect, other, preferences[ fallback]));
+      return( CGRectPlaceNextToRect( rect, other, preferences[ fallback]));
 
    return( CGPointMake( CGFLOAT_MIN, CGFLOAT_MIN));
 }

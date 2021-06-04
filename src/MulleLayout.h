@@ -7,7 +7,22 @@
 #include "CGGeometry.h"
 #include "MulleEdgeInsets.h"
 
-
+//
+// MulleLayout supports layouting of other rectangle in rows and columns.
+// Rectangles are added to a row, until its filled. Then a new row is used.
+//
+// Layout state is kept in "struct MulleLayout"
+//
+//    .-----------------------.
+//    | .-------. .---. .---. |
+//    | |       | |   | |   | |
+//    | |       | '---' '---' |
+//    | '-------'             |
+//    | .---. .-------------. |
+//    | |   | |             | |
+//    | '---' |             | |
+//    |       '-------------' |
+//    '-----------------------'
 //
 // Basically follow the definitions set in here
 // https://yogalayout.com/
@@ -32,9 +47,9 @@ struct MulleLayout
 };
 
 
-static inline void  MulleLayoutInit( struct MulleLayout *p,
-                                     CGRect rect,
-                                     MulleEdgeInsets margins)
+static inline void  _MulleLayoutInit( struct MulleLayout *p,
+                                      CGRect rect,
+                                      MulleEdgeInsets margins)
 {
    // read only (in algorithm)
    p->originalRect    = rect;
@@ -46,6 +61,19 @@ static inline void  MulleLayoutInit( struct MulleLayout *p,
 }
 
 
+static inline void  MulleLayoutInit( struct MulleLayout *p,
+                                     CGRect rect,
+                                     MulleEdgeInsets margins)
+{
+   if( p)
+      _MulleLayoutInit( p, rect, margins);
+}
+
+
+//
+// currently there is nothing to do here, but in the future this
+// might free some stuff in the struct
+//
 static inline void  _MulleLayoutDone( struct MulleLayout *p)
 {
 }
@@ -53,6 +81,8 @@ static inline void  _MulleLayoutDone( struct MulleLayout *p)
 
 static inline void  MulleLayoutDone( struct MulleLayout *p)
 {
+   if( p)
+      _MulleLayoutDone( p);
 }
 
 
@@ -66,7 +96,7 @@ static inline void  MulleLayoutDone( struct MulleLayout *p)
 // # #
 // ###
 
-static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
+static inline CGSize  _MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 {
    CGSize   size;
 
@@ -77,6 +107,15 @@ static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 }
 
 
+static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
+{
+   if( ! p)
+      return( CGSizeZero);
+   return( _MulleLayoutGetRemainingRowSize( p));
+}
+
+
+
 // Each row starts at 0,0. The origin is added to the returned rect on return.
 // When a row is done, the height of the row is added to the origin.
 //
@@ -84,18 +123,13 @@ static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 // |                   |
 // +-------------------+
 //
+void   _MulleLayoutNewRow( struct MulleLayout *p);
+
+
 static inline void   MulleLayoutNewRow( struct MulleLayout *p)
 {
-   p->margins.top    = p->originalMargins.top > p->margins.bottom
-                         ? p->originalMargins.top
-                         : p->margins.bottom;
-   p->margins.bottom = p->originalMargins.bottom;
-   p->margins.left   = p->originalMargins.left;
-   p->margins.right  = p->originalMargins.right;
-
-   p->rect.origin.x  = p->originalRect.origin.x;
-   p->rect.origin.y += p->rect.size.height;
-   p->rect.size      = CGSizeZero;
+   if( p)
+      _MulleLayoutNewRow( p);
 }
 
 
@@ -105,15 +139,36 @@ static inline void   MulleLayoutNewRow( struct MulleLayout *p)
 // which is also the right edge of the space. The larger margin wins.
 // Returns zerosized rect, if it doesn't fit. Does not attempt to change 'y'
 //
-CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
+CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
                                CGSize size,
                                MulleEdgeInsets margins);
 
-CGRect   MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
+
+static inline CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
+                                            CGSize size,
+                                            MulleEdgeInsets margins)
+{
+   if( ! p)
+      return( CGRectNull);
+   return( _MulleLayoutAddToRow( p, size, margins));
+}
+
+
+
+
+CGRect   _MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
                                            CGSize size,
                                            MulleEdgeInsets margins);
 
 
+static inline CGRect   MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
+                                                        CGSize size,
+                                                        MulleEdgeInsets margins)
+{
+   if( ! p)
+      return( CGRectNull);
+   return( _MulleLayoutAddToRowWithOverflow( p, size, margins));
+}
 
 // TODO: more to come...
 

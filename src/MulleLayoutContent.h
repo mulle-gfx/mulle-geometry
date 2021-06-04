@@ -6,76 +6,85 @@
 
 #include "CGGeometry.h"
 
-
+//
+// Layout content is concerned about placing a rectangle of some size
+// inside another rectangle of known size.
+//
+//  .-------------.
+//  |             |
+//  |    .---.    |
+//  |    |   |    |
+//  |    '---'    |
+//  |             |
+//  '-------------'
+//
 typedef enum
 {
-   MulleLayoutContentModeScaleToFill,
-   MulleLayoutContentModeScaleAspectFit,
-   MulleLayoutContentModeScaleAspectFill,
+   CGContentModeScaleToFill,
+   CGContentModeScaleAspectFit,
+   CGContentModeScaleAspectFill,
 
-//   MulleLayoutContentModeRedraw,  // not supported
+//   CGContentModeRedraw,  // not supported
 
-   MulleLayoutContentModeCenter,
+   // circular arrangement, convenient for lazy animations
+   CGContentModeTop,
+   CGContentModeTopRight,
+   CGContentModeRight,
+   CGContentModeBottomRight,
+   CGContentModeBottom,
+   CGContentModeBottomLeft,
+   CGContentModeLeft,
+   CGContentModeTopLeft,
 
-   MulleLayoutContentModeTop,
-   MulleLayoutContentModeBottom,
-   MulleLayoutContentModeLeft,
-   MulleLayoutContentModeRight,
+   // it's CenterPoint to disinguish from Center, which is used for the
+   // Y axis (and Middle for the X axis)
+   CGContentModeCenterPoint,
 
-   MulleLayoutContentModeTopLeft,
-   MulleLayoutContentModeTopRight,
-   MulleLayoutContentModeBottomLeft,
-   MulleLayoutContentModeBottomRight
-} MulleLayoutContentMode;
-#define N_MulleLayoutContentModeNames 12
-
-
-extern char            *MulleLayoutContentModeNames[ N_MulleLayoutContentModeNames];
-char                   *MulleLayoutContentModeCStringDescription( MulleLayoutContentMode mode);
-MulleLayoutContentMode  MulleLayoutContentModeParseCString( char *s);
+} CGContentMode;
+#define N_CGContentModes 12
 
 
+extern char    *CGContentModeNames[ N_CGContentModes];
+char           *CGContentModeCStringDescription( CGContentMode mode);
+CGContentMode  CGContentModeParseCString( char *s);
 
 
-CGFloat   MulleSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize);
-CGFloat   MulleSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize);
 
-CGRect  MulleSizeAspectLayoutInRect( CGSize size, CGRect rect, int fill);
+static inline CGFloat   CGSizeGetAspectRatio( CGSize size)
+{
+   if( size.height == 0.0f)
+      return( 0.0f);
+   return( size.width / size.height);
+}
+
+
+CGFloat   CGSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize);
+CGFloat   CGSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize);
+
+CGRect    CGSizePlaceInRectWithAspectCorrection( CGSize size, CGRect rect, int fill);
+
+static inline CGRect  CGSizePlaceInRectWithAspectFit( CGSize size, CGRect rect)
+{
+   return( CGSizePlaceInRectWithAspectCorrection( size, rect, 0));
+}
+
+static inline CGRect  CGSizePlaceInRectWithAspectFill( CGSize size, CGRect rect)
+{
+   return( CGSizePlaceInRectWithAspectCorrection( size, rect, 1));
+}
+
 
 //
 // a rect of a certain size is positioned and possibly stretched into a
 // given frame using contentMode. If the size is larger than the frame
 // it may overlap (or shrink)
 //
-CGRect   MulleSizeApplyContentModeInRect( CGSize size,
-                                          MulleLayoutContentMode contentMode,
-                                          CGRect rect);
+CGRect   CGSizeApplyContentModeInRect( CGSize size,
+                                       CGContentMode contentMode,
+                                       CGRect rect);
 
 
-
-static inline CGPoint   MulleRectGetCenter( CGRect rect)
-{
-   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
-}
-
-
-static inline CGRect   MulleLayoutRectCenterInRect( CGRect rect, CGRect bounds)
-{
-   CGPoint   center;
-
-   center.x = CGRectGetMidX( bounds);
-   center.y = CGRectGetMidY( bounds);
-
-   rect.origin.x = center.x - rect.size.width / 2.0;
-   rect.origin.y = center.y - rect.size.height / 2.0;
-
-   return( rect);
-}
-
-
-
-// MulleSize_CenterInRect lesbarer ?
-static inline CGPoint   MulleOriginOfSizeCenteredInRect( CGSize size, CGRect rect)
+static inline CGPoint   CGSizeGetCenterPointInRect( CGSize size, CGRect rect)
 {
    CGPoint   center;
 
@@ -85,37 +94,32 @@ static inline CGPoint   MulleOriginOfSizeCenteredInRect( CGSize size, CGRect rec
    return( center);
 }
 
-//void   MulleRectSplitVertically( CGRect frame, CGRect *frame1, CGRect *frame2)
-//void   MulleRectSplitHorizontally( CGRect frame, CGRect *frame1, CGRect *frame2);
+//void   CGRectSplitVertically( CGRect frame, CGRect *frame1, CGRect *frame2)
+//void   CGRectSplitHorizontally( CGRect frame, CGRect *frame1, CGRect *frame2);
 
-//
-// take frame and partition into 'n' equal sized rects and spaced apart rects
-// n must be >= 1. Sorta like CFRectDivide just
-//
-
-
-static inline CGRect   MulleRectCenterInRect( CGRect rect, CGRect otherRect)
+static inline CGRect   CGRectCenterInRect( CGRect rect, CGRect bounds)
 {
-   return( MulleSizeApplyContentModeInRect( rect.size, MulleLayoutContentModeCenter, otherRect));
-}
-
-
-// so adjust x, so that centers align
-static inline CGRect   MulleRectAlignCenterInColumn( CGRect rect,
-                                                     CGPoint otherCenter)
-{
-   rect.origin.x += otherCenter.x - CGRectGetMidX( rect);
+   rect.origin = CGSizeGetCenterPointInRect( rect.size, bounds);
    return( rect);
 }
 
 
-static inline CGRect   MulleRectAlignCenterInRow( CGRect rect,
-                                                  CGPoint otherCenter)
+static inline CGRect   CGSizeCenterInRect( CGSize size, CGRect bounds)
 {
-   rect.origin.y += otherCenter.y - CGRectGetMidY( rect);
+   CGRect   rect;
+
+   rect.origin = CGSizeGetCenterPointInRect( size, bounds);
+   rect.size   = size;
    return( rect);
 }
 
+
+static inline CGRect   CGRectCenterAtPoint( CGRect rect, CGPoint point)
+{
+   rect.origin.x = point.x - rect.size.width / 2.0;
+   rect.origin.y = point.y - rect.size.height / 2.0;
+   return( rect);
+}
 
 
 #endif

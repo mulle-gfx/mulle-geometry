@@ -37,6 +37,7 @@ if( NOT M_LIBRARY)
       )
       # intentionally left blank
    else()
+      # Disable with: `mulle-sourcetree mark m no-require-link`
       message( FATAL_ERROR "M_LIBRARY was not found")
    endif()
 endif()

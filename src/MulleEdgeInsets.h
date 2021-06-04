@@ -10,28 +10,46 @@
 #include <string.h>
 
 
+//
+// this field order actually produces slightly better code for
+// MulleEdgeInsetsInsetRect (gcc 11. x86_64 -O3)
+//
 typedef struct MulleEdgeInsets
 {
+   CGFloat   left;
 	CGFloat   top;
+   CGFloat   right;
 	CGFloat   bottom;
-	CGFloat   left;
-	CGFloat   right;
 } MulleEdgeInsets;
 
 
-static inline MulleEdgeInsets   MulleEdgeInsetsMake( CGFloat top, CGFloat left, CGFloat bottom, CGFloat right)
+//
+// TLBR (counter clockwise) isn't the worst order imaginable, that would be IMO
+// RTBL but it's a second or third. We use it because that's how Apple did it.
+// Probably imagining this as a top/left and a bottom/right point, but it makes
+// little sense in insets.
+//
+static inline MulleEdgeInsets   MulleEdgeInsetsMake( CGFloat top,
+                                                     CGFloat left,
+                                                     CGFloat bottom,
+                                                     CGFloat right)
 {
-	return( (MulleEdgeInsets){ .top = top, .left = left, .bottom = bottom, .right = right });
+	return( (MulleEdgeInsets){ .top = top,
+                              .left = left,
+                              .bottom = bottom,
+                              .right = right });
 }
 
 
-static inline int   MulleEdgeInsetsEqualToEdgeInsets( MulleEdgeInsets insets1, MulleEdgeInsets insets2)
+static inline int   MulleEdgeInsetsEqualToEdgeInsets( MulleEdgeInsets insets1,
+                                                      MulleEdgeInsets insets2)
 {
 	return( ! memcmp( &insets1, &insets2, sizeof( MulleEdgeInsets)));
 }
 
 
-static inline CGRect   MulleEdgeInsetsInsetRect( MulleEdgeInsets insets, CGRect rect)
+static inline CGRect   MulleEdgeInsetsInsetRect( MulleEdgeInsets insets,
+                                                 CGRect rect)
 {
 	rect.origin.x    += insets.left;
 	rect.origin.y    += insets.top;
@@ -41,7 +59,8 @@ static inline CGRect   MulleEdgeInsetsInsetRect( MulleEdgeInsets insets, CGRect 
 }
 
 
-static inline CGRect   MulleEdgeInsetsExtrudeRect( MulleEdgeInsets insets, CGRect rect)
+static inline CGRect   MulleEdgeInsetsExtrudeRect( MulleEdgeInsets insets,
+                                                   CGRect rect)
 {
 	rect.origin.x    -= insets.left;
 	rect.origin.y    -= insets.top;

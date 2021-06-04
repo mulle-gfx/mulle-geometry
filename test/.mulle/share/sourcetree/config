@@ -1,2 +1,2 @@
-mulle-testallocator;${MULLE_TESTALLOCATOR_NODETYPE:-tar};no-import,no-singlephase;18434C2E-C9A0-41D1-9C44-4F79CDF00521;${MULLE_TESTALLOCATOR_URL:-https://github.com/mulle-core/mulle-testallocator/archive/${MULLE_TAG}.tar.gz};;${MULLE_TESTALLOCATOR_TAG:-latest};;
-mulle-layout;${MULLE_LAYOUT_NODETYPE:-tar};singlephase;B4AD4035-45FE-4756-8361-7ECCAE9A360A;${MULLE_LAYOUT_URL:-https://github.com/MulleUI/mulle-layout/archive/${MULLE_TAG}.tar.gz};;${MULLE_LAYOUT_TAG:-latest};;
+mulle-testallocator;${MULLE_TESTALLOCATOR_NODETYPE:-tar};no-import,no-singlephase;F774C370-7EFB-4E9D-A83B-617BA8D3982A;${MULLE_TESTALLOCATOR_URL:-https://github.com/mulle-core/mulle-testallocator/archive/${MULLE_TAG}.tar.gz};;${MULLE_TESTALLOCATOR_TAG:-latest};;
+mulle-layout;${MULLE_LAYOUT_NODETYPE:-tar};;FFE231E7-2D8F-4A5C-A864-AFBEBE3C2A3E;${MULLE_LAYOUT_URL:-https://github.com/MulleUI/mulle-layout/archive/${MULLE_TAG}.tar.gz};;${MULLE_LAYOUT_TAG:-latest};;

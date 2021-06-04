@@ -8,23 +8,17 @@
 #include <stdint.h>
 
 
-static inline CGPoint  MullePointClampToSize( CGPoint offset, CGSize size)
-{
-   assert( size.width >= 0.0);
-   assert( size.height >= 0.0);
-
-   if( offset.x < 0.0)
-      offset.x = 0.0;
-   if( offset.x >= size.width)
-      offset.x = size.width;
-
-   if( offset.y < 0.0)
-      offset.y = 0.0;
-   if( offset.y >= size.height)
-      offset.y = size.height;
-   return( offset);
-}
-
+//
+// Layout placement is concerned about placing a rectangle in proximity of
+// another rectangle.
+//
+// .-------------.
+// |             |
+// |             | .---.
+// |             | |   |
+// |             | '---'
+// |             |
+// '-------------'
 
 
 // uintptr_t for comapatibility with NSUInteger, which we don't have
@@ -85,20 +79,37 @@ static inline enum MulleLayoutHorizontalPlacement
 
 
 
-CGPoint   MullePlaceRectNextToRect( CGRect rect,
-                                    CGRect other,
-                                    MulleLayoutPlacement placement);
+CGPoint   CGRectPlaceNextToRect( CGRect rect,
+                                 CGRect other,
+                                 MulleLayoutPlacement placement);
 
 //
 // position rect at either side of other, if space fits.
 // Gives a list of MulleLayoutPlacement and they are tried until something
 // fits.
 //
-CGPoint   MullePlaceRectNextToRectInSpace( CGRect rect,
-                                           CGRect other,
-                                           CGRect space,
-                                           uintptr_t n_preferences,
-                                           unsigned char *preferences,
-                                           intptr_t fallback);
+CGPoint   CGRectPlaceNextToRectInSpace( CGRect rect,
+                                        CGRect other,
+                                        CGRect space,
+                                        uintptr_t n_preferences,
+                                        unsigned char *preferences,
+                                        intptr_t fallback);
+
+
+
+// so adjust x, so that centers align
+static inline CGRect   CGRectAlignHorizontally( CGRect rect, CGFloat x)
+{
+   rect.origin.x += x - CGRectGetMidX( rect);
+   return( rect);
+}
+
+
+static inline CGRect   CGRectAlignVertically( CGRect rect, CGFloat y)
+{
+   rect.origin.y += y - CGRectGetMidY( rect);
+   return( rect);
+}
+
 
 #endif

@@ -17,7 +17,7 @@
 // this will produce the amount to scale srcSize in both dimensions
 // so that everything remains visible in the same aspect
 //
-CGFloat   MulleSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize)
+CGFloat   CGSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize)
 {
    CGFloat   srcAspectScale;
    CGFloat   dstAspectScale;
@@ -31,7 +31,7 @@ CGFloat   MulleSizeGetAspectFitFactor( CGSize dstSize, CGSize srcSize)
 }
 
 
-CGFloat   MulleSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize)
+CGFloat   CGSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize)
 {
    CGFloat   srcAspectScale;
    CGFloat   dstAspectScale;
@@ -45,7 +45,7 @@ CGFloat   MulleSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize)
 }
 
 
-CGRect  MulleSizeAspectLayoutInRect( CGSize size, CGRect rect, int fill)
+CGRect  CGSizePlaceInRectWithAspectCorrection( CGSize size, CGRect rect, int fill)
 {
    CGFloat  aspectScale;
    CGRect   result;
@@ -54,9 +54,9 @@ CGRect  MulleSizeAspectLayoutInRect( CGSize size, CGRect rect, int fill)
       return( CGRectZero);
 
    if( fill)
-      aspectScale = MulleSizeGetAspectFillFactor( rect.size, size);
+      aspectScale = CGSizeGetAspectFillFactor( rect.size, size);
    else
-      aspectScale = MulleSizeGetAspectFitFactor( rect.size, size);
+      aspectScale = CGSizeGetAspectFitFactor( rect.size, size);
 
    result.size.width  = size.width * aspectScale;
    result.size.height = size.height * aspectScale;
@@ -66,72 +66,73 @@ CGRect  MulleSizeAspectLayoutInRect( CGSize size, CGRect rect, int fill)
    return( result);
 }
 
-CGRect   MulleSizeApplyContentModeInRect( CGSize size,
-                                          MulleLayoutContentMode contentMode,
-                                          CGRect rect)
+
+CGRect   CGSizeApplyContentModeInRect( CGSize size,
+                                       CGContentMode contentMode,
+                                       CGRect rect)
 {
    CGRect   result;
    CGFloat  aspectScale;
 
    switch( contentMode)
    {
-   case MulleLayoutContentModeScaleToFill :
+   case CGContentModeScaleToFill :
       return( rect);
 
-   case MulleLayoutContentModeScaleAspectFit :
-      return( MulleSizeAspectLayoutInRect( size, rect, 0));
+   case CGContentModeScaleAspectFit :
+      return( CGSizePlaceInRectWithAspectCorrection( size, rect, 0));
 
-   case MulleLayoutContentModeScaleAspectFill :
-      return( MulleSizeAspectLayoutInRect( size, rect, 1));
+   case CGContentModeScaleAspectFill :
+      return( CGSizePlaceInRectWithAspectCorrection( size, rect, 1));
 
-   case MulleLayoutContentModeCenter :
+   case CGContentModeCenterPoint :
       result.origin.x = CGRectGetMidX( rect) - size.width / 2.0;
       result.origin.y = CGRectGetMidY( rect) - size.height / 2.0;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeTop :
+   case CGContentModeTop :
       result.origin.x = CGRectGetMidX( rect) - size.width / 2.0;
       result.origin.y = rect.origin.y;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeBottom :
+   case CGContentModeBottom :
       result.origin.x = CGRectGetMidX( rect) - size.width / 2.0;
       result.origin.y = CGRectGetMaxY( rect) - size.height;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeLeft :
+   case CGContentModeLeft :
       result.origin.x = rect.origin.x;
       result.origin.y = CGRectGetMidY( rect) - size.height / 2.0;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeRight :
+   case CGContentModeRight :
       result.origin.x = CGRectGetMaxX( rect) - size.width;
       result.origin.y = CGRectGetMidY( rect) - size.height / 2.0;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeTopLeft :
+   case CGContentModeTopLeft :
       result.origin = rect.origin;
       result.size   = size;
       return( result);
 
-   case MulleLayoutContentModeTopRight :
+   case CGContentModeTopRight :
       result.origin.x = CGRectGetMaxX( rect) - size.width;
       result.origin.y = rect.origin.y;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeBottomLeft :
+   case CGContentModeBottomLeft :
       result.origin.x = rect.origin.x;
       result.origin.y = CGRectGetMaxY( rect) - size.height;
       result.size     = size;
       return( result);
 
-   case MulleLayoutContentModeBottomRight :
+   case CGContentModeBottomRight :
       result.origin.x = CGRectGetMaxX( rect) - size.width;
       result.origin.y = CGRectGetMaxY( rect) - size.height;
       result.size     = size;
@@ -141,32 +142,34 @@ CGRect   MulleSizeApplyContentModeInRect( CGSize size,
 }
 
 
-char  *MulleLayoutContentModeNames[] =
+char  *CGContentModeNames[] =
 {
    "ScaleToFill",
    "ScaleAspectFit",
    "ScaleAspectFill",
-//   "MulleLayoutContentModeRedraw",
-   "Center",
+//   "CGContentModeRedraw",
+
    "Top",
-   "Bottom",
-   "Left",
-   "Right",
-   "TopLeft",
    "TopRight",
-   "BottomLeft",
+   "Right",
    "BottomRight",
+   "Bottom",
+   "BottomLeft",
+   "Left",
+   "TopLeft",
+
+   "Center"
 };
 
 
-char  *MulleLayoutContentModeCStringDescription( MulleLayoutContentMode mode)
+char  *CGContentModeCStringDescription( CGContentMode mode)
 {
-   assert( mode >= MulleLayoutContentModeScaleToFill && mode <= MulleLayoutContentModeBottomRight);
-   return( MulleLayoutContentModeNames[ mode]);
+   assert( mode >= CGContentModeScaleToFill && mode <= CGContentModeBottomRight);
+   return( CGContentModeNames[ mode]);
 }
 
 
-MulleLayoutContentMode  MulleLayoutContentModeParseCString( char *s)
+CGContentMode  CGContentModeParseCString( char *s)
 {
    char   **sentinel;
    char   **p;
@@ -179,12 +182,12 @@ MulleLayoutContentMode  MulleLayoutContentModeParseCString( char *s)
       s = &s[ strlen( "ContentMode")];
    }
 
-   p        = MulleLayoutContentModeNames;
-   sentinel = &p[ N_MulleLayoutContentModeNames];
+   p        = CGContentModeNames;
+   sentinel = &p[ N_CGContentModes];
    while( p < sentinel)
    {
       if( ! strcmp( s, *p))
-         return( (int) (p - MulleLayoutContentModeNames));
+         return( (int) (p - CGContentModeNames));
       ++p;
    }
    return( -1);

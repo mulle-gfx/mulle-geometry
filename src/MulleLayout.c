@@ -7,13 +7,31 @@
 
 
 
+void   _MulleLayoutNewRow( struct MulleLayout *p)
+{
+   p->margins.top    = p->originalMargins.top > p->margins.bottom
+                         ? p->originalMargins.top
+                         : p->margins.bottom;
+   p->margins.bottom = p->originalMargins.bottom;
+   p->margins.left   = p->originalMargins.left;
+   p->margins.right  = p->originalMargins.right;
 
-CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
-                              CGSize size,
-                              MulleEdgeInsets margins)
+   p->rect.origin.x  = p->originalRect.origin.x;
+   p->rect.origin.y += p->rect.size.height;
+   p->rect.size      = CGSizeZero;
+}
+
+
+
+CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
+                               CGSize size,
+                               MulleEdgeInsets margins)
 {
    CGRect    rect;
    CGFloat   margin;
+
+   if( ! p)
+      return( CGRectNull);
 
    rect.size   = size;
 
@@ -53,9 +71,9 @@ CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
 }
 
 
-CGRect   MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
-                                          CGSize size,
-                                          MulleEdgeInsets margins)
+CGRect   _MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
+                                           CGSize size,
+                                           MulleEdgeInsets margins)
 {
    CGRect   rect;
 

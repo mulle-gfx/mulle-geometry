@@ -8,13 +8,14 @@ if( MULLE_TRACE_INCLUDE)
    MESSAGE( STATUS "# Include \"${CMAKE_CURRENT_LIST_FILE}\"" )
 endif()
 
+#
+# contents selected with patternfile ??-source--sources
+#
 set( SOURCES
-src/CGAffineTransform.c
 src/CGGeometry.c
 src/MulleLayoutContent.c
 src/MulleLayoutPartition.c
 src/MulleLayoutPlacement.c
 src/MulleLayout.c
-src/MulleQuadratic.c
 src/mulle-layout.c
 )

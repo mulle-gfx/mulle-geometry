@@ -26,96 +26,6 @@
 /**
  @Status Interoperable
 */
-void CGRectDivide(CGRect rect, CGRect* slice, CGRect* remainder, CGFloat amount, CGRectEdge edge) {
-    if( ! slice || ! remainder)
-      return;
-
-    if (CGRectIsNull(rect)) {
-        *slice     = CGRectNull;
-        *remainder = CGRectNull;
-        return;
-    }
-
-    amount = 0.0f > amount ? 0.0f : amount;
-    rect   = CGRectStandardize(rect);
-
-    /*
-    * (0,0)                      (width,0)
-    * x-----------------------------x
-    * |                             |
-    * |                             |
-    * |                             |
-    * |                             |
-    * |                             |
-    * x-----------------------------x
-    * (0,height)               (width,height)
-    *
-    *
-    * The division is based on CGRectEdge, which edge to divide.
-    * e.g CGRectMinYEdge
-    *
-    *   (0,0)                      (width,0)
-    *    x-----------------------------x
-    *    | slice            | (amount) |
-    *    |                  v          |
-    * (0,amount)------------------(width,amount)
-    *    | reminder                    |
-    *    |                             |
-    *    x-----------------------------x
-    *   0,height-amount)               (width,height-amount)
-    */
-
-    // Set both to rect, then update the sizes.
-    *slice = rect;
-    *remainder = rect;
-
-    switch (edge) {
-        case CGRectMinYEdge:
-            amount = (amount > rect.size.height) ? rect.size.height : amount;
-            remainder->origin.y += amount;
-            if (amount >= rect.size.height) {
-                remainder->size.height = 0;
-            } else {
-                slice->size.height = amount;
-                remainder->size.height -= amount;
-            }
-            break;
-        case CGRectMaxYEdge:
-            if (amount >= rect.size.height) {
-                remainder->size.height = 0;
-            } else {
-                slice->origin.y += (rect.size.height - amount);
-                slice->size.height = amount;
-                remainder->size.height -= amount;
-            }
-            break;
-        case CGRectMinXEdge:
-            amount = (amount > rect.size.width) ? rect.size.width : amount;
-            remainder->origin.x += amount;
-            if (amount >= rect.size.width) {
-                remainder->size.width = 0;
-            } else {
-                slice->size.width = amount;
-                remainder->size.width -= amount;
-            }
-            break;
-        case CGRectMaxXEdge:
-            if (amount >= rect.size.width) {
-                remainder->size.width = 0;
-            } else {
-                remainder->size.width -= amount;
-                slice->origin.x += rect.size.width - amount;
-                slice->size.width = amount;
-            }
-            break;
-        default:
-            abort();
-    }
-}
-
-/**
- @Status Interoperable
-*/
 CGRect CGRectIntegral(CGRect r)
 {
    CGRect   rect;
@@ -152,16 +62,16 @@ CGRect CGRectIntersection(CGRect r1, CGRect r2)
         if( r1.origin.x + r1.size.width < r2.origin.x)
             return( CGRectNull);
 
-        x1 = MulleLayoutFloatMinimum(r1.origin.x + r1.size.width, r2.origin.x);
-        x2 = MulleLayoutFloatMinimum(r1.origin.x + r1.size.width, r2.origin.x + r2.size.width);
+        x1 = CGFloatMinimum(r1.origin.x + r1.size.width, r2.origin.x);
+        x2 = CGFloatMinimum(r1.origin.x + r1.size.width, r2.origin.x + r2.size.width);
     }
     else
     {
         if (r2.origin.x + r2.size.width < r1.origin.x)
            return (CGRectNull);
 
-        x1 = MulleLayoutFloatMinimum(r2.origin.x + r2.size.width, r1.origin.x);
-        x2 = MulleLayoutFloatMinimum(r2.origin.x + r2.size.width, r1.origin.x + r1.size.width);
+        x1 = CGFloatMinimum(r2.origin.x + r2.size.width, r1.origin.x);
+        x2 = CGFloatMinimum(r2.origin.x + r2.size.width, r1.origin.x + r1.size.width);
     }
 
     if (r1.origin.y < r2.origin.y)
@@ -169,16 +79,16 @@ CGRect CGRectIntersection(CGRect r1, CGRect r2)
         if (r1.origin.y + r1.size.height < r2.origin.y)
            return (CGRectNull);
 
-        y1 = MulleLayoutFloatMinimum(r1.origin.y + r1.size.height, r2.origin.y);
-        y2 = MulleLayoutFloatMinimum(r1.origin.y + r1.size.height, r2.origin.y + r2.size.height);
+        y1 = CGFloatMinimum(r1.origin.y + r1.size.height, r2.origin.y);
+        y2 = CGFloatMinimum(r1.origin.y + r1.size.height, r2.origin.y + r2.size.height);
     }
     else
     {
         if (r2.origin.y + r2.size.height < r1.origin.y)
            return (CGRectNull);
 
-        y1 = MulleLayoutFloatMinimum(r2.origin.y + r2.size.height, r1.origin.y);
-        y2 = MulleLayoutFloatMinimum(r2.origin.y + r2.size.height, r1.origin.y + r1.size.height);
+        y1 = CGFloatMinimum(r2.origin.y + r2.size.height, r1.origin.y);
+        y2 = CGFloatMinimum(r2.origin.y + r2.size.height, r1.origin.y + r1.size.height);
     }
 
 
@@ -262,89 +172,3 @@ CGRect CGRectUnion(CGRect r1, CGRect r2) {
 }
 
 
-unsigned int   MulleRectSubdivideByRect( CGRect rect, CGRect other, CGRect output[ 4])
-{
-   unsigned int   i;
-   CGFloat        left_margin;
-   CGFloat        right_margin;
-   CGFloat        top_margin;
-   CGFloat        bottom_margin;
-   CGFloat        extent;
-
-   // isn't this overkill ?
-   rect  = CGRectStandardize( rect);
-   other = CGRectStandardize( other);
-
-   // and assume other is smack dab in the middle of rect
-   //
-   //    000000000
-   //    111   222
-   //    333333333
-   //
-   // assume other is overlapping middle and part of the bottom
-   //
-   //    000000000
-   //    111   222
-   //    111   222
-   //
-   // assume other is overlapping middle and part of the bottom
-   //
-   //    000000000
-   //    111
-   //    111
-
-   i = 0;
-
-   if ( ! CGRectIntersectsRect( rect, other))
-      return (0);
-
-   top_margin    = CGRectGetMinY( other) - CGRectGetMinY( rect);
-   bottom_margin = CGRectGetMaxY( rect)  - CGRectGetMaxY( other);
-   left_margin   = CGRectGetMinX( other) - CGRectGetMinX( rect);
-   right_margin  = CGRectGetMaxX( rect)  - CGRectGetMaxX( other);
-
-   extent = CGRectGetHeight(rect);
-
-   if( top_margin > 0.0)
-   {
-      output[ i++] = CGRectMake( CGRectGetMinX( rect),
-                                 CGRectGetMinY( rect),
-                                 CGRectGetWidth( rect),
-                                 top_margin);
-      extent -= top_margin;
-   }
-   else
-      top_margin = 0.0;
-
-   if( bottom_margin > 0.0)
-   {
-      output[i++] = CGRectMake(CGRectGetMinX(rect),
-                               CGRectGetMaxY(rect) - bottom_margin,
-                               CGRectGetWidth(rect),
-                               bottom_margin);
-      extent -= bottom_margin;
-   }
-
-
-   if( extent > 0.0)
-   {
-      if( left_margin > 0.0)
-      {
-         output[i++] = CGRectMake(CGRectGetMinX(rect),
-                                  CGRectGetMinY (rect) + top_margin,
-                                  left_margin,
-                                  extent);
-      }
-
-      if( right_margin > 0.0)
-      {
-         output[i++] = CGRectMake(CGRectGetMaxX(rect) - right_margin,
-                                  CGRectGetMinY(rect) + top_margin,
-                                  right_margin,
-                                  extent);
-      }
-   }
-
-
-   return( i);
-}

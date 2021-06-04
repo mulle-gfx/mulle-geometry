@@ -5,11 +5,10 @@
  *
  *      mulle-sde environment set MULLE_MATCH_TO_C_C_HEADERS_FILE DISABLE
  *
- *   To not generate any header files:
+ *   To not let mulle-match-to-c generate any header files:
  *
  *      mulle-sde environment set MULLE_MATCH_TO_C_RUN DISABLE
  */
-#include "CGAffineTransform.h"
 #include "CGBase.h"
 #include "CGGeometry.h"
 #include "MulleEdgeInsets.h"
@@ -17,4 +16,3 @@
 #include "MulleLayoutPartition.h"
 #include "MulleLayoutPlacement.h"
 #include "MulleLayout.h"
-#include "MulleQuadratic.h"
