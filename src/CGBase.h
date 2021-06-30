@@ -18,12 +18,14 @@
 
 #include <float.h>
 #include <stdlib.h>
+#include <assert.h>
 
 
 typedef float CGFloat;
-#define CGFLOAT_MIN FLT_MIN
-#define CGFLOAT_MAX FLT_MAX
-#define CGFLOAT_IS_DOUBLE 0
+
+#define CGFLOAT_MIN         FLT_MIN
+#define CGFLOAT_MAX         FLT_MAX
+#define CGFLOAT_IS_DOUBLE   0
 
 
 
@@ -94,7 +96,7 @@ static inline CGPoint  CGPointBySettingAxisValue( CGPoint p, CGAxis axis, CGFloa
 //    '-------------'
 //      size.width
 //
-typedef struct CGSize 
+typedef struct CGSize
 {
 	CGFloat  width;
 	CGFloat  height;

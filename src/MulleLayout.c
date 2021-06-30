@@ -41,7 +41,7 @@ CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
 
    rect.origin.y = CGRectGetMinY( p->rect) + margins.top;
    if( CGRectGetMaxY( rect) > CGRectGetMaxY( p->originalRect))
-      return( CGRectZero);
+      return( CGRectNull);
 
    margins.left = margins.left > p->margins.right
                      ? margins.left
@@ -54,7 +54,7 @@ CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
    // The right margin of the rect is ignored.... hmmmm
    //
    if( CGRectGetMaxX( rect) > CGRectGetMaxX( p->originalRect) - p->originalMargins.right)
-      return( CGRectZero);
+      return( CGRectNull);
 
    // left margin is now "fixed" and can be subtracted
    p->margins.right = p->originalMargins.right > margins.right

@@ -45,7 +45,9 @@ CGFloat   CGSizeGetAspectFillFactor( CGSize dstSize, CGSize srcSize)
 }
 
 
-CGRect  CGSizePlaceInRectWithAspectCorrection( CGSize size, CGRect rect, int fill)
+CGRect  CGSizePlaceInRectWithAspectCorrection( CGSize size,
+                                               CGRect rect,
+                                               int fill)
 {
    CGFloat  aspectScale;
    CGRect   result;
@@ -67,9 +69,9 @@ CGRect  CGSizePlaceInRectWithAspectCorrection( CGSize size, CGRect rect, int fil
 }
 
 
-CGRect   CGSizeApplyContentModeInRect( CGSize size,
-                                       CGContentMode contentMode,
-                                       CGRect rect)
+CGRect   CGSizePlaceInRect( CGSize size,
+                            CGRect rect,
+                            CGContentMode contentMode)
 {
    CGRect   result;
    CGFloat  aspectScale;

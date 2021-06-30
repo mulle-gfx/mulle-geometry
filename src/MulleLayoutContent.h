@@ -79,9 +79,16 @@ static inline CGRect  CGSizePlaceInRectWithAspectFill( CGSize size, CGRect rect)
 // given frame using contentMode. If the size is larger than the frame
 // it may overlap (or shrink)
 //
-CGRect   CGSizeApplyContentModeInRect( CGSize size,
-                                       CGContentMode contentMode,
-                                       CGRect rect);
+CGRect   CGSizePlaceInRect( CGSize size,
+                            CGRect rect,
+                            CGContentMode contentMode);
+
+static inline CGRect   CGRectPlaceInRect( CGRect r1,
+                                          CGRect r2,
+                                          CGContentMode contentMode)
+{
+   return( CGSizePlaceInRect( r1.size, r2, contentMode));
+}
 
 
 static inline CGPoint   CGSizeGetCenterPointInRect( CGSize size, CGRect rect)

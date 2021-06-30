@@ -28,7 +28,7 @@ void   drawContentMode( NVGcontext *vg,
    size.width  = rect.size.width  / 2.0;
    size.height = rect.size.height / 2.0 > size.width ? size.width : rect.size.height / 2.0;
 
-   smallRect = CGSizeApplyContentModeInRect( size, contentMode, rect);
+   smallRect = CGSizePlaceInRect( size, rect, contentMode);
    nvgBeginPath( vg);
    {
       nvgRoundedRect( vg, smallRect.origin.x,
@@ -72,7 +72,7 @@ void   drawRectPlacement( NVGcontext *vg,
    size.width  = rect.size.width  / 3.0;
    size.height = rect.size.height / 3.0 > size.width ? size.width : rect.size.height / 3.0;
 
-   smallRect = CGSizeApplyContentModeInRect( size, CGContentModeCenterPoint, rect);
+   smallRect = CGSizePlaceInRect( size, rect, CGContentModeCenterPoint);
 
    nvgBeginPath( vg);
    {
@@ -145,7 +145,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
    size.width  = rect.size.width  / 3.0;
    size.height = rect.size.height / 3.0 > size.width ? size.width : rect.size.height / 3.0;
 
-   smallRect = CGSizeApplyContentModeInRect( size, rectMode, rect);
+   smallRect = CGSizePlaceInRect( size, rect, rectMode);
    nvgBeginPath( vg);
    {
       nvgRoundedRect( vg, smallRect.origin.x,
@@ -336,7 +336,7 @@ int   main()
 
       [[UIApplication sharedInstance] addWindow:window];
 
-      [window setBackgroundColor:CGColorCreateGenericRGB( 1.0, 1.0, 1.0, 1.0)];
+      [window setBackgroundColor:CGColorMakeRGBA( 1.0, 1.0, 1.0, 1.0)];
 
       setupScene( [window contentPlane]);
 

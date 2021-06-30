@@ -40,6 +40,23 @@ static inline int CGSizeEqualToSize(CGSize a, CGSize b) {
     return a.width == b.width && a.height == b.height;
 }
 
+
+/**
+@Status Interoperable
+*/
+static inline int CGSizeGetArea(CGSize a) {
+    return a.width* a.height;
+}
+
+
+/**
+@Status Interoperable
+*/
+static inline int CGRectGetArea(CGRect a) {
+    return a.size.width * a.size.height;
+}
+
+
 /**
 @Status Interoperable
 //  .-------------.

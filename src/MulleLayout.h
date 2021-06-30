@@ -41,7 +41,7 @@ struct MulleLayout
    MulleEdgeInsets   originalMargins;
 
    CGRect            rect;      // growing rect of the current row
-   MulleEdgeInsets   margins;  // growing margins of the current row
+   MulleEdgeInsets   margins;   // growing margins of the current row
 
    CGFloat           maxMarginY;
 };
@@ -137,7 +137,7 @@ static inline void   MulleLayoutNewRow( struct MulleLayout *p)
 // Straightforward, except when space runs out. The margin handling is also
 // a bit complicated. Size doesn't fit, if there isn't room enough for margins,
 // which is also the right edge of the space. The larger margin wins.
-// Returns zerosized rect, if it doesn't fit. Does not attempt to change 'y'
+// Returns CGRectNull rect, if it doesn't fit. Does not attempt to change 'y'
 //
 CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
                                CGSize size,
