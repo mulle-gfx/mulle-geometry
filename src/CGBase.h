@@ -71,20 +71,48 @@ typedef struct CGPoint
 } CGPoint;
 
 
-static inline CGFloat  CGPointGetAxisValue( CGPoint p, CGAxis axis)
+static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
 {
-   return( axis == CGVerticalAxis ? p.y : p.x);
+   return( (CGPoint){ .x = x, .y = y });
 }
 
 
-static inline CGPoint  CGPointBySettingAxisValue( CGPoint p, CGAxis axis, CGFloat value)
+//
+// union is not CGPoint, because it's too inconvenient in the debugger
+// and its not used that often.
+//
+typedef struct CGPointU
 {
-   if( axis == CGVerticalAxis)
-      p.y = value;
-   else
-      p.x = value;
-   return( p);
+   union
+   {
+      struct
+      {
+         CGFloat  x;
+         CGFloat  y;
+      };
+      CGFloat     value[ 2];
+   };
+} CGPointU;
+
+
+static inline CGPointU   CGPointUMake(CGFloat x, CGFloat y)
+{
+   return( (CGPointU){ .x = x, .y = y });
 }
+
+
+static inline CGPoint   CGPointUGetPoint( CGPointU v)
+{
+   return( *(CGPoint *) &v);
+}
+
+
+static inline CGPointU   CGPointGetPointU( CGPoint v)
+{
+   return( *(CGPointU *) &v);
+}
+
+
 
 //
 //    .-------------.
@@ -103,19 +131,95 @@ typedef struct CGSize
 } CGSize;
 
 
-static inline CGFloat  CGSizeGetAxisValue( CGSize size, CGAxis axis)
+static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
 {
-   return( axis == CGVerticalAxis ? size.height : size.width);
+   return( (CGSize){ .width = w, .height = h });
 }
 
 
-static inline CGSize  CGSizeBySettingAxisValue( CGSize size, CGAxis axis, CGFloat value)
+//
+// this can be used for variable axis code like:
+//    sizeu.value[ axis] += pointu.value[ axis];
+// which is otherwise a pain to code with CGSizeGetAxisValue or
+// CGSizeBySettingAxisValue
+//
+typedef struct CGSizeU
 {
-   if( axis == CGVerticalAxis)
-      size.height = value;
-   else
-      size.width = value;
-   return( size);
+   union
+   {
+      struct
+      {
+         CGFloat  width;
+         CGFloat  height;
+      };
+      CGFloat     value[ 2];
+   };
+} CGSizeU;
+
+
+static inline CGSizeU   CGSizeUMake( CGFloat w, CGFloat h)
+{
+   return( (CGSizeU){ .width = w, .height = h });
+}
+
+
+static inline CGSize   CGSizeUGetSize( CGSizeU v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGSizeU   CGSizeGetSizeU( CGSize v)
+{
+   return( *(CGSizeU *) &v);
+}
+
+
+//
+// hardly ever used. Use CAPolarPoint for real vector stuff
+//
+typedef struct CGVector
+{
+   CGFloat  dx;
+   CGFloat  dy;
+} CGVector;
+
+
+static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
+{
+   return( (CGVector){ .dx = dx, .dy = dy });
+}
+
+
+typedef struct CGVectorU
+{
+   union
+   {
+      struct
+      {
+         CGFloat  dx;
+         CGFloat  dy;
+      };
+      CGFloat     value[ 2];
+   };
+} CGVectorU;
+
+
+static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
+{
+   return( (CGVectorU){ .dx = dx, .dy = dy });
+}
+
+
+static inline CGVector   CGVectorUGetVector( CGVectorU v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGVectorU   CGVectorGetVectorU( CGVector v)
+{
+   return( *(CGVectorU *) &v);
 }
 
 
@@ -138,47 +242,6 @@ typedef struct CGRect
 } CGRect;
 
 
-//
-// hardly ever used. Use CAPolarPoint for real vector stuff
-//
-typedef struct CGVector
-{
-   CGFloat  dx;
-   CGFloat  dy;
-} CGVector;
-
-
-static inline CGFloat  CGVectorGetAxisValue( CGVector v, CGAxis axis)
-{
-   return( axis == CGVerticalAxis ? v.dy : v.dx);
-}
-
-
-static inline CGVector  CGVectorBySettingAxisValue( CGVector v, CGAxis axis, CGFloat value)
-{
-   if( axis == CGVerticalAxis)
-      v.dy = value;
-   else
-      v.dx = value;
-   return( v);
-}
-
-
-//
-// MEMO: Using extern const is probably the worst way to initialize to zero
-//       as it can't be inlined and forces read/write, though we only need to
-//       write.
-//       Now, with a macro, you can't take the address of a CGRectZero
-//       anymore though.
-//
-#define CGRectInfinite   CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
-#define CGPointZero      CGPointMake( 0, 0)
-#define CGRectZero       CGRectMake( 0, 0, 0, 0)
-#define CGSizeZero       CGSizeMake( 0, 0)
-#define CGVectorZero     CGVectorMake( 0, 0)
-#define CGRectNull       CGRectMake( -INFINITY, -INFINITY, 0.0f, 0.0)
-
-
 
 static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
@@ -189,21 +252,55 @@ static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 }
 
 
-static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
+typedef struct CGRectU
 {
-   return( (CGPoint){ .x = x, .y = y });
+   CGPointU   origin;
+   CGSizeU    size;
+} CGRectU;
+
+
+static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
+{
+   return( (CGRectU){
+                     .origin = (CGPointU) { .x = x, .y = y },
+                     .size   = (CGSizeU)  { .width = w, .height = h }
+                   });
 }
 
 
-static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
+static inline CGRect   CGRectUGetRect( CGRectU v)
 {
-   return( (CGSize){ .width = w, .height = h });
+   return( *(CGRect *) &v);
 }
 
-static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
+
+static inline CGRectU   CGRectGetRectU( CGRect v)
 {
-   return( (CGVector){ .dx = dx, .dy = dy });
+   return( *(CGRectU *) &v);
 }
 
+
+//
+// MEMO: Using extern const is probably the worst way to initialize to zero
+//       as it can't be inlined and forces read/write, though we only need to
+//       write.
+//       Now, with a macro, you can't take the address of a CGRectZero
+//       anymore though.
+//
+#define CGPointZero       CGPointMake( 0, 0)
+#define CGPointUZero      CGPointUMake( 0, 0)
+#define CGPointNull       CGPointMake( -INFINITY, -INFINITY)
+#define CGSizeZero        CGSizeMake( 0, 0)
+#define CGSizeUZero       CGSizeUMake( 0, 0)
+// there is no CGSizeNull
+#define CGVectorZero      CGVectorMake( 0, 0)
+#define CGVectorUZero     CGVectorUMake( 0, 0)
+
+#define CGRectZero        CGRectMake( 0, 0, 0, 0)
+#define CGRectUZero       CGRectUMake( 0, 0, 0, 0)
+#define CGRectNull        CGRectMake( -INFINITY, -INFINITY, 0.0f, 0.0f)
+#define CGRectUNull       CGRectUMake( NSIntegerMin, NSIntegerMin, 0.0f, 0.0f)
+#define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
+#define CGRectUInfinite   CGRectUMake( NSIntegerMin, NSIntegerMin, NSIntegerMax, NSIntegerMax)
 
 #endif
