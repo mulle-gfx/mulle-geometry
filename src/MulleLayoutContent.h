@@ -45,7 +45,7 @@ typedef enum
 
 
 extern char    *CGContentModeNames[ N_CGContentModes];
-char           *CGContentModeCStringDescription( CGContentMode mode);
+char           *CGContentModeUTF8String( CGContentMode mode);
 CGContentMode  CGContentModeParseCString( char *s);
 
 

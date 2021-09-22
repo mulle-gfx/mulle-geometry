@@ -164,7 +164,7 @@ char  *CGContentModeNames[] =
 };
 
 
-char  *CGContentModeCStringDescription( CGContentMode mode)
+char  *CGContentModeUTF8String( CGContentMode mode)
 {
    assert( mode >= CGContentModeScaleToFill && mode <= CGContentModeBottomRight);
    return( CGContentModeNames[ mode]);
