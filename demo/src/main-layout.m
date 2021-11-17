@@ -21,7 +21,7 @@ void   drawContentMode( NVGcontext *vg,
                    rect.size.width,
                    rect.size.height);
       nvgStrokeWidth( vg, 1.0);
-      nvgStrokeColor(vg, MulleColorMake( 0x8080007F));
+      nvgStrokeColor(vg, CGColorMakeWithUnsignedInteger( 0x8080007F));
    }
    nvgStroke( vg);
 
@@ -38,7 +38,7 @@ void   drawContentMode( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.2 + 0.6 * ((double) contentMode / (N_CGContentModes - 1));
-      nvgStrokeColor( vg, MulleColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 }
@@ -65,7 +65,7 @@ void   drawRectPlacement( NVGcontext *vg,
                    rect.size.width,
                    rect.size.height);
       nvgStrokeWidth( vg, 1.0);
-      nvgStrokeColor(vg, MulleColorMake( 0x8080007F));
+      nvgStrokeColor(vg, CGColorMakeWithUnsignedInteger( 0x8080007F));
    }
    nvgStroke( vg);
 
@@ -83,7 +83,7 @@ void   drawRectPlacement( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.0 + 0.5 * ((double) i / (36 - 1));
-      nvgStrokeColor( vg, MulleColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 
@@ -104,7 +104,7 @@ void   drawRectPlacement( NVGcontext *vg,
                           otherRect.size.height,
                           otherRect.size.width / 10.0);
       hue = 0.5 + 0.5 * ((double) i / (36 - 1));
-      nvgFillColor( vg, MulleColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgFillColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgFill( vg);
 }
@@ -138,7 +138,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
                    rect.size.width,
                    rect.size.height);
       nvgStrokeWidth( vg, 1.0);
-      nvgStrokeColor(vg, MulleColorMake( 0x8080007F));
+      nvgStrokeColor(vg, CGColorMakeWithUnsignedInteger( 0x8080007F));
    }
    nvgStroke( vg);
 
@@ -155,7 +155,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.0 + 0.5 * ((double) rectMode / (N_CGContentModes - 1));
-      nvgStrokeColor( vg, MulleColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 
@@ -180,7 +180,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
                           otherRect.size.height,
                           otherRect.size.width / 10.0);
       hue = 0.5 + 0.5 * ((double) rectMode / (N_CGContentModes - 1));
-      nvgFillColor( vg, MulleColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgFillColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgFill( vg);
 }
@@ -202,7 +202,7 @@ static void   drawLayoutInSpace( NVGcontext *vg, CGRect rect)
                    rect.size.width,
                    rect.size.height);
       nvgStrokeWidth( vg, 1.0);
-      nvgStrokeColor(vg, MulleColorMake( 0x8080007F));
+      nvgStrokeColor(vg, CGColorMakeWithUnsignedInteger( 0x8080007F));
    }
    nvgStroke( vg);
 
@@ -232,7 +232,7 @@ static void   drawLayoutInSpace( NVGcontext *vg, CGRect rect)
                       part.size.width,
                       part.size.height);
          nvgStrokeWidth( vg, 1.0);
-         nvgStrokeColor( vg, MulleColorMakeHSLA( fmod( 0.13 * i, 1.0), 1.0, 0.2, 0.7));
+         nvgStrokeColor( vg, CGColorMakeHSLA( fmod( 0.13 * i, 1.0), 1.0, 0.2, 0.7));
       }
       nvgStroke( vg);
       ++i;

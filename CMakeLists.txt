@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 3.15)
 
 project( mulle-layout C)
+add_definitions( -DMULLE_LAYOUT_EXTERN_GLOBAL=extern)
+
 
 ### mulle-sde environment
 set( CREATE_OBJC_LOADER_INC OFF)

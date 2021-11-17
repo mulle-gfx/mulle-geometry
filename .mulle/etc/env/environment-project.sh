@@ -7,7 +7,7 @@ export PROJECT_NAME="mulle-layout"
 #
 #
 #
-export PROJECT_TYPE="executable"
+export PROJECT_TYPE="library"
 
 
 #

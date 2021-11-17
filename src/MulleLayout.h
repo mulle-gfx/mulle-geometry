@@ -115,6 +115,19 @@ static inline CGSize  MulleLayoutGetRemainingRowSize( struct MulleLayout *p)
 }
 
 
+static inline int   _MulleLayoutIsEmptyRow( struct MulleLayout *p)
+{
+   return( p->rect.size.width == 0.0);
+}
+
+static inline int   MulleLayoutIsEmptyRow(  struct MulleLayout *p)
+{
+   if( ! p)
+      return( 0);
+   return( _MulleLayoutIsEmptyRow( p));
+}
+
+
 
 // Each row starts at 0,0. The origin is added to the returned rect on return.
 // When a row is done, the height of the row is added to the origin.
@@ -154,6 +167,20 @@ static inline CGRect   MulleLayoutAddToRow( struct MulleLayout *p,
 }
 
 
+// an existing row will be preempted, a new row of height h will be
+// returned ( if space is available)
+CGRect   _MulleLayoutAddRowWithHeight( struct MulleLayout *p,
+                                       CGFloat h,
+                                       MulleEdgeInsets margins);
+
+static inline CGRect   MulleLayoutAddRowWithHeight( struct MulleLayout *p,
+                                                    CGFloat h,
+                                                    MulleEdgeInsets margins)
+{
+   if( ! p)
+      return( CGRectNull);
+   return( _MulleLayoutAddRowWithHeight( p, h, margins));
+}
 
 
 CGRect   _MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
@@ -171,6 +198,4 @@ static inline CGRect   MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
 }
 
 // TODO: more to come...
-
-
 #endif

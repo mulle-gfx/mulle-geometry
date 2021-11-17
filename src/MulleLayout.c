@@ -6,7 +6,6 @@
 #include "include-private.h"
 
 
-
 void   _MulleLayoutNewRow( struct MulleLayout *p)
 {
    p->margins.top    = p->originalMargins.top > p->margins.bottom
@@ -32,8 +31,10 @@ CGRect   _MulleLayoutAddToRow( struct MulleLayout *p,
 
    if( ! p)
       return( CGRectNull);
+//   if( size.width == 0.0)  // don't want to dirty rect.origin.y then ...
+//      return( CGRectNull);
 
-   rect.size   = size;
+   rect.size  = size;
 
    margins.top = margins.top > p->margins.top
                      ? margins.top
@@ -86,3 +87,26 @@ CGRect   _MulleLayoutAddToRowWithOverflow( struct MulleLayout *p,
    return( rect);
 }
 
+
+CGRect   _MulleLayoutAddRowWithHeight( struct MulleLayout *p,
+                                       CGFloat h,
+                                       MulleEdgeInsets margins)
+{
+   CGFloat           w;
+   CGFloat           hMargin;
+   MulleEdgeInsets   actualMargins;
+   CGRect            rect;
+
+   if( ! _MulleLayoutIsEmptyRow( p))
+      _MulleLayoutNewRow( p);
+
+   actualMargins = MulleEdgeInsetsUnion( margins, p->originalMargins);
+   hMargin       = actualMargins.left + actualMargins.right;
+   w             = p->originalRect.size.width - hMargin;
+
+   rect = _MulleLayoutAddToRow( p, CGSizeMake( w, h), margins);
+
+   // immediately add a fresh new row
+   _MulleLayoutNewRow( p);
+   return( rect);
+}
