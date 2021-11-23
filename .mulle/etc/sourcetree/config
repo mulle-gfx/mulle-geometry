@@ -1,1 +1,2 @@
-m;none;no-all-load,no-build,no-cmake-inherit,no-cmake-searchpath,no-delete,no-dependency,no-fs,no-import,no-share,no-update;55F69EC9-59CA-4CC8-B3DB-E28DD6287CA3;;;;;include=math.h
+m;none;no-all-load,no-build,no-cmake-inherit,no-cmake-searchpath,no-delete,no-dependency,no-fs,no-import,no-share,no-update;C188D99D-CCBD-414D-A471-8F0E2AA68E25;;;;;include=math.h
+mulle-time;${MULLE_TIME_NODETYPE:-tar};no-all-load,no-cmake-loader,no-cmake-searchpath,no-import;9E7730E5-8D17-49B4-B469-3AF0AFE2CD91;${MULLE_TIME_URL:-https://github.com/mulle-c/mulle-time/archive/${MULLE_TAG}.tar.gz};${MULLE_TIME_BRANCH};${MULLE_TIME_TAG:-latest};;

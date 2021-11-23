@@ -9,10 +9,9 @@
  *
  *      mulle-sde environment set MULLE_MATCH_TO_C_RUN DISABLE
  */
+#include "CAAngle.h"
+#include "CAPolarPoint.h"
+#include "CAQuadratic.h"
+#include "CATime.h"
 #include "CGBase.h"
 #include "CGGeometry.h"
-#include "MulleEdgeInsets.h"
-#include "MulleLayoutContent.h"
-#include "MulleLayoutPartition.h"
-#include "MulleLayoutPlacement.h"
-#include "MulleLayout.h"

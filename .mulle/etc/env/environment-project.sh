@@ -1,7 +1,7 @@
 #
 #
 #
-export PROJECT_NAME="mulle-layout"
+export PROJECT_NAME="mulle-geometry"
 
 
 #

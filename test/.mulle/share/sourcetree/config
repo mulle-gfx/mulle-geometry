@@ -1,2 +1,2 @@
-mulle-testallocator;${MULLE_TESTALLOCATOR_NODETYPE:-tar};no-import,no-singlephase;A3F3956C-DE68-4F07-B93D-63C857CAA8A7;${MULLE_TESTALLOCATOR_URL:-https://github.com/mulle-core/mulle-testallocator/archive/${MULLE_TAG}.tar.gz};;${MULLE_TESTALLOCATOR_TAG:-latest};;
-mulle-layout;${MULLE_LAYOUT_NODETYPE:-tar};;BDBF118D-4F37-42ED-8AB3-4646BFD30479;${MULLE_LAYOUT_URL:-https://github.com/MulleUI/mulle-layout/archive/${MULLE_TAG}.tar.gz};;${MULLE_LAYOUT_TAG:-latest};;
+mulle-testallocator;${MULLE_TESTALLOCATOR_NODETYPE:-tar};no-import,no-singlephase;71518BAD-E650-4184-A7B6-331D524907FA;${MULLE_TESTALLOCATOR_URL:-https://github.com/mulle-core/mulle-testallocator/archive/${MULLE_TAG}.tar.gz};;${MULLE_TESTALLOCATOR_TAG:-latest};;
+mulle-geometry;${MULLE_GEOMETRY_NODETYPE:-tar};;B087E8B9-FA9C-44D8-99FF-E6EAAF30E5FF;${MULLE_GEOMETRY_URL:-https://github.com/MulleUI/mulle-geometry/archive/${MULLE_TAG}.tar.gz};;${MULLE_GEOMETRY_TAG:-latest};;

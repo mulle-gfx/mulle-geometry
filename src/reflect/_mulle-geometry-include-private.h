@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef _mulle_layout_include_private_h__
-#define _mulle_layout_include_private_h__
+#ifndef _mulle_geometry_include_private_h__
+#define _mulle_geometry_include_private_h__
 
 /* no headers */
 

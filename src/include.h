@@ -1,5 +1,5 @@
-#ifndef mulle_layout_include_h__
-#define mulle_layout_include_h__
+#ifndef mulle_geometry_include_h__
+#define mulle_geometry_include_h__
 
 /* This is a central include file to keep dependencies out of the library
    C files. It is usally included by .h files only.
@@ -23,7 +23,7 @@
    Here the prefix is harmless and serves disambiguation. If you have no
    sourcetree, then you don't need it.
  */
-#include "_mulle-layout-include.h"
+#include "_mulle-geometry-include.h"
 #ifndef MULLE_LAYOUT_EXTERN_GLOBAL
 # define MULLE_LAYOUT_EXTERN_GLOBAL MULLE_C_EXTERN_GLOBAL
 #endif

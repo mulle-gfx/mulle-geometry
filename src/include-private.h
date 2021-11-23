@@ -1,5 +1,5 @@
-#ifndef mulle_layout_include_private_h__
-#define mulle_layout_include_private_h__
+#ifndef mulle_geometry_include_private_h__
+#define mulle_geometry_include_private_h__
 
 
 /* DO:    #include this files in sources
@@ -16,6 +16,6 @@
    sourcetree, then you don't need it.
  */
 
-#include "_mulle-layout-include-private.h"
+#include "_mulle-geometry-include-private.h"
 
 #endif

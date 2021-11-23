@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.15)
 
-project( mulle-layout C)
+project( mulle-geometry C)
 add_definitions( -DMULLE_LAYOUT_EXTERN_GLOBAL=extern)
 
 

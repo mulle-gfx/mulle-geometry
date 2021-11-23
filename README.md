@@ -1,32 +1,35 @@
-# 📏 mulle-layout
+# 🔭 mulle-geometry
 
-#### 📏 Rectangle geometry and manual layouting
-
-
-This library contains functions for manual layouting of rectangles.
+#### 🔭 Basic geometric and time datatypes 
 
 
-![Demo Screenshot](demos/layout.png)
+This library contains definitions and functions for familiar datatypes like **CGRect**. As most of these datatypes have legacy names, the prefixes are all
+over the place.
 
-Here you can see a demo of the library in action. The available window space
-is split into vertical and horizontal slices using "paritioning".
+Datatype            | Description
+--------------------|---------------------------
+CGFloat             | legacy name of `float` in CoreGraphics
+CGPoint             | cartesian point
+CGSize              | size
+CGVector            | cartesian vector (rarely used)
+CGRect              | rectangle
+CAAngleDegrees      | the angle in 0-360 degrees (0 is leftwards)
+CAAngleDirectional  | angle from -0.999 to +0.999 (0 is upwards)
+CAAngleRadians      | the usual angle in radians (0 is leftwards)
+CAAngleHour         | maps angle to analog hours (0 is upwards)
+CAPolarPoint        | point as an angle and distance from 0,0			
+CAQuadratic 		| interpolation value
+CAQuadraticBezier   | bezier curve
+CARelativeTime      | a quantity of time like 10s
+CAAbsoluteTime      | a timestamp like today 
+CARelativeTimeRange | a time range of relative times, like delay, duration
+CAAbsoluteTimeRange | an absolute time range, like today until tomorrow
 
-In the first row you see "contentmode" examples of a rectangle inside
-another rectangle.
-
-In the second and third row, you see "placement" of a rectangle with fixed
-size relative to another rectangle of fixed size.
-
-The fourth row, shows "placement" of a rectangle of "flexible" size
-relative to another rectangle of fixes size.
-
-The last row, shows the "layout" code, placing rectangles in column first,
-then row fashion.
 
 
 ## Attribution
 
-The library contains a lot of code from :
+The library may still contain some code from :
 
 ```
 Copyright (c) 2006-2007 Christopher J. W. Lloyd
