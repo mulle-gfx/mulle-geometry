@@ -1,5 +1,5 @@
-#ifndef CA_QUADRATIC_H__
-#define CA_QUADRATIC_H__
+#ifndef ca_quadratic_h__
+#define ca_quadratic_h__
 
 
 #include "include.h"

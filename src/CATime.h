@@ -1,5 +1,5 @@
-#ifndef CA_TIME_H__
-#define CA_TIME_H__
+#ifndef ca_time_H__
+#define ca_time_H__
 
 #include "include.h"
 

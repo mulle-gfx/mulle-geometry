@@ -13,5 +13,6 @@
 #include "CAPolarPoint.h"
 #include "CAQuadratic.h"
 #include "CATime.h"
+#include "CGAffineTransform.h"
 #include "CGBase.h"
 #include "CGGeometry.h"

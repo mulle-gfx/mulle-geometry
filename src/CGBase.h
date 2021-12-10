@@ -13,8 +13,8 @@
 // THE SOFTWARE.
 //
 //******************************************************************************
-#ifndef __cg_base_h__
-#define __cg_base_h__
+#ifndef cg_base_h__
+#define cg_base_h__
 
 #include <float.h>
 #include <stdlib.h>

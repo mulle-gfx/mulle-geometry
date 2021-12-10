@@ -13,6 +13,7 @@ endif()
 set( SOURCES
 src/CAPolarPoint.c
 src/CAQuadratic.c
+src/CGAffineTransform.c
 src/CGGeometry.c
 src/mulle-geometry.c
 )

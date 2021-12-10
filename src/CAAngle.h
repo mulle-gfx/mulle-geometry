@@ -1,5 +1,5 @@
-#ifndef cg_geometry_ca_animation_h__
-#define cg_geometry_ca_animation_h__
+#ifndef ca_angle_h__
+#define ca_angle_h__
 
 // want to get M_PI, but are we included before math?
 
