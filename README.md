@@ -1,6 +1,6 @@
 # 🔭 mulle-geometry
 
-#### 🔭 Basic geometric and time datatypes 
+#### 🔭 Basic geometric types
 
 This library contains definitions and functions for (macOS/iOS) familiar
 datatypes like **CGRect**. CG prefixed datatypes are legacy names. The
@@ -29,12 +29,10 @@ CAPolarPoint        | point as an angle and distance from 0,0
 CAQuadratic         | interpolation value
 CAQuadraticBezier   | bezier curve
 
-Datatype            | Description
---------------------|---------------------------
-CAAbsoluteTime      | a timestamp like today
-CAAbsoluteTimeRange | an absolute time range, like today until tomorrow
-CARelativeTime      | a quantity of time like 10s
-CARelativeTimeRange | a time range of relative times, like delay, duration
+### You are here
+
+![Overview](overview.dot.svg)
+
 
 
 ## mulle-sde

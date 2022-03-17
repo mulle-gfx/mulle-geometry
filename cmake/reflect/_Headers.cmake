@@ -51,7 +51,6 @@ set( PUBLIC_HEADERS
 src/CAAngle.h
 src/CAPolarPoint.h
 src/CAQuadratic.h
-src/CATime.h
 src/CGAffineTransform.h
 src/CGBase.h
 src/CGGeometry.h

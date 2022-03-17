@@ -17,7 +17,7 @@ endif()
 # Disable for this platform: `mulle-sourcetree mark mulle-time no-cmake-platform-${MULLE_UNAME}`
 #
 if( NOT MULLE_TIME_LIBRARY)
-   find_library( MULLE_TIME_LIBRARY NAMES ${CMAKE_STATIC_LIBRARY_PREFIX}mulle-time${CMAKE_STATIC_LIBRARY_SUFFIX} mulle-time NO_CMAKE_SYSTEM_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+   find_library( MULLE_TIME_LIBRARY NAMES ${CMAKE_STATIC_LIBRARY_PREFIX}mulle-time${CMAKE_DEBUG_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX} ${CMAKE_STATIC_LIBRARY_PREFIX}mulle-time${CMAKE_STATIC_LIBRARY_SUFFIX} mulle-time NO_CMAKE_SYSTEM_PATH NO_SYSTEM_ENVIRONMENT_PATH)
    message( STATUS "MULLE_TIME_LIBRARY is ${MULLE_TIME_LIBRARY}")
    #
    # The order looks ascending, but due to the way this file is read
