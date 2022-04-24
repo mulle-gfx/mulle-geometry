@@ -25,11 +25,12 @@
 //         ~- . ___ . -~
 //
 // Notes: negative radius is the same as flipping the angle by 180° deg and
-//        having a postive radius of the same value. 
-//        So a polar point can already have two representations of a CGPoint
-//        there already. A CGPoint is unique. Furthermore you can have negative 
-//        and  positive multiples of the angle, which map to the same point
-//        (e.g. add 360° deg to the angle)
+//        having a positive radius of the same value.
+//        So a CAPolarPoint can already have two representations of a CGPoint
+//        right there already. Furthermore you
+//        can have negative  and  positive multiples of the angle, which map to
+//        the same point (e.g. add 360° deg to the angle)
+//        In contrast a CGPoint is unique.
 //
 //        Ergo: conversion back and forth is a slightly lossy operation.
 //              comparing two CAPolarPoints is tricky and error prone.
@@ -79,8 +80,6 @@ static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint 
 {
    return( p.radius == q.radius && p.angle == q.angle);
 }
-
-
 
 
 static inline CAPolarPoint  CGPointAsPolarPoint( CGPoint p)

@@ -23,8 +23,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
-
-
 /**
 @Status Interoperable
 */
@@ -298,6 +296,11 @@ static inline int CGRectContainsRect(CGRect a, CGRect b)
 // to the nearest whole integers, such that the result contains the original
 // rectangle
 CGRect CGRectIntegral(CGRect rect);
+
+//
+// Returns a rect that represents the intersection of r1 and r2.
+// Returns CGRectNull if r1 and r2 do not intersect
+//
 CGRect CGRectIntersection(CGRect r1, CGRect r2);
 
 // turns negative width/height rect, into positive with different x/y
@@ -327,4 +330,25 @@ CGRect CGRectStandardize(CGRect rect);
 CGRect CGRectUnion(CGRect a, CGRect b);
 
 
+// Not enabled, because the interface is somewhat awkward. It usually needs
+// a lot of copying...
+//
+// Find in "rects" the rect with the largest intersection area with r1. If none
+// intersect, returns ((uintptr_t) INTPTR_MAX), which is the same as
+// NSNotFound or mulle_not_found_e
+//
+// Example: CGRectIndexOfRectWithLargestIntersection( r1, 3, rects)
+//          would return 1
+//
+//              .-----------.----------.
+//              | rects[0]  | rects[1] |
+//              |        .--------.    |
+//              |        | r1     |    |
+//              .--------|        |----'
+//              | rects[2'--------'
+//              |           |
+//              '-----------'
+//
+// uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects);
+//
 #endif

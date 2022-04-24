@@ -1,12 +1,7 @@
-#include <mulle-layout/mulle-layout.h>
+#include <mulle-geometry/mulle-geometry.h>
 
 #include <stdlib.h>
 
-
-static inline CGFloat   CGFloatMakeRandom( void)
-{
-   return( (CGFloat) (rand() * 1.0 / RAND_MAX));
-}
 
 
 int   main()

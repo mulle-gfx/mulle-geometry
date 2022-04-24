@@ -26,6 +26,31 @@
 /**
  @Status Interoperable
 */
+CGRect CGRectStandardize(CGRect r) {
+    CGRect out;
+
+    if (r.size.width < 0.0f) {
+        out.origin.x = r.origin.x + r.size.width;
+        out.size.width = -r.size.width;
+    } else {
+        out.origin.x = r.origin.x;
+        out.size.width = r.size.width;
+    }
+
+    if (r.size.height < 0.0f) {
+        out.origin.y = r.origin.y + r.size.height;
+        out.size.height = -r.size.height;
+    } else {
+        out.origin.y = r.origin.y;
+        out.size.height = r.size.height;
+    }
+    return out;
+}
+
+
+/**
+ @Status Interoperable
+*/
 CGRect CGRectIntegral(CGRect r)
 {
    CGRect   rect;
@@ -48,9 +73,8 @@ CGRect CGRectIntegral(CGRect r)
 /**
  @Status Interoperable
 */
-CGRect CGRectIntersection(CGRect r1, CGRect r2)
+static CGRect   _CGRectIntersection(CGRect r1, CGRect r2)
 {
-    r1 = CGRectStandardize(r1);
     r2 = CGRectStandardize(r2);
 
     CGFloat  x1, y1, x2, y2;
@@ -100,29 +124,12 @@ CGRect CGRectIntersection(CGRect r1, CGRect r2)
    return out;
 }
 
-/**
- @Status Interoperable
-*/
-CGRect CGRectStandardize(CGRect r) {
-    CGRect out;
-
-    if (r.size.width < 0.0f) {
-        out.origin.x = r.origin.x + r.size.width;
-        out.size.width = -r.size.width;
-    } else {
-        out.origin.x = r.origin.x;
-        out.size.width = r.size.width;
-    }
-
-    if (r.size.height < 0.0f) {
-        out.origin.y = r.origin.y + r.size.height;
-        out.size.height = -r.size.height;
-    } else {
-        out.origin.y = r.origin.y;
-        out.size.height = r.size.height;
-    }
-    return out;
+CGRect   CGRectIntersection(CGRect r1, CGRect r2)
+{
+   return( _CGRectIntersection( CGRectStandardize(r1), r2));
 }
+
+
 
 /**
  @Status Interoperable
@@ -170,5 +177,31 @@ CGRect CGRectUnion(CGRect r1, CGRect r2) {
 
     return ret;
 }
-
-
+//
+//
+// uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects)
+// {
+//    uintptr_t    i;
+//    double       largestArea;
+//    double       area;
+//    uintptr_t    found;
+//    CGRect       intersection;
+//
+//    found       = (uintptr_t) INTPTR_MAX;
+//    largestArea = 0.0;
+//    r1          = CGRectStandardize( r1);
+//
+//    for( i = 0; i < n; i++)
+//    {
+//       intersection =  CGRectIntersection( r1, rects[ i]);
+//       area         = intersection.size.width * intersection.size.height;
+//       if( area > largestArea)
+//       {
+//          largestArea = area;
+//          found       = i;
+//       }
+//    }
+//
+//    return( found);
+// }
+//

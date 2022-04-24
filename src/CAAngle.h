@@ -89,7 +89,6 @@ static inline CAAngleRadians   CANormalizedFloatToRadians( CGFloat x)
 }
 
 
-
 static inline CAAngleRadians   CAAngleDegreesToRadians( CAAngleDegrees deg)
 {
 //   deg = fmodf( deg, 360.0f);
