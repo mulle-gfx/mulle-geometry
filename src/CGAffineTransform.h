@@ -304,4 +304,8 @@ CGPoint  CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t);
 CGSize   CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t);
 CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
 
+// useful for scalings of UIViews may be
+CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
+                                                  CGAffineTransform t,
+                                                  CGPoint anchorPoint);
 #endif

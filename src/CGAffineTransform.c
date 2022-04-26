@@ -32,8 +32,6 @@ const CGAffineTransform   CGAffineTransformIdentity =
 };
 
 
-
-
 CGAffineTransform   CGAffineTransformMakeRotation( CGFloat angle)
 {
    return( CGAffineTransformMakeRotationInline( angle));
@@ -151,6 +149,32 @@ CGSize   CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t)
 CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t)
 {
    return( CGRectApplyAffineTransformInline( rect, t));
+}
+
+
+// center as anchor point of rect is 0.5,0.5
+CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
+                                                  CGAffineTransform t,
+                                                  CGPoint anchorPoint)
+{
+   CGAffineTransform  s;   // trust the compiler optimizer will reduce this
+   CGAffineTransform  u;
+   CGAffineTransform  v;
+   CGAffineTransform  w;
+   CGPoint            transformCenter;
+
+   transformCenter.x = CGRectGetMinX( rect) + CGRectGetWidth( rect) * anchorPoint.x;
+   transformCenter.y = CGRectGetMinY( rect) + CGRectGetHeight( rect) * anchorPoint.y;
+
+   s = CGAffineTransformMakeTranslationInline( - transformCenter.x,
+                                               - transformCenter.y);
+   u = CGAffineTransformConcatInline( s, t);
+
+   v = CGAffineTransformMakeTranslationInline( + transformCenter.x,
+                                               + transformCenter.y);
+   w = CGAffineTransformConcatInline( u, v);
+
+   return( CGRectApplyAffineTransformInline( rect, w));
 }
 
 // -original-

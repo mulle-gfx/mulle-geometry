@@ -129,5 +129,4 @@ static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
    return( CGPointAsPolarPoint( r));
 }
 
-
 #endif
