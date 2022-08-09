@@ -66,7 +66,7 @@ CGRect CGRectIntegral(CGRect r)
     rect.size.width  -= rect.origin.x;
     rect.size.height -= rect.origin.y;
 
-    return r;
+    return rect;
 }
 
 

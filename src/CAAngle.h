@@ -46,7 +46,7 @@
 //        '---------'
 //           M_PI/2
 
-typedef CGFloat     CAAngleRadians;
+typedef CGFloat   CAAngleRadians;
 
 //           270
 //       .---------.
@@ -66,7 +66,7 @@ typedef CGFloat   CAAngleDegrees;
 //        '------'
 //            6
 
-typedef CGFloat     CAAngleHour;
+typedef CGFloat   CAAngleHour;
 
 //              0.0
 //        .-------------.
@@ -74,7 +74,7 @@ typedef CGFloat     CAAngleHour;
 //        '-------------'
 //         -0.999  0.999
 
-typedef CGFloat     CAAngleDirectional;
+typedef CGFloat   CAAngleDirectional;
 
 
 

@@ -19,7 +19,7 @@
 #include <float.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <stdint.h>
 
 typedef float CGFloat;
 
@@ -50,11 +50,12 @@ static inline CGFloat   CGFloatMinimum( CGFloat x, CGFloat y)
 
 
 // used for CGPoint.value and CGSize.value
-typedef enum
+enum
 {
    CGHorizontalAxis = 0,
    CGVerticalAxis   = 1
-} CGAxis;
+};
+
 
 
 // MEMO: the union, though convenient sometimes, might vanish, as the
@@ -242,12 +243,19 @@ typedef struct CGRect
 } CGRect;
 
 
-
 static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
    return( (CGRect){
                      .origin = (CGPoint) { .x = x, .y = y },
                      .size   = (CGSize)  { .width = w, .height = h }
+                   });
+}
+
+static inline CGRect   CGRectMakeWithOriginAndSize( CGPoint origin, CGSize size)
+{
+   return( (CGRect){
+                     .origin = origin,
+                     .size   = size
                    });
 }
 
@@ -302,5 +310,16 @@ static inline CGRectU   CGRectGetRectU( CGRect v)
 #define CGRectUNull       CGRectUMake( NSIntegerMin, NSIntegerMin, 0.0f, 0.0f)
 #define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 #define CGRectUInfinite   CGRectUMake( NSIntegerMin, NSIntegerMin, NSIntegerMax, NSIntegerMax)
+
+
+enum
+{
+   CGDirectionTop    = 1,
+   CGDirectionBottom = 2,
+   CGDirectionLeft   = 4,
+   CGDirectionRight  = 8
+};
+
+typedef uintptr_t    CGDirection;
 
 #endif

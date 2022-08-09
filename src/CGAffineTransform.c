@@ -82,58 +82,6 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t2, CGAffineTransform
     return( ! memcmp( &t1, &t2, sizeof( CGAffineTransform)));
 }
 
-//
-// MEMO: the ifs probably preclude too much compiler optimization where
-//       steps can be computed and combined with other steps
-//
-CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds)
-{
-   CGAffineTransform   t;
-   CGPoint             scale;
-
-   t = CGAffineTransformMakeTranslationInline( -bounds.origin.x, -bounds.origin.y);
-
-   //
-   // now translate bounds for context
-   //
-   //if( ! CGSizeEqualToSize( frame.size, bounds.size))
-   {
-      scale.x = frame.size.width  / bounds.size.width;
-      scale.y = frame.size.height / bounds.size.height;
-      t   = CGAffineTransformConcatInline( t, CGAffineTransformMakeScaleInline( scale.x, scale.y));
-   }
-
-   //if( ! CGPointEqualToPoint( frame.origin, CGPointMake( 0, 0)))
-      t = CGAffineTransformConcatInline( t, CGAffineTransformMakeTranslationInline( frame.origin.x,
-                                                                        frame.origin.y));
-   return( t);
-}
-
-
-// could also do
-CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds)
-{
-   CGPoint             scale;
-   CGAffineTransform   t;
-
-   t = CGAffineTransformMakeTranslationInline( bounds.origin.x, bounds.origin.y);
-   //if( ! CGSizeEqualToSize( frame.size, bounds.size))
-   {
-      scale.x = bounds.size.width / frame.size.width;
-      scale.y = bounds.size.height / frame.size.height;
-
-      t   = CGAffineTransformConcat( CGAffineTransformMakeScaleInline( scale.x, scale.y),
-                                     t);
-   }
-
-   //if( ! CGPointEqualToPoint( bounds.origin, CGPointMake( 0, 0)))
-      t = CGAffineTransformConcat( CGAffineTransformMakeTranslationInline( -frame.origin.x,
-                                                                           -frame.origin.y),
-                                   t);
-   return( t);
-}
-
-
 
 CGPoint   CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t)
 {
@@ -176,6 +124,128 @@ CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
 
    return( CGRectApplyAffineTransformInline( rect, w));
 }
+
+
+//
+// MEMO: the ifs probably preclude too much compiler optimization where
+//       steps can be computed and combined with other steps
+//
+CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds)
+{
+   CGAffineTransform   t;
+   CGPoint             scale;
+
+   t = CGAffineTransformMakeTranslationInline( -bounds.origin.x, -bounds.origin.y);
+
+   //
+   // now translate bounds for context
+   //
+   //if( ! CGSizeEqualToSize( frame.size, bounds.size))
+   {
+      scale.x = frame.size.width  / bounds.size.width;
+      scale.y = frame.size.height / bounds.size.height;
+      t   = CGAffineTransformConcatInline( t, CGAffineTransformMakeScaleInline( scale.x, scale.y));
+   }
+
+   //if( ! CGPointEqualToPoint( frame.origin, CGPointMake( 0, 0)))
+      t = CGAffineTransformConcatInline( t, CGAffineTransformMakeTranslationInline( frame.origin.x,
+                                                                                   frame.origin.y));
+   return( t);
+}
+
+
+// could also do
+CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds)
+{
+   CGPoint             scale;
+   CGAffineTransform   t;
+
+   t = CGAffineTransformMakeTranslationInline( bounds.origin.x, bounds.origin.y);
+   //if( ! CGSizeEqualToSize( frame.size, bounds.size))
+   {
+      scale.x = bounds.size.width / frame.size.width;
+      scale.y = bounds.size.height / frame.size.height;
+
+      t   = CGAffineTransformConcat( CGAffineTransformMakeScaleInline( scale.x, scale.y),
+                                     t);
+   }
+
+   //if( ! CGPointEqualToPoint( bounds.origin, CGPointMake( 0, 0)))
+      t = CGAffineTransformConcat( CGAffineTransformMakeTranslationInline( -frame.origin.x,
+                                                                           -frame.origin.y),
+                                   t);
+   return( t);
+}
+
+
+#if 0
+//
+// Transform for incoming values of the superview to translate into
+// bounds space of the view. For hit tests.
+//
+
+CGAffineTransform
+   CGAffineTransformConcatFrameAndBoundsTransform( CGAffineTransform transform,
+                                                   CGRect frame,
+                                                   CGRect bounds)
+
+{
+   CGPoint             scale;
+   CGAffineTransform   tmp;
+   CGAffineTransform   xform;
+
+   tmp   = CGAffineTransformMakeTranslationInline( bounds.origin.x, bounds.origin.y);
+//   nvgTransformTranslate( tmp, bounds.origin.x, bounds.origin.y);
+   xform = CGAffineTransformConcatInline( tmp, transform);
+//   nvgTransformPremultiply( transform, tmp);
+
+   scale.x = bounds.size.width / frame.size.width;
+   scale.y = bounds.size.height / frame.size.height;
+
+   tmp  = CGAffineTransformMakeScaleInline( scale.x, scale.y);
+//   nvgTransformScale( tmp, scale.x, scale.y);
+   xform = CGAffineTransformConcatInline( tmp, xform);
+//   nvgTransformPremultiply( transform, tmp);
+
+   tmp = CGAffineTransformMakeTranslationInline( -frame.origin.x, -frame.origin.y);
+//   nvgTransformTranslate( tmp, -frame.origin.x, -frame.origin.y);
+   tmp = CGAffineTransformConcatInline( tmp, xform);
+//   nvgTransformPremultiply( transform, tmp);
+   return( tmp);
+}
+
+
+
+CGAffineTransform
+   CGAffineTransformConcatFrameAndBoundsInverseTransform( CGAffineTransform transform,
+                                                          CGRect frame,
+                                                          CGRect bounds)
+
+{
+   CGPoint             scale;
+   CGAffineTransform   tmp;
+   CGAffineTransform   xform;
+
+   tmp   = CGAffineTransformMakeTranslationInline( frame.origin.x, frame.origin.y);
+//   nvgTransformTranslate( tmp, bounds.origin.x, bounds.origin.y);
+   xform = CGAffineTransformConcatInline( tmp, transform);
+//   nvgTransformPremultiply( transform, tmp);
+
+   scale.x = frame.size.width / bounds.size.width;
+   scale.y = frame.size.height / bounds.size.height;
+
+   tmp  = CGAffineTransformMakeScaleInline( scale.x, scale.y);
+//   nvgTransformScale( tmp, scale.x, scale.y);
+   xform = CGAffineTransformConcatInline( tmp, xform);
+//   nvgTransformPremultiply( transform, tmp);
+
+   tmp = CGAffineTransformMakeTranslationInline( -bounds.origin.x, -bounds.origin.y);
+//   nvgTransformTranslate( tmp, -frame.origin.x, -frame.origin.y);
+   tmp = CGAffineTransformConcatInline( tmp, xform);
+//   nvgTransformPremultiply( transform, tmp);
+   return( tmp);
+}
+#endif
 
 // -original-
 

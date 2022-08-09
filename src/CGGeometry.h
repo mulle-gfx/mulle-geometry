@@ -192,6 +192,36 @@ static inline int CGRectContainsPoint(CGRect rect, CGPoint point) {
            (point.y >= CGRectGetMinY(rect) && point.y < CGRectGetMaxY(rect));
 }
 
+static inline CGRect   CGRectExpand( CGRect rect, CGFloat dx, CGDirection direction)
+{
+    if( direction & CGDirectionTop)
+    {
+        rect.origin.y    -= dx;
+        rect.size.height += dx;
+    }
+    if( direction & CGDirectionBottom)
+    {
+        rect.origin.y    += dx;
+        rect.size.height += dx;
+    }
+    if( direction & CGDirectionLeft)
+    {
+        rect.origin.x   -= dx;
+        rect.size.width += dx;
+    }
+    if( direction & CGDirectionRight)
+    {
+        rect.origin.x   += dx;
+        rect.size.width += dx;
+    }
+    return( rect);
+}
+
+static inline CGRect   CGRectContract( CGRect rect, CGFloat dx, CGDirection direction)
+{
+    return( CGRectExpand( rect, -dx, direction));
+}
+
 
 /*
  *   .................................
@@ -206,7 +236,7 @@ static inline int CGRectContainsPoint(CGRect rect, CGPoint point) {
  *   .               dy              .
  *   .................................
  */
-static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
+static inline CGRect   CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
 {
     rect.origin.x    += dx;
     rect.origin.y    += dy;
@@ -214,6 +244,7 @@ static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
     rect.size.height -= dy * 2;
     return rect;
 }
+
 
 /*
  * Translate rect origin.
@@ -229,7 +260,7 @@ static inline CGRect CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
  *            '-------------'
  *
  */
-static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy)
+static inline CGRect   CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy)
 {
     rect.origin.x += dx;
     rect.origin.y += dy;
@@ -239,7 +270,7 @@ static inline CGRect CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy)
 /**
 @Status Interoperable
 */
-static inline int CGRectIsEmpty(CGRect rect)
+static inline int   CGRectIsEmpty(CGRect rect)
 {
     return ((rect.size.width == 0) && (rect.size.height == 0));
 }
@@ -251,7 +282,7 @@ static inline int CGRectIsEmpty(CGRect rect)
    This is so that "adjacent" rectangles are not considered intersecting.
    CGRectIntersection will return an intersection of 0 width or height though!
 */
-static inline int CGRectIntersectsRect(CGRect a, CGRect b)
+static inline int   CGRectIntersectsRect(CGRect a, CGRect b)
 {
     return !((b.origin.x >= CGRectGetMaxX( a)) || (b.origin.y >= CGRectGetMaxY( a)) ||
              (a.origin.x >= CGRectGetMaxX( b)) || (a.origin.y >= CGRectGetMaxY( b)));
@@ -260,7 +291,7 @@ static inline int CGRectIntersectsRect(CGRect a, CGRect b)
 /**
 @Status Interoperable
 */
-static inline int CGRectEqualToRect(CGRect a, CGRect b)
+static inline int   CGRectEqualToRect(CGRect a, CGRect b)
 {
     return CGPointEqualToPoint(a.origin, b.origin) && CGSizeEqualToSize(a.size, b.size);
 }
@@ -304,7 +335,7 @@ CGRect CGRectIntegral(CGRect rect);
 CGRect CGRectIntersection(CGRect r1, CGRect r2);
 
 // turns negative width/height rect, into positive with different x/y
-// mathematically its the same
+// mathematically its the same.
 CGRect CGRectStandardize(CGRect rect);
 
 
@@ -327,7 +358,7 @@ CGRect CGRectStandardize(CGRect rect);
 //      #   b  #      |      |
 //      '======'      '------'
 
-CGRect CGRectUnion(CGRect a, CGRect b);
+CGRect   CGRectUnion( CGRect a, CGRect b);
 
 
 // Not enabled, because the interface is somewhat awkward. It usually needs

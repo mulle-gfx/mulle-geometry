@@ -7,6 +7,8 @@ datatypes like **CGRect**. CG prefixed datatypes are legacy names. The
 advantage of reusing the names is, that they are familiar already and that
 documentation already exists outside of the project.
 
+For a nice overview read [NSHipster:Core​Graphics Geometry Primitives](https://nshipster.com/cggeometry/).
+
 CA prefixed datetypes are custom and not documented elsewhere.
 
 
@@ -58,15 +60,13 @@ Requirements                                      | Description
 
 Install into `/usr/local`:
 
-```
-mkdir build 2> /dev/null
-(
-   cd build ;
-   cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
-         -DCMAKE_PREFIX_PATH=/usr/local \
-         -DCMAKE_BUILD_TYPE=Release .. ;
-   make install
-)
+``` sh
+cmake -B build \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DCMAKE_PREFIX_PATH=/usr/local \
+      -DCMAKE_BUILD_TYPE=Release &&
+cmake --build build --config Release &&
+cmake --install build --config Release
 ```
 
 

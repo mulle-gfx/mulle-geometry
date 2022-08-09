@@ -50,7 +50,7 @@ static inline CAPolarPoint   CAPolarPointMake( CGFloat r, CAAngleRadians a)
 }
 
 
-static inline CGPoint  CAPolarPointAsPoint( CAPolarPoint v)
+static inline CGPoint  CAPolarPointGetPoint( CAPolarPoint v)
 {
    return( CGPointMake( cosf( v.angle) * v.radius,
                         sinf( v.angle) * v.radius));
@@ -90,7 +90,7 @@ static inline CAPolarPoint  CGPointAsPolarPoint( CGPoint p)
 
 static CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
 {
-   return( CGPointAdd( p, CAPolarPointAsPoint( v)));
+   return( CGPointAdd( p, CAPolarPointGetPoint( v)));
 }
 
 
@@ -116,7 +116,7 @@ static CAPolarPoint  CAPolarPointAddPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
-   r = CGPointAdd( CAPolarPointAsPoint( v), p);
+   r = CGPointAdd( CAPolarPointGetPoint( v), p);
    return( CGPointAsPolarPoint( r));
 }
 
@@ -125,8 +125,27 @@ static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
-   r = CGPointSubtract( CAPolarPointAsPoint( v), p);
+   r = CGPointSubtract( CAPolarPointGetPoint( v), p);
    return( CGPointAsPolarPoint( r));
+}
+
+
+
+static CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMake( v.radius, v.angle + a);
+   return( r);
+}
+
+
+static CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMake( v.radius, v.angle - a);
+   return( r);
 }
 
 #endif

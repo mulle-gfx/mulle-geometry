@@ -7,7 +7,7 @@ CAPolarPoint   CAPolarPointAdd1( CAPolarPoint p, CAPolarPoint q)
 {
    CGPoint   tmp;
 
-   tmp = CGPointAdd( CAPolarPointAsPoint( p), CAPolarPointAsPoint( q));
+   tmp = CGPointAdd( CAPolarPointGetPoint( p), CAPolarPointGetPoint( q));
    return( CGPointAsPolarPoint( tmp));
 }
 
@@ -38,7 +38,7 @@ CAPolarPoint   CAPolarPointSubtract1( CAPolarPoint p, CAPolarPoint q)
 {
    CGPoint   tmp;
 
-   tmp = CGPointSubtract( CAPolarPointAsPoint( p), CAPolarPointAsPoint( q));
+   tmp = CGPointSubtract( CAPolarPointGetPoint( p), CAPolarPointGetPoint( q));
    return( CGPointAsPolarPoint( tmp));
 }
 

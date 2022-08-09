@@ -251,9 +251,6 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
 /**
  @Status Interoperable
 */
-// mulle additions
-CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds);
-CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds);
 
 /*
  * Non-inlining counterparts (except when still inlining :))
@@ -308,4 +305,21 @@ CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
 CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
                                                   CGAffineTransform t,
                                                   CGPoint anchorPoint);
+
+// mulle additions
+CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds);
+CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds);
+
+#if 0
+CGAffineTransform
+   CGAffineTransformConcatFrameAndBoundsTransform( CGAffineTransform transform,
+                                                   CGRect frame,
+                                                   CGRect bounds);
+
+CGAffineTransform
+   CGAffineTransformConcatFrameAndBoundsInverseTransform( CGAffineTransform transform,
+                                                          CGRect frame,
+                                                          CGRect bounds);
+#endif
+
 #endif
