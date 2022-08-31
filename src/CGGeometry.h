@@ -42,7 +42,7 @@ static inline int CGSizeEqualToSize(CGSize a, CGSize b) {
 /**
 @Status Interoperable
 */
-static inline int CGSizeGetArea(CGSize a) {
+static inline double CGSizeGetArea(CGSize a) {
     return a.width* a.height;
 }
 
@@ -50,9 +50,42 @@ static inline int CGSizeGetArea(CGSize a) {
 /**
 @Status Interoperable
 */
-static inline int CGRectGetArea(CGRect a) {
+static inline double CGRectGetArea(CGRect a) {
     return a.size.width * a.size.height;
 }
+
+
+// now this is sometimes useful, though it sounds bad
+static inline CGFloat CGVectorGetAspectRatio(CGVector a) {
+    return( a.dy == 0.0 ? 0.0 : a.dx / a.dy);
+}
+
+// now this is sometimes useful, though it sounds bad
+static inline CGFloat CGPointGetAspectRatio(CGPoint a) {
+    return( a.y == 0.0 ? 0.0 : a.x / a.y);
+}
+
+// if a has no size, use 0.0 instead of INFINITY for 
+// easier code (?)
+static inline CGFloat CGSizeGetAspectRatio(CGSize a) {
+    return( a.height == 0.0 ? 0.0 : a.width / a.height);
+}
+
+// returns either height or weight, which ever is smaller
+static inline CGFloat CGSizeGetMinimum(CGSize a) {
+    return( a.width < a.height ? a.width : a.height);
+}
+
+// returns either height or weight, which ever is bigger
+static inline CGFloat CGSizeGetMaximum( CGSize a) {
+    return( a.width > a.height ? a.width : a.height);
+}
+
+
+static inline CGFloat CGRectGetAspectRatio(CGRect a) {
+    return( CGSizeGetAspectRatio( a.size));
+}
+
 
 
 /**
@@ -84,7 +117,8 @@ static inline CGFloat CGRectGetMinX(CGRect rect) {
 //                 ^
 //                 CGRectGetMaxX
 //
-// GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
+// GetMaxX is really the first X point not inside the rectangle.
+// 
 */
 static inline CGFloat CGRectGetMaxX(CGRect rect) {
     return rect.origin.x + rect.size.width;
@@ -132,7 +166,7 @@ static inline CGFloat CGRectGetMinY(CGRect rect) {
 //  '-------------'
 //                  < CGRectGetMaxY
 //
-// GetMaxY is a misnomer, its really the first Y point not inside the rectangle.
+// GetMaxY is really the first Y point not inside the rectangle.
 */
 static inline CGFloat CGRectGetMaxY(CGRect rect) {
     return(rect.origin.y + rect.size.height);
@@ -165,6 +199,7 @@ static inline CGFloat CGRectGetWidth(CGRect rect) {
 static inline CGFloat CGRectGetHeight(CGRect rect) {
     return rect.size.height;
 }
+
 
 
 
@@ -217,6 +252,7 @@ static inline CGRect   CGRectExpand( CGRect rect, CGFloat dx, CGDirection direct
     return( rect);
 }
 
+
 static inline CGRect   CGRectContract( CGRect rect, CGFloat dx, CGDirection direction)
 {
     return( CGRectExpand( rect, -dx, direction));
@@ -242,6 +278,29 @@ static inline CGRect   CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
     rect.origin.y    += dy;
     rect.size.width  -= dx * 2;
     rect.size.height -= dy * 2;
+    return rect;
+}
+
+
+/*
+ *   .-------------------------------.
+ *   | output        dy              |
+ *   |    .......................    |
+ *   |    : input               :    |
+ *   |    :                     :    |
+ *   |  dx:                     :dx  |
+ *   |    :                     :    |
+ *   |    :                     :    |
+ *   |    .......................    |
+ *   |               dy              |
+ *   '-------------------------------'
+ */
+static inline CGRect   CGRectExtrude(CGRect rect, CGFloat dx, CGFloat dy)
+{
+    rect.origin.x    -= dx;
+    rect.origin.y    -= dy;
+    rect.size.width  += dx * 2;
+    rect.size.height += dy * 2;
     return rect;
 }
 

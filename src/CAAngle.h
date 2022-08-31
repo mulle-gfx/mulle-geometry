@@ -228,39 +228,39 @@ static inline CAAngleRadians   CGPointGetPolarAngle( CGPoint p)
 // mulle addition (neg. size values possible due to OpenGl code) and flipping
 // and the like
 //
-static inline CGPoint  CGPointClampToSize( CGPoint offset, CGSize size)
+static inline CGPoint  CGPointClampToSize( CGPoint point, CGSize size)
 {
    if( size.width > 0.0)
    {
-      if( offset.x < 0.0)
-         offset.x = 0.0;
-      if( offset.x >= size.width)
-         offset.x = size.width;
+      if( point.x < 0.0)
+         point.x = 0.0;
+      if( point.x >= size.width)
+         point.x = size.width;  // th
    }
    else
    {
-      if( offset.x > 0.0)
-         offset.x = 0.0;
-      if( offset.x <= size.width)
-         offset.x = size.width;
+      if( point.x > 0.0)
+         point.x = 0.0;
+      if( point.x <= size.width)
+         point.x = size.width;
    }
 
    if( size.height > 0.0)
    {
-      if( offset.y < 0.0)
-         offset.y = 0.0;
-      if( offset.y >= size.height)
-         offset.y = size.height;
+      if( point.y < 0.0)
+         point.y = 0.0;
+      if( point.y >= size.height)
+         point.y = size.height;
    }
    else
    {
-      if( offset.y > 0.0)
-         offset.y = 0.0;
-      if( offset.y <= size.height)
-         offset.y = size.height;
+      if( point.y > 0.0)
+         point.y = 0.0;
+      if( point.y <= size.height)
+         point.y = size.height;
    }
 
-   return( offset);
+   return( point);
 }
 
 

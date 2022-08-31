@@ -23,13 +23,26 @@
 
 const CGAffineTransform   CGAffineTransformIdentity =
 {
-   1.0f,
-   0.0f,
-   0.0f,
-   1.0f,
-   0.0f,
-   0.0f
+   .a  = 1.0f,
+   .b  = 0.0f,
+   .c  = 0.0f,
+   .d  = 1.0f,
+   .tx = 0.0f,
+   .ty = 0.0f 
 };
+
+
+int   CGAffineTransformIsIdentity( CGAffineTransform t)
+{
+   return( CGAffineTransformIsIdentityInline( t));
+}
+
+
+int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform t2)
+{
+   return( CGAffineTransformEqualToTransformInline( t1, t2));
+}
+
 
 
 CGAffineTransform   CGAffineTransformMakeRotation( CGFloat angle)
@@ -67,19 +80,6 @@ CGAffineTransform CGAffineTransformScale( CGAffineTransform t, float sx, float s
 CGAffineTransform   CGAffineTransformInvert( CGAffineTransform t)
 {
    return( CGAffineTransformInvertInline( t));
-}
-
-
-
-int   CGAffineTransformIsIdentity( CGAffineTransform t)
-{
-    return( ! memcmp( &t, &CGAffineTransformIdentity, sizeof( CGAffineTransform)));
-}
-
-
-int   CGAffineTransformEqualToTransform( CGAffineTransform t2, CGAffineTransform t1)
-{
-    return( ! memcmp( &t1, &t2, sizeof( CGAffineTransform)));
 }
 
 

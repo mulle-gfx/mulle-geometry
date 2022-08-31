@@ -95,6 +95,8 @@ static inline CGAffineTransform   CGAffineTransformMakeScaleInline(CGFloat sx, C
 //
 // Many of these functions are actually too big for inlining
 // nevertheless especially for constants there might be nice gains
+// So its up to you, to chose either the inlining version or the
+// non-inlining version
 //
 static inline CGAffineTransform   CGAffineTransformMakeRotationInline(CGFloat angle)
 {
@@ -241,11 +243,33 @@ static inline CGRect
    return( result);
 }
 
-/*
- * some functions with no inlining available
- */
+
+// this is likely to be profitable to be inlined
+static inline int   CGAffineTransformIsIdentityInline( CGAffineTransform t)
+{
+   return(  t.a == 1.0f && 
+            t.b == 0.0f &&    
+            t.c == 0.0f &&    
+            t.d == 1.0f &&    
+            t.tx == 0.0f &&    
+            t.ty == 0.0f);      
+}
+
+// this is likely to be profitable to be inlined
+static inline int   CGAffineTransformEqualToTransformInline( CGAffineTransform t1, CGAffineTransform t2)
+{
+   return(  t1.a == t2.a && 
+            t1.b == t2.b &&    
+            t1.c == t2.c &&    
+            t1.d == t2.d &&    
+            t1.tx == t2.tx &&    
+            t1.ty == t2.ty);   
+}
+
+
 int   CGAffineTransformIsIdentity( CGAffineTransform t);
 int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform t2);
+
 
 
 /**
@@ -257,9 +281,10 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
  */
 
 //
-// Not inlining makes no sense IMO, but in code we like to write Inline when
-// deemed useful and don't want to think about if the function does exist
-//
+// Not inlining makes no sense IMO for the next few functions, so they
+// actually still are inlining. But in code, we don't want to think 
+// about if the function does exist or not, so give them non-inlining
+// names...
 static inline CGAffineTransform   CGAffineTransformMakeTranslation( CGFloat tx, CGFloat ty)
 {
    return( CGAffineTransformMakeTranslationInline( tx, ty));
@@ -288,6 +313,8 @@ static inline CGAffineTransform   CGAffineTransformMake( CGFloat a,
    return( CGAffineTransformMakeInline( a, b, c, d, tx, ty));
 }
 
+
+// now truely non-inlining functions, where it makes sense (IMO)
 
 CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTransform t1);
 CGAffineTransform   CGAffineTransformMakeRotation( CGFloat angle);

@@ -49,6 +49,30 @@ static inline CGFloat   CGFloatMinimum( CGFloat x, CGFloat y)
 }
 
 
+static inline CGFloat   CGFloatAbsolute( CGFloat x)
+{
+   return( x >= 0.0f ? x : -x);
+}
+
+
+static inline CGFloat   CGFloatSign( CGFloat x)
+{
+   return( x >= 0.0f ? 1.0f : -1.0f);
+}
+
+
+static inline CGFloat   CGFloatClamp( CGFloat x)
+{
+   return( x > 1.0f ? 1.0f : (x < 0.0f ? 0.0f : x));
+}
+
+
+static inline CGFloat   CGFloatClampToMinMax( CGFloat x, CGFloat min, CGFloat max)
+{
+   return( x > max ? max : (x < min ? min : x));
+}
+
+
 // used for CGPoint.value and CGSize.value
 enum
 {
@@ -319,6 +343,9 @@ enum
    CGDirectionLeft   = 4,
    CGDirectionRight  = 8
 };
+
+#define CGDirectionUp    CGDirectionTop
+#define CGDirectionDown  CGDirectionBottom
 
 typedef uintptr_t    CGDirection;
 

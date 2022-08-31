@@ -25,23 +25,32 @@
 
 /**
  @Status Interoperable
+ * A rectangle that represents the source rectangle, but with positive width 
+ * and height values. Returns a null rectangle if rect is a null rectangle.
 */
-CGRect CGRectStandardize(CGRect r) {
+CGRect CGRectStandardize(CGRect r) 
+{
     CGRect out;
 
-    if (r.size.width < 0.0f) {
-        out.origin.x = r.origin.x + r.size.width;
+    if( r.size.width < 0.0f) 
+    {
+        out.origin.x   = r.origin.x + r.size.width;
         out.size.width = -r.size.width;
-    } else {
-        out.origin.x = r.origin.x;
+    } 
+    else 
+    {
+        out.origin.x   = r.origin.x;
         out.size.width = r.size.width;
     }
 
-    if (r.size.height < 0.0f) {
-        out.origin.y = r.origin.y + r.size.height;
+    if( r.size.height < 0.0f) 
+    {
+        out.origin.y    = r.origin.y + r.size.height;
         out.size.height = -r.size.height;
-    } else {
-        out.origin.y = r.origin.y;
+    } 
+    else 
+    {
+        out.origin.y    = r.origin.y;
         out.size.height = r.size.height;
     }
     return out;
@@ -58,11 +67,11 @@ CGRect CGRectIntegral(CGRect r)
    if( CGRectIsNull( r))
       return( r);
 
-    rect              = CGRectStandardize(r);  // TODO: compatible ?
-    rect.size.width   = ceilf(rect.origin.x + rect.size.width);
-    rect.size.height  = ceilf(rect.origin.y + rect.size.height);
-    rect.origin.x     = floorf(rect.origin.x);
-    rect.origin.y     = floorf(rect.origin.y);
+    rect              = CGRectStandardize( r);  // TODO: compatible ?
+    rect.size.width   = ceilf( rect.origin.x + rect.size.width);
+    rect.size.height  = ceilf( rect.origin.y + rect.size.height);
+    rect.origin.x     = floorf( rect.origin.x);
+    rect.origin.y     = floorf( rect.origin.y);
     rect.size.width  -= rect.origin.x;
     rect.size.height -= rect.origin.y;
 
@@ -73,13 +82,12 @@ CGRect CGRectIntegral(CGRect r)
 /**
  @Status Interoperable
 */
-static CGRect   _CGRectIntersection(CGRect r1, CGRect r2)
+CGRect   CGRectIntersection(CGRect r1, CGRect r2)
 {
-    r2 = CGRectStandardize(r2);
-
     CGFloat  x1, y1, x2, y2;
-    int isNull = 0;
-    CGRect out;
+
+    r1 = CGRectStandardize(r1);
+    r2 = CGRectStandardize(r2);
 
     if (r1.origin.x < r2.origin.x)
     {
@@ -115,18 +123,7 @@ static CGRect   _CGRectIntersection(CGRect r1, CGRect r2)
         y2 = CGFloatMinimum(r2.origin.y + r2.size.height, r1.origin.y + r1.size.height);
     }
 
-
-   out.origin.x = x1;
-   out.origin.y = y1;
-   out.size.width = x2 - x1;
-   out.size.height = y2 - y1;
-
-   return out;
-}
-
-CGRect   CGRectIntersection(CGRect r1, CGRect r2)
-{
-   return( _CGRectIntersection( CGRectStandardize(r1), r2));
+    return( CGRectMake( x1, y1, x2 - x1, y2 - y1));
 }
 
 
@@ -135,6 +132,8 @@ CGRect   CGRectIntersection(CGRect r1, CGRect r2)
  @Status Interoperable
 */
 CGRect CGRectUnion(CGRect r1, CGRect r2) {
+    CGFloat x1, y1, x2, y2;
+
     if (CGRectIsInfinite(r1)) {
         return r2;
     }
@@ -144,8 +143,6 @@ CGRect CGRectUnion(CGRect r1, CGRect r2) {
 
     r1 = CGRectStandardize(r1);
     r2 = CGRectStandardize(r2);
-
-    float x1, y1, x2, y2;
 
     if (r1.origin.x < r2.origin.x) {
         x1 = r1.origin.x;
@@ -169,14 +166,9 @@ CGRect CGRectUnion(CGRect r1, CGRect r2) {
         y2 = r2.origin.y + r2.size.height;
     }
 
-    CGRect ret;
-    ret.origin.x = x1;
-    ret.origin.y = y1;
-    ret.size.width = x2 - x1;
-    ret.size.height = y2 - y1;
-
-    return ret;
+    return( CGRectMake( x1, y1, x2 - x1, y2 - y1));
 }
+
 //
 //
 // uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects)
@@ -193,8 +185,8 @@ CGRect CGRectUnion(CGRect r1, CGRect r2) {
 //
 //    for( i = 0; i < n; i++)
 //    {
-//       intersection =  CGRectIntersection( r1, rects[ i]);
-//       area         = intersection.size.width * intersection.size.height;
+//       intersection = CGRectIntersection( r1, rects[ i]);
+//       area         = CGRectGetArea( intersection);
 //       if( area > largestArea)
 //       {
 //          largestArea = area;
