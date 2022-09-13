@@ -84,7 +84,8 @@ static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint 
 
 static inline CAPolarPoint  CGPointAsPolarPoint( CGPoint p)
 {
-   return( CAPolarPointMake( CGPointGetPolarRadius( p), CGPointGetPolarAngle( p)));
+   return( CAPolarPointMake( CGPointGetPolarRadius( p), 
+                             CGPointGetPolarAngle( p)));
 }
 
 
@@ -128,7 +129,6 @@ static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
    r = CGPointSubtract( CAPolarPointGetPoint( v), p);
    return( CGPointAsPolarPoint( r));
 }
-
 
 
 static CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)

@@ -31,6 +31,14 @@ static inline int CGPointEqualToPoint(CGPoint a, CGPoint b) {
 }
 
 
+static inline CGPoint   CGPointOffset( CGPoint a, CGFloat dx, CGFloat dy)
+{
+    a.x += dx;
+    a.y += dy;
+    return a;
+}
+
+
 /**
 @Status Interoperable
 */

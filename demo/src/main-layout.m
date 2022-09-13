@@ -38,7 +38,7 @@ void   drawContentMode( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.2 + 0.6 * ((double) contentMode / (N_CGContentModes - 1));
-      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeWithHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 }
@@ -83,7 +83,7 @@ void   drawRectPlacement( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.0 + 0.5 * ((double) i / (36 - 1));
-      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeWithHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 
@@ -104,7 +104,7 @@ void   drawRectPlacement( NVGcontext *vg,
                           otherRect.size.height,
                           otherRect.size.width / 10.0);
       hue = 0.5 + 0.5 * ((double) i / (36 - 1));
-      nvgFillColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgFillColor( vg, CGColorMakeWithHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgFill( vg);
 }
@@ -155,7 +155,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
                           smallRect.size.width / 10.0);
       nvgStrokeWidth( vg, 2.0);
       hue = 0.0 + 0.5 * ((double) rectMode / (N_CGContentModes - 1));
-      nvgStrokeColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgStrokeColor( vg, CGColorMakeWithHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgStroke( vg);
 
@@ -180,7 +180,7 @@ void   drawRectSpacePlacement( NVGcontext *vg,
                           otherRect.size.height,
                           otherRect.size.width / 10.0);
       hue = 0.5 + 0.5 * ((double) rectMode / (N_CGContentModes - 1));
-      nvgFillColor( vg, CGColorMakeHSLA( hue, 1.0, 0.7, 0.7));
+      nvgFillColor( vg, CGColorMakeWithHSLA( hue, 1.0, 0.7, 0.7));
    }
    nvgFill( vg);
 }
@@ -232,7 +232,7 @@ static void   drawLayoutInSpace( NVGcontext *vg, CGRect rect)
                       part.size.width,
                       part.size.height);
          nvgStrokeWidth( vg, 1.0);
-         nvgStrokeColor( vg, CGColorMakeHSLA( fmod( 0.13 * i, 1.0), 1.0, 0.2, 0.7));
+         nvgStrokeColor( vg, CGColorMakeWithHSLA( fmod( 0.13 * i, 1.0), 1.0, 0.2, 0.7));
       }
       nvgStroke( vg);
       ++i;
@@ -337,7 +337,7 @@ int   main()
 
       [app addWindow:window];
 
-      [window setBackgroundColor:CGColorMakeRGBA( 1.0, 1.0, 1.0, 1.0)];
+      [window setBackgroundColor:CGColorMakeWithRGBA( 1.0, 1.0, 1.0, 1.0)];
 
       setupScene( [window contentPlane]);
    }
