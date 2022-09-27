@@ -34,7 +34,7 @@
 // limitations). Conversion from and to CAAngleHour and CAAngleDirectional are
 // lossy though.
 //
-// You will lose the amplitude of the rotation (i.e.  15* M_PI can
+// You will lose the amplitude of the rotation (i.e. 15* M_PI can
 // be thought of as 15 turns) and the sign (CAAngleHour).
 //
 // If you have an indicator needle, that is usually centered and goes left
@@ -76,6 +76,14 @@ typedef CGFloat   CAAngleHour;
 
 typedef CGFloat   CAAngleDirectional;
 
+//            0.0
+//        .---------.
+//    0.75|  unity  |0.25
+//        '---------'
+//            0.5
+
+typedef CGFloat   CAAngleUnity;
+
 
 
 // MEMO: use CANormalizedFloatToRadians and not CANormalizedFloatAsRadians
@@ -103,12 +111,33 @@ static inline CAAngleDegrees   CAAngleRadiansToDegrees( CAAngleRadians rad)
 }
 
 
+static inline CAAngleUnity   CAAngleRadiansToUnity( CAAngleRadians rad)
+{
+   CAAngleUnity   unity;
+
+   unity = (rad + M_PI_2f) / M_2_PIf;
+   unity = fmodf( unity, 1.0f);
+   return( unity < 0.0f ? 1.0f + unity : unity);
+}
+
+
+static inline CAAngleRadians   CAAngleUnityToRadians( CAAngleUnity unity)
+{
+   CAAngleRadians   rad;
+
+   assert( unity >= 0.0f && unity <= 1.0f);
+
+   rad = unity * M_2_PIf;
+   return( rad - M_PI_f + M_PI_2f);
+}
+
+
 static inline CAAngleHour   CAAngleRadiansToHour( CAAngleRadians rad)
 {
    CAAngleHour   hour;
 
    hour = (rad + M_PI_2f) * 12.0f / M_2_PIf;
-   hour = fmod( hour, 12.0f);
+   hour = fmodf( hour, 12.0f);
    return( hour < 0.0f ? 12.0f + hour : hour);
 }
 
@@ -119,7 +148,7 @@ static inline CAAngleRadians   CAAngleHourToRadians( CAAngleHour hour)
 
    assert( hour >= 0.0f && hour <= 12.0f);
 
-   rad = hour / 12.0 * M_2_PIf;
+   rad = hour / 12.0f * M_2_PIf;
    return( rad - M_PI_2f);
 }
 
@@ -172,41 +201,6 @@ static inline CAAngleDegrees   CAAngleDirectionalToDegrees( CAAngleDirectional d
 
 
 
-
-// mulle addition:
-static inline CGPoint   CGPointMakeRandomInRect( CGRect r)
-{
-   return( CGPointMake( r.size.width * CGFloatMakeRandom() + r.origin.x,
-                        r.size.height * CGFloatMakeRandom() + r.origin.y));
-}
-
-
-// mulle addition:
-static inline CGSize   CGSizeMakeRandom( CGSize minSize, CGSize maxSize)
-{
-   assert( minSize.width <= maxSize.width);
-   assert( minSize.height <= maxSize.height);
-
-   return( CGSizeMake( minSize.width  + (maxSize.width - minSize.width)  * CGFloatMakeRandom(),
-                       minSize.height + (maxSize.height - minSize.width) * CGFloatMakeRandom()));
-}
-
-
-// mulle addition:
-static inline CGRect   CGRectMakeRandomInRect( CGRect r, CGSize minSize, CGSize maxSize)
-{
-   CGRect   rect;
-
-   rect.size   = CGSizeMakeRandom( minSize, maxSize);
-   rect.origin = CGPointMakeRandomInRect( CGRectMake( r.origin.x,
-                                                      r.origin.y,
-                                                      r.size.width - rect.size.width,
-                                                      r.size.height - rect.size.height));
-   return( rect);
-}
-
-
-
 // mulle addition:
 static inline CGFloat   CGPointGetPolarRadius( CGPoint p)
 {
@@ -221,73 +215,6 @@ static inline CAAngleRadians   CGPointGetPolarAngle( CGPoint p)
    if( CGPointEqualToPoint( p, CGPointZero))
       return( 0.0);
    return( atan2f( p.y, p.x));
-}
-
-
-//
-// mulle addition (neg. size values possible due to OpenGl code) and flipping
-// and the like
-//
-static inline CGPoint  CGPointClampToSize( CGPoint point, CGSize size)
-{
-   if( size.width > 0.0)
-   {
-      if( point.x < 0.0)
-         point.x = 0.0;
-      if( point.x >= size.width)
-         point.x = size.width;  // th
-   }
-   else
-   {
-      if( point.x > 0.0)
-         point.x = 0.0;
-      if( point.x <= size.width)
-         point.x = size.width;
-   }
-
-   if( size.height > 0.0)
-   {
-      if( point.y < 0.0)
-         point.y = 0.0;
-      if( point.y >= size.height)
-         point.y = size.height;
-   }
-   else
-   {
-      if( point.y > 0.0)
-         point.y = 0.0;
-      if( point.y <= size.height)
-         point.y = size.height;
-   }
-
-   return( point);
-}
-
-
-static inline CGPoint   CGPointAdd( CGPoint p, CGPoint q)
-{
-   return( CGPointMake( p.x + q.x, p.y + q.y));
-}
-
-
-static inline CGPoint   CGPointSubtract( CGPoint p, CGPoint q)
-{
-   return( CGPointMake( p.x - q.x, p.y - q.y));
-}
-
-
-static inline CGPoint   CGPointMultiply( CGPoint p, CGPoint q)
-{
-   return( CGPointMake( p.x * q.x, p.y * q.y));
-}
-
-
-static inline CGFloat    CGPointGetDistanceToPoint( CGPoint p, CGPoint q)
-{
-   CGPoint  r;
-
-   r = CGPointSubtract( q, p);
-   return( CGPointGetPolarRadius( r));
 }
 
 #endif

@@ -42,7 +42,7 @@ typedef struct CAPolarPoint
 } CAPolarPoint;
 
 
-// apparently the iso norm for spherical is radius first, then angles
+// apparently the iso norm for spherical is radius first, then angle
 // assume this is the way to go for 2D also
 static inline CAPolarPoint   CAPolarPointMake( CGFloat r, CAAngleRadians a)
 {
@@ -50,7 +50,14 @@ static inline CAPolarPoint   CAPolarPointMake( CGFloat r, CAAngleRadians a)
 }
 
 
-static inline CGPoint  CAPolarPointGetPoint( CAPolarPoint v)
+static inline CAPolarPoint  CAPolarPointMakeWithPoint( CGPoint p)
+{
+   return( CAPolarPointMake( CGPointGetPolarRadius( p), 
+                             CGPointGetPolarAngle( p)));
+}
+
+
+static inline CGPoint  CGPointMakeWithPolarPoint( CAPolarPoint v)
 {
    return( CGPointMake( cosf( v.angle) * v.radius,
                         sinf( v.angle) * v.radius));
@@ -82,16 +89,9 @@ static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint 
 }
 
 
-static inline CAPolarPoint  CGPointAsPolarPoint( CGPoint p)
-{
-   return( CAPolarPointMake( CGPointGetPolarRadius( p), 
-                             CGPointGetPolarAngle( p)));
-}
-
-
 static CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
 {
-   return( CGPointAdd( p, CAPolarPointGetPoint( v)));
+   return( CGPointAdd( p, CGPointMakeWithPolarPoint( v)));
 }
 
 
@@ -117,8 +117,8 @@ static CAPolarPoint  CAPolarPointAddPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
-   r = CGPointAdd( CAPolarPointGetPoint( v), p);
-   return( CGPointAsPolarPoint( r));
+   r = CGPointAdd( CGPointMakeWithPolarPoint( v), p);
+   return( CAPolarPointMakeWithPoint( r));
 }
 
 
@@ -126,8 +126,8 @@ static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
-   r = CGPointSubtract( CAPolarPointGetPoint( v), p);
-   return( CGPointAsPolarPoint( r));
+   r = CGPointSubtract( CGPointMakeWithPolarPoint( v), p);
+   return( CAPolarPointMakeWithPoint( r));
 }
 
 
@@ -147,5 +147,7 @@ static CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a
    r = CAPolarPointMake( v.radius, v.angle - a);
    return( r);
 }
+
+CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b);
 
 #endif

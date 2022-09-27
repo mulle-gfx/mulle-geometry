@@ -23,6 +23,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
+
+static inline CGFloat  CGVectorLength( CGVector v)
+{
+   return( sqrtf( v.dx * v.dx + v.dy * v.dy));
+}
+
+
 /**
 @Status Interoperable
 */
@@ -36,6 +43,73 @@ static inline CGPoint   CGPointOffset( CGPoint a, CGFloat dx, CGFloat dy)
     a.x += dx;
     a.y += dy;
     return a;
+}
+
+
+static inline CGPoint   CGPointAdd( CGPoint p, CGPoint q)
+{
+   return( CGPointMake( p.x + q.x, p.y + q.y));
+}
+
+
+static inline CGPoint   CGPointSubtract( CGPoint p, CGPoint q)
+{
+   return( CGPointMake( p.x - q.x, p.y - q.y));
+}
+
+
+static inline CGPoint   CGPointMultiply( CGPoint p, CGPoint q)
+{
+   return( CGPointMake( p.x * q.x, p.y * q.y));
+}
+
+
+//
+// mulle addition (neg. size values possible due to OpenGl code) and flipping
+// and the like
+//
+static inline CGPoint  CGPointClampToSize( CGPoint point, CGSize size)
+{
+   if( size.width > 0.0)
+   {
+      if( point.x < 0.0)
+         point.x = 0.0;
+      if( point.x >= size.width)
+         point.x = size.width;  // th
+   }
+   else
+   {
+      if( point.x > 0.0)
+         point.x = 0.0;
+      if( point.x <= size.width)
+         point.x = size.width;
+   }
+
+   if( size.height > 0.0)
+   {
+      if( point.y < 0.0)
+         point.y = 0.0;
+      if( point.y >= size.height)
+         point.y = size.height;
+   }
+   else
+   {
+      if( point.y > 0.0)
+         point.y = 0.0;
+      if( point.y <= size.height)
+         point.y = size.height;
+   }
+
+   return( point);
+}
+
+
+static inline CGFloat  CGPointDistanceToPoint( CGPoint a, CGPoint b)
+{
+   CGVector  d;
+
+   d = CGVectorMake( b.x - a.x, b.y - a.y);
+   return( CGVectorLength( d));
 }
 
 
@@ -428,6 +502,40 @@ CGRect CGRectStandardize(CGRect rect);
 CGRect   CGRectUnion( CGRect a, CGRect b);
 
 
+
+// mulle addition:
+static inline CGPoint   CGPointMakeRandomInRect( CGRect r)
+{
+   return( CGPointMake( r.size.width * CGFloatMakeRandom() + r.origin.x,
+                        r.size.height * CGFloatMakeRandom() + r.origin.y));
+}
+
+
+// mulle addition:
+static inline CGSize   CGSizeMakeRandom( CGSize minSize, CGSize maxSize)
+{
+   assert( minSize.width <= maxSize.width);
+   assert( minSize.height <= maxSize.height);
+
+   return( CGSizeMake( minSize.width  + (maxSize.width - minSize.width)  * CGFloatMakeRandom(),
+                       minSize.height + (maxSize.height - minSize.width) * CGFloatMakeRandom()));
+}
+
+
+// mulle addition:
+static inline CGRect   CGRectMakeRandomInRect( CGRect r, CGSize minSize, CGSize maxSize)
+{
+   CGRect   rect;
+
+   rect.size   = CGSizeMakeRandom( minSize, maxSize);
+   rect.origin = CGPointMakeRandomInRect( CGRectMake( r.origin.x,
+                                                      r.origin.y,
+                                                      r.size.width - rect.size.width,
+                                                      r.size.height - rect.size.height));
+   return( rect);
+}
+
+
 // Not enabled, because the interface is somewhat awkward. It usually needs
 // a lot of copying...
 //
@@ -449,4 +557,6 @@ CGRect   CGRectUnion( CGRect a, CGRect b);
 //
 // uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects);
 //
+
+
 #endif

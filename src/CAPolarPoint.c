@@ -7,8 +7,8 @@ CAPolarPoint   CAPolarPointAdd1( CAPolarPoint p, CAPolarPoint q)
 {
    CGPoint   tmp;
 
-   tmp = CGPointAdd( CAPolarPointGetPoint( p), CAPolarPointGetPoint( q));
-   return( CGPointAsPolarPoint( tmp));
+   tmp = CGPointAdd( CGPointMakeWithPolarPoint( p), CGPointMakeWithPolarPoint( q));
+   return( CAPolarPointMakeWithPoint( tmp));
 }
 
 //
@@ -38,8 +38,8 @@ CAPolarPoint   CAPolarPointSubtract1( CAPolarPoint p, CAPolarPoint q)
 {
    CGPoint   tmp;
 
-   tmp = CGPointSubtract( CAPolarPointGetPoint( p), CAPolarPointGetPoint( q));
-   return( CGPointAsPolarPoint( tmp));
+   tmp = CGPointSubtract( CGPointMakeWithPolarPoint( p), CGPointMakeWithPolarPoint( q));
+   return( CAPolarPointMakeWithPoint( tmp));
 }
 
 
@@ -58,4 +58,19 @@ CAPolarPoint   CAPolarPointSubtract2( CAPolarPoint p, CAPolarPoint q)
    r.radius = sqrtf( (p.radius - u) * (p.radius - u) + (v * v));
    r.angle  = p.angle - atan2( v, p.radius - u);
    return( r);
+}
+
+
+//
+// formula stolen from: https://www.kristakingmath.com/blog/distance-between-polar-points
+//
+CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b)
+{
+   // cosf returns values from -1 to +1, negative sqrtf is bad though
+   // Can we produce negative ?
+   // 0.1 * 0.1 = 0.01  0.1 * 0.1 = 0.01  0.01 + 0.01 = 0.02
+   // 2 * 0.1 * 0.1 = 0.2 * (-1 .. 1) 
+   // doesn't look like it
+   return( sqrtf( a.radius * a.radius + b.radius * b.radius -           /* P1 */ 
+                  2 * a.radius * b.radius * cosf( a.angle - b.angle))); /* P2 */
 }

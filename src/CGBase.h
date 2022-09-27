@@ -36,7 +36,6 @@ static inline CGFloat   CGFloatMakeRandom( void)
 }
 
 
-
 static inline CGFloat   CGFloatMaximum( CGFloat x, CGFloat y)
 {
    return( x > y ? x : y);
@@ -70,6 +69,28 @@ static inline CGFloat   CGFloatClamp( CGFloat x)
 static inline CGFloat   CGFloatClampToMinMax( CGFloat x, CGFloat min, CGFloat max)
 {
    return( x > max ? max : (x < min ? min : x));
+}
+
+
+// this is p5js.map, but "project" sounds more like what it does IMO
+static inline CGFloat   CGFloatProject( CGFloat value,
+                                        CGFloat start1, CGFloat stop1,
+                                        CGFloat start2, CGFloat stop2)
+{
+   return( (value - start1) / (stop1 - start1) * (stop2 - start2) + start2);
+}
+
+
+static inline CGFloat   CGFloatProjectClamped( CGFloat value,
+                                               CGFloat start1, CGFloat stop1,
+                                               CGFloat start2, CGFloat stop2)
+{
+   CGFloat   projected;
+
+   projected = CGFloatProject( value, start1, stop1, start1, stop2);
+   if( start2 < stop2)
+      return( CGFloatClampToMinMax( projected, start2, stop2));
+   return( CGFloatClampToMinMax( projected, stop2, start2));
 }
 
 
@@ -126,18 +147,6 @@ static inline CGPointU   CGPointUMake(CGFloat x, CGFloat y)
 }
 
 
-static inline CGPoint   CGPointUGetPoint( CGPointU v)
-{
-   return( *(CGPoint *) &v);
-}
-
-
-static inline CGPointU   CGPointGetPointU( CGPoint v)
-{
-   return( *(CGPointU *) &v);
-}
-
-
 
 //
 //    .-------------.
@@ -188,17 +197,6 @@ static inline CGSizeU   CGSizeUMake( CGFloat w, CGFloat h)
 }
 
 
-static inline CGSize   CGSizeUGetSize( CGSizeU v)
-{
-   return( *(CGSize *) &v);
-}
-
-
-static inline CGSizeU   CGSizeGetSizeU( CGSize v)
-{
-   return( *(CGSizeU *) &v);
-}
-
 
 //
 // hardly ever used. Use CAPolarPoint for real vector stuff
@@ -236,16 +234,6 @@ static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
 }
 
 
-static inline CGVector   CGVectorUGetVector( CGVectorU v)
-{
-   return( *(CGVector *) &v);
-}
-
-
-static inline CGVectorU   CGVectorGetVectorU( CGVector v)
-{
-   return( *(CGVectorU *) &v);
-}
 
 
 //
@@ -300,18 +288,6 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 }
 
 
-static inline CGRect   CGRectUGetRect( CGRectU v)
-{
-   return( *(CGRect *) &v);
-}
-
-
-static inline CGRectU   CGRectGetRectU( CGRect v)
-{
-   return( *(CGRectU *) &v);
-}
-
-
 //
 // MEMO: Using extern const is probably the worst way to initialize to zero
 //       as it can't be inlined and forces read/write, though we only need to
@@ -334,6 +310,94 @@ static inline CGRectU   CGRectGetRectU( CGRect v)
 #define CGRectUNull       CGRectUMake( NSIntegerMin, NSIntegerMin, 0.0f, 0.0f)
 #define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 #define CGRectUInfinite   CGRectUMake( NSIntegerMin, NSIntegerMin, NSIntegerMax, NSIntegerMax)
+
+
+
+static inline CGPoint   CGSizeAsPoint( CGSize v)
+{
+   return( *(CGPoint *) &v);
+}
+
+
+static inline CGSize   CGPointAsSize( CGPoint v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGVector   CGPointAsVector( CGPoint v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGPoint   CGVectorAsPoint( CGVector v)
+{
+   return( *(CGPoint *) &v);
+}
+
+
+static inline CGVector   CGSizeAsVector( CGSize v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGSize   CGVectorAsSize( CGVector v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+
+static inline CGPoint   CGPointUAsPoint( CGPointU v)
+{
+   return( *(CGPoint *) &v);
+}
+
+
+static inline CGPointU   CGPointAsPointU( CGPoint v)
+{
+   return( *(CGPointU *) &v);
+}
+
+
+static inline CGVector   CGVectorUAsVector( CGVectorU v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGVectorU   CGVectorAsVectorU( CGVector v)
+{
+   return( *(CGVectorU *) &v);
+}
+
+
+static inline CGSize   CGSizeUAsSize( CGSizeU v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGSizeU   CGSizeAsSizeU( CGSize v)
+{
+   return( *(CGSizeU *) &v);
+}
+
+
+
+static inline CGRect   CGRectUAsRect( CGRectU v)
+{
+   return( *(CGRect *) &v);
+}
+
+
+static inline CGRectU   CGRectAsRectU( CGRect v)
+{
+   return( *(CGRectU *) &v);
+}
+
 
 
 enum
