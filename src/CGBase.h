@@ -36,6 +36,13 @@ static inline CGFloat   CGFloatMakeRandom( void)
 }
 
 
+static inline CGFloat   CGFloatMakeRandomMinMax( CGFloat min, CGFloat max)
+{
+   return( CGFloatMakeRandom() * (max - min) + min);
+}
+
+
+
 static inline CGFloat   CGFloatMaximum( CGFloat x, CGFloat y)
 {
    return( x > y ? x : y);
@@ -262,6 +269,17 @@ static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
                      .size   = (CGSize)  { .width = w, .height = h }
                    });
 }
+
+
+static inline CGRect   CGRectMakeWithSize( CGSize size)
+{
+   return( (CGRect){
+                     .origin = { 0.0f, 0.0f },
+                     .size   = size
+                   });
+}
+
+
 
 static inline CGRect   CGRectMakeWithOriginAndSize( CGPoint origin, CGSize size)
 {

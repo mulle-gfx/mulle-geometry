@@ -89,12 +89,6 @@ static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint 
 }
 
 
-static CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
-{
-   return( CGPointAdd( p, CGPointMakeWithPolarPoint( v)));
-}
-
-
 CAPolarPoint   CAPolarPointAdd1( CAPolarPoint p, CAPolarPoint q);
 CAPolarPoint   CAPolarPointAdd2( CAPolarPoint p, CAPolarPoint q);
 
@@ -149,5 +143,12 @@ static CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a
 }
 
 CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b);
+
+
+static CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
+{
+   return( CGPointAdd( p, CGPointMakeWithPolarPoint( v)));
+}
+
 
 #endif
