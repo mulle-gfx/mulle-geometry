@@ -4,10 +4,11 @@
 #include "include.h"
 
 #include "CAAngle.h"
+#include "CGGeometry.h"
 
 #include <math.h>
 
-
+/*
 // A polar point is a combination of an angle and a radius. The angle 0 is
 // at 3 o clock. If you keep the radius constant and change the angle you
 // are sweeping along a circle.
@@ -34,7 +35,7 @@
 //
 //        Ergo: conversion back and forth is a slightly lossy operation.
 //              comparing two CAPolarPoints is tricky and error prone.
-
+*/
 typedef struct CAPolarPoint
 {
    CGFloat          radius;
@@ -64,17 +65,18 @@ static inline CGPoint  CGPointMakeWithPolarPoint( CAPolarPoint v)
 }
 
 
+
 //
 // makes angle between 0 and 2 PI, if radius is negative, flip the vector
 //
-static CAPolarPoint  CAPolarPointStandardize( CAPolarPoint v)
+static inline CAPolarPoint  CAPolarPointStandardize( CAPolarPoint v)
 {
    if( v.radius < 0.0)
    {
       v.angle  = v.angle + M_PI_f;
       v.radius = -v.radius;
    }
-   v.angle = fmodf( v.angle, M_2_PIf);
+   v.angle = fmodf( v.angle, CA_2xPI);
    return( v);
 }
 
@@ -107,7 +109,7 @@ static inline CAPolarPoint   CAPolarPointSubtract( CAPolarPoint p, CAPolarPoint 
 }
 
 
-static CAPolarPoint  CAPolarPointAddPoint( CAPolarPoint v, CGPoint p)
+static inline CAPolarPoint  CAPolarPointAddPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
@@ -116,7 +118,7 @@ static CAPolarPoint  CAPolarPointAddPoint( CAPolarPoint v, CGPoint p)
 }
 
 
-static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
+static inline CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
 {
    CGPoint  r;
 
@@ -125,7 +127,7 @@ static CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p)
 }
 
 
-static CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)
+static inline CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)
 {
    CAPolarPoint  r;
 
@@ -134,7 +136,7 @@ static CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)
 }
 
 
-static CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a)
+static inline CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a)
 {
    CAPolarPoint  r;
 
@@ -145,7 +147,7 @@ static CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a
 CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b);
 
 
-static CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
+static inline CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
 {
    return( CGPointAdd( p, CGPointMakeWithPolarPoint( v)));
 }

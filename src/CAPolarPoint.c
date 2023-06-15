@@ -19,7 +19,6 @@ CAPolarPoint   CAPolarPointAdd2( CAPolarPoint p, CAPolarPoint q)
 {
    CAPolarPoint   r;
    CGFloat        a;
-   CGFloat        b;
    CGFloat        u;
    CGFloat        v;
 
@@ -48,7 +47,6 @@ CAPolarPoint   CAPolarPointSubtract2( CAPolarPoint p, CAPolarPoint q)
 {
    CAPolarPoint   r;
    CGFloat        a;
-   CGFloat        b;
    CGFloat        u;
    CGFloat        v;
 

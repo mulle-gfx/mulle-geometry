@@ -27,15 +27,29 @@
 #include <math.h>   // m
 
 // You can tweak the following #include with these commands.
-// (Use 9E7730E5-8D17-49B4-B469-3AF0AFE2CD91 instead of mulle-time if there are duplicate entries)
-//    remove #include:: `mulle-sde dependency mark mulle-time no-header`
-//    rename:              `mulle-sde dependency|library set mulle-time include whatever.h`
-//    reorder:             `mulle-sde dependency move mulle-time <up|down>`
-//    toggle #include:    `mulle-sde dependency mark mulle-time [no-]import`
-//    toggle public:       `mulle-sde dependency mark mulle-time [no-]public`
-//    toggle optional:     `mulle-sde dependency mark mulle-time [no-]require`
-//    remove for platform: `mulle-sde dependency mark mulle-time no-platform-<uname>`
+// (Use BF05D5CF-8F51-4F08-8583-7FCBBAE0939D instead of mulle-core if there are duplicate entries)
+//    remove #include:: `mulle-sde dependency mark mulle-core no-header`
+//    rename:              `mulle-sde dependency|library set mulle-core include whatever.h`
+//    reorder:             `mulle-sde dependency move mulle-core <up|down>`
+//    toggle #include:    `mulle-sde dependency mark mulle-core [no-]import`
+//    toggle public:       `mulle-sde dependency mark mulle-core [no-]public`
+//    toggle optional:     `mulle-sde dependency mark mulle-core [no-]require`
+//    remove for platform: `mulle-sde dependency mark mulle-core no-platform-<uname>`
 //        (use `mulle-sourcetree-to-c --unames` to list known values)
-#include <mulle-time/mulle-time.h>   // mulle-time
+#include <mulle-core/mulle-core.h>   // mulle-core
+
+// You can tweak the following #include with these commands.
+// (Use B3B23976-BBD9-4282-AFE0-7A179F43E700 instead of math if there are duplicate entries)
+//    remove #include:: `mulle-sde dependency mark math no-header`
+//    rename:              `mulle-sde dependency|library set math include whatever.h`
+//    reorder:             `mulle-sde dependency move math <up|down>`
+//    toggle #include:    `mulle-sde dependency mark math [no-]import`
+//    toggle public:       `mulle-sde dependency mark math [no-]public`
+//    toggle optional:     `mulle-sde dependency mark math [no-]require`
+//    remove for platform: `mulle-sde dependency mark math no-platform-<uname>`
+//        (use `mulle-sourcetree-to-c --unames` to list known values)
+# if ! defined( _WIN32)
+# include <math.h>   // math
+#endif
 
 #endif

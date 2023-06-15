@@ -12,4 +12,6 @@ endif()
 #
 set( SOURCES
 src/main-layout.m
+src/main-polarpoint.m
+src/main-radius.m
 )

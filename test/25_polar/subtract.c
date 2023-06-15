@@ -18,19 +18,19 @@ int   main( int argc, char *argv[])
          for( y1 = -100; y1 <= 100; y1 += STEP)
             for( y2 = -100; y2 <= 100; y2 += STEP)
             {
-               a = CGPointMake( x1, y1);
-               b = CGPointMake( x2, y2);
+               a  = CGPointMake( x1, y1);
+               b  = CGPointMake( x2, y2);
                r1 = CGPointSubtract( a, b);
                printf( "[%.1f %.1f] + [%.1f %.1f] = [%.1f %.1f]",
                         a.x, a.y,
                         b.x, b.y,
                         r1.x, r1.y);
 
-               p = CAPolarPointSubtract1( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
+               p  = CAPolarPointSubtract1( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
                r2 = CGPointMakeWithPolarPoint( p);
                printf( ", [%.1f %.1f]", r2.x, r2.y);
 
-               p = CAPolarPointSubtract2( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
+               p  = CAPolarPointSubtract2( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
                r3 = CGPointMakeWithPolarPoint( p);
                printf( ", [%.1f %.1f]", r3.x, r3.y);
 

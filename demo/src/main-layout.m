@@ -325,8 +325,8 @@ void   setupScene( UIWindowPlane *contentPlane)
 
 int   main()
 {
-   UIWindow   *window;
-
+   UIWindow        *window;
+   UIApplication   *app;
    /*
     * window and app
     */

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
+#include <math.h>
 
 typedef float CGFloat;
 
@@ -40,7 +41,6 @@ static inline CGFloat   CGFloatMakeRandomMinMax( CGFloat min, CGFloat max)
 {
    return( CGFloatMakeRandom() * (max - min) + min);
 }
-
 
 
 static inline CGFloat   CGFloatMaximum( CGFloat x, CGFloat y)
@@ -104,8 +104,8 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 // used for CGPoint.value and CGSize.value
 enum
 {
-   CGHorizontalAxis = 0,
-   CGVerticalAxis   = 1
+   CGHorizontalAxisIndex = 0,
+   CGVerticalAxisIndex   = 1
 };
 
 
@@ -330,6 +330,103 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 #define CGRectUInfinite   CGRectUMake( NSIntegerMin, NSIntegerMin, NSIntegerMax, NSIntegerMax)
 
 
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
+
+//--------------- modern API ------
+
+
+static inline CGPoint   CGPointMakeWithSize( CGSize v)
+{
+   return( *(CGPoint *) &v);
+}
+
+static inline CGPoint   CGPointMakeWithVector( CGVector v)
+{
+   return( *(CGPoint *) &v);
+}
+
+static inline CGPoint   CGPointMakeWithPointU( CGPointU v)
+{
+   return( *(CGPoint *) &v);
+}
+
+
+
+static inline CGVector   CGVectorMakeWithPoint( CGPoint v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGVector   CGVectorMakeWithVectorU( CGVectorU v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+static inline CGVector   CGVectorMakeWithSize( CGSize v)
+{
+   return( *(CGVector *) &v);
+}
+
+
+
+static inline CGSize   CGSizeMakeWithPoint( CGPoint v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGSize   CGSizeMakeWithSizeU( CGSizeU v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGSize   CGSizeMakeWithVector( CGVector v)
+{
+   return( *(CGSize *) &v);
+}
+
+
+static inline CGRect   CGRectMakeWithRectU( CGRectU v)
+{
+   return( *(CGRect *) &v);
+}
+
+
+
+
+static inline CGPointU   CGPointUMakeWithPoint( CGPoint v)
+{
+   return( *(CGPointU *) &v);
+}
+
+
+static inline CGVectorU   CGVectorUMakeWithVector( CGVector v)
+{
+   return( *(CGVectorU *) &v);
+}
+
+
+static inline CGSizeU   CGSizeUMakeWithSize( CGSize v)
+{
+   return( *(CGSizeU *) &v);
+}
+
+
+static inline CGRectU   CGRectUMakeWithRect( CGRect v)
+{
+   return( *(CGRectU *) &v);
+}
+
+
+// ----- old API - phased out, because MakeWith is more common
+//                 than As
 
 static inline CGPoint   CGSizeAsPoint( CGSize v)
 {
@@ -417,18 +514,22 @@ static inline CGRectU   CGRectAsRectU( CGRect v)
 }
 
 
-
-enum
+static inline int   CGRectIsNull( CGRect v)
 {
-   CGDirectionTop    = 1,
-   CGDirectionBottom = 2,
-   CGDirectionLeft   = 4,
-   CGDirectionRight  = 8
-};
+   return( isnan( v.origin.x));
+}
 
-#define CGDirectionUp    CGDirectionTop
-#define CGDirectionDown  CGDirectionBottom
 
-typedef uintptr_t    CGDirection;
+static inline int   CGPointIsNull( CGPoint p)
+{
+   return( isnan( p.x));
+}
+
+
+
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
+
 
 #endif

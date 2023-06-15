@@ -56,16 +56,16 @@ static inline void   CAQuadraticInit( CAQuadratic *q,
 //
 // possibly too large for inlining ca. 100 bytes!
 //
-static inline CGFloat   _CAQuadraticGetValue( CAQuadratic *b, CGFloat t)
+static inline CGFloat   _CAQuadraticGetValue( CAQuadratic b, CGFloat t)
 {
    CGFloat   value;
 
    assert( t >= 0.0 && t <= 1.0);
 
-   value = (1 - t) * (1 - t) * (1 - t) * b->value[0] +
-       3 * (1 - t) * (1 - t) * t * b->value[1] +
-       3 * (1 - t) * t * t * b->value[2] +
-       t * t * t * b->value[3];
+   value = (1 - t) * (1 - t) * (1 - t) * b.value[0] +
+       3 * (1 - t) * (1 - t) * t * b.value[1] +
+       3 * (1 - t) * t * t * b.value[2] +
+       t * t * t * b.value[3];
    return( value);
 }
 
@@ -73,7 +73,7 @@ static inline CGFloat   CAQuadraticGetValue( CAQuadratic *b, CGFloat t)
 {
    if( ! b)
       return( 0.0);
-   return( _CAQuadraticGetValue( b, t));
+   return( _CAQuadraticGetValue( *b, t));
 }
 
 

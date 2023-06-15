@@ -1,0 +1,16 @@
+CGWindDirectionNNE : rad: -1.178 direction: CADirectionTop
+CGWindDirectionNE  : rad: -0.785 direction: CADirectionTop|CADirectionRight
+CGWindDirectionENE : rad: -0.393 direction: CADirectionRight
+CGWindDirectionE   : rad: 0.000 direction: CADirectionRight
+CGWindDirectionESE : rad: 0.393 direction: CADirectionRight
+CGWindDirectionSE  : rad: 0.785 direction: CADirectionBottom|CADirectionRight
+CGWindDirectionSSE : rad: 1.178 direction: CADirectionBottom
+CGWindDirectionS   : rad: 1.571 direction: CADirectionBottom
+CGWindDirectionSSW : rad: 1.963 direction: CADirectionBottom
+CGWindDirectionSW  : rad: 2.356 direction: CADirectionBottom|CADirectionLeft
+CGWindDirectionWSW : rad: 2.749 direction: CADirectionLeft
+CGWindDirectionW   : rad: 3.142 direction: CADirectionLeft
+CGWindDirectionWNW : rad: 3.534 direction: CADirectionLeft
+CGWindDirectionNW  : rad: 3.927 direction: CADirectionTop|CADirectionLeft
+CGWindDirectionNNW : rad: 4.320 direction: CADirectionTop|CADirectionLeft
+CGWindDirectionN   : rad: 4.712 direction: CADirectionTop

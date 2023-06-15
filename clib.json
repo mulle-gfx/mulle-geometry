@@ -1,0 +1,31 @@
+{
+   "name" : "mulle-geometry",
+   "version" : "0.0.1",
+   "description" : "Basic geometric types",
+   "keywords" : [],
+   "license" : "UNLICENSED",
+   "repo" : "MulleUI/mulle-geometry",
+   "src" : [
+      "src/CAAngle.c",
+      "src/CAAngle.h",
+      "src/CAPolarPoint.c",
+      "src/CAPolarPoint.h",
+      "src/CAQuadratic.c",
+      "src/CAQuadratic.h",
+      "src/CGAffineTransform.c",
+      "src/CGAffineTransform.h",
+      "src/CGBase.h",
+      "src/CGGeometry.c",
+      "src/CGGeometry.h",
+      "src/include-private.h",
+      "src/include.h",
+      "src/mulle-geometry.c",
+      "src/mulle-geometry.h",
+      "src/reflect/_mulle-geometry-include-private.h",
+      "src/reflect/_mulle-geometry-include.h",
+      "src/reflect/_mulle-geometry-provide.h"
+   ],
+   "dependencies" : {
+      "mulle-core/mulle-core": "*"
+   }
+}
