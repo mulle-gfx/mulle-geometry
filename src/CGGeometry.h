@@ -63,6 +63,11 @@ static inline CGPoint   CGPointSubtract( CGPoint p, CGPoint q)
    return( CGPointMake( p.x - q.x, p.y - q.y));
 }
 
+static inline CGPoint   CGPointNegate( CGPoint p)
+{
+   return( CGPointMake( -p.x, -p.y));
+}
+
 
 static inline CGPoint   CGPointSubtractVector( CGPoint p, CGVector q)
 {
@@ -165,6 +170,7 @@ static inline CGFloat  CGPointDistanceToPoint( CGPoint a, CGPoint b)
    d = CGVectorMake( b.x - a.x, b.y - a.y);
    return( CGVectorLength( d));
 }
+
 
 // http://paperjs.org/reference/point/#normalize
 static inline CGPoint  CGPointNormalize( CGPoint a, CGFloat radius)
@@ -387,10 +393,44 @@ static inline CGFloat CGRectGetHeight(CGRect rect) {
 //         ^
 //         CGRectGetCenterPoint().x
 //
+
+static inline CGPoint   CGRectGetCornerPoint( CGRect rect, CADirection dir)
+{
+   CGPoint   p;
+
+   switch( dir & (CADirectionLeft|CADirectionRight))
+   {
+   case CADirectionLeft   : p.x = CGRectGetMinX( rect); break;
+   case CADirectionRight  : p.x = CGRectGetMaxX( rect); break;
+   default                : p.x = CGRectGetMidX( rect); break;
+   }
+   switch( dir & (CADirectionTop|CADirectionBottom))
+   {
+   case CADirectionTop    : p.y = CGRectGetMinY( rect); break;
+   case CADirectionBottom : p.y = CGRectGetMaxY( rect); break;
+   default                : p.y = CGRectGetMidY( rect); break;
+   }
+   return( p);
+}
+
+
+static inline CGPoint   CGRectGetTopLeftPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMinX( rect), CGRectGetMinY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetBottomRightPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMaxY( rect)));
+}
+
+
 static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
 {
    return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
 }
+
 
 
 /**

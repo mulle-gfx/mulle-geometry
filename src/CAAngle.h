@@ -39,6 +39,8 @@
 //
 // If you have an indicator needle, that is usually centered and goes left
 // (negative) or right (positive), the CAAngleDirectional is nice.
+
+
 //
 //          -M_PI/2
 //        .---------.
@@ -87,7 +89,7 @@ typedef CGFloat   CAAngleUnity;
 
 
 // MEMO: use CANormalizedFloatToRadians and not CANormalizedFloatAsRadians
-//       because there is a calculation involved. Could also use a Get
+//       because there is a calculation involved.
 //       but...
 static inline CAAngleRadians   CANormalizedFloatToRadians( CGFloat x)
 {
@@ -106,6 +108,10 @@ static inline CAAngleUnity   CAAngleRadiansToUnity( CAAngleRadians rad)
    unity = unity < 0.0f ? 1.0f + unity : unity;
    return( unity);
 }
+
+
+#define CAAngleRadiansDataWithUnity( unity)  \
+   ((unity) * CA_2xPI - M_PI_f + M_PI_2f)
 
 
 static inline CAAngleRadians   CAAngleUnityToRadians( CAAngleUnity unity)
@@ -153,6 +159,10 @@ static inline CAAngleDegrees   CAAngleRadiansToDegrees( CAAngleRadians rad)
    return( (CGFloat) (rad * 360.0f / CA_2xPI));
 }
 
+
+#define CAAngleRadiansDataWithDegrees( deg)   ((deg) * M_PI_f / 180.0f)
+
+
 static inline CAAngleRadians   CAAngleDegreesToRadians( CAAngleDegrees deg)
 {
 //   deg = fmodf( deg, 360.0f);
@@ -185,12 +195,12 @@ static inline CAAngleDirectional   CAAngleDegreesToDirectional( CAAngleDegrees d
 }
 
 
-// make an angle between -pi/2 and +pi/2
+// make an angle between -pi and +pi
 // https://stackoverflow.com/questions/24234609/standard-way-to-normalize-an-angle-to-%CF%80-radians-in-java
 //
 static inline CAAngleRadians   CAAngleRadiansNormalize( CAAngleRadians rad)
 {
-   return( rad - CA_2xPI * floorf( rad + M_PI_f) / CA_2xPI);
+   return( rad - CA_2xPI * floorf( (rad + M_PI_f) / CA_2xPI));
 }
 
 
@@ -206,35 +216,6 @@ static inline CAAngleDegrees   CAAngleDegreesNormalize( CAAngleDegrees deg)
       normalized = 360.0f + normalized;
    return( normalized);
 }
-
-
-#ifdef __GNUC__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
-
-//
-// this can be used to discern full left CAAngleDirectional
-//
-static inline int  CAIsNegativeZero( CGFloat x)
-{
-   if( x != 0.0f)
-      return( 1);
-
-   if( sizeof( CGFloat) == sizeof( int32_t))
-   {
-      return( (*(int32_t *) &x) < 0);
-   }
-   if( sizeof( CGFloat) == sizeof( int64_t))
-   {
-      return( (*(int64_t *) &x) < 0);
-   }
-   assert( 0);
-}
-
-#ifdef __GNUC__
-# pragma GCC diagnostic pop
-#endif
 
 
 //
@@ -333,32 +314,32 @@ static inline CADirection   CAAngleRadiansToDirection( CAAngleRadians radians)
 }
 
 
-#define CGWindDirectionNNE   CAAngleUnityToRadians(  1.0 / 16.0)
-#define CGWindDirectionNE    CAAngleUnityToRadians(  2.0 / 16.0)
-#define CGWindDirectionENE   CAAngleUnityToRadians(  3.0 / 16.0)
-#define CGWindDirectionE     CAAngleUnityToRadians(  4.0 / 16.0)
-#define CGWindDirectionESE   CAAngleUnityToRadians(  5.0 / 16.0)
-#define CGWindDirectionSE    CAAngleUnityToRadians(  6.0 / 16.0)
-#define CGWindDirectionSSE   CAAngleUnityToRadians(  7.0 / 16.0)
-#define CGWindDirectionS     CAAngleUnityToRadians(  8.0 / 16.0)
-#define CGWindDirectionSSW   CAAngleUnityToRadians(  9.0 / 16.0)
-#define CGWindDirectionSW    CAAngleUnityToRadians( 10.0 / 16.0)
-#define CGWindDirectionWSW   CAAngleUnityToRadians( 11.0 / 16.0)
-#define CGWindDirectionW     CAAngleUnityToRadians( 12.0 / 16.0)
-#define CGWindDirectionWNW   CAAngleUnityToRadians( 13.0 / 16.0)
-#define CGWindDirectionNW    CAAngleUnityToRadians( 14.0 / 16.0)
-#define CGWindDirectionNNW   CAAngleUnityToRadians( 15.0 / 16.0)
-#define CGWindDirectionN     CAAngleUnityToRadians( 16.0 / 16.0)
+#define CAAngleRadiansNNE         CAAngleRadiansDataWithUnity(  1.0 / 16.0)
+#define CAAngleRadiansNE          CAAngleRadiansDataWithUnity(  2.0 / 16.0)
+#define CAAngleRadiansENE         CAAngleRadiansDataWithUnity(  3.0 / 16.0)
+#define CAAngleRadiansE           CAAngleRadiansDataWithUnity(  4.0 / 16.0)
+#define CAAngleRadiansESE         CAAngleRadiansDataWithUnity(  5.0 / 16.0)
+#define CAAngleRadiansSE          CAAngleRadiansDataWithUnity(  6.0 / 16.0)
+#define CAAngleRadiansSSE         CAAngleRadiansDataWithUnity(  7.0 / 16.0)
+#define CAAngleRadiansS           CAAngleRadiansDataWithUnity(  8.0 / 16.0)
+#define CAAngleRadiansSSW         CAAngleRadiansDataWithUnity(  9.0 / 16.0)
+#define CAAngleRadiansSW          CAAngleRadiansDataWithUnity( 10.0 / 16.0)
+#define CAAngleRadiansWSW         CAAngleRadiansDataWithUnity( 11.0 / 16.0)
+#define CAAngleRadiansW           CAAngleRadiansDataWithUnity( 12.0 / 16.0)
+#define CAAngleRadiansWNW         CAAngleRadiansDataWithUnity( 13.0 / 16.0)
+#define CAAngleRadiansNW          CAAngleRadiansDataWithUnity( 14.0 / 16.0)
+#define CAAngleRadiansNNW         CAAngleRadiansDataWithUnity( 15.0 / 16.0)
+#define CAAngleRadiansN           CAAngleRadiansDataWithUnity( 16.0 / 16.0)
 
 
-#define CGWindDirectionGreco       CGWindDirectionNE
-#define CGWindDirectionLevante     CGWindDirectionE
-#define CGWindDirectionScirocco    CGWindDirectionSE
-#define CGWindDirectionOstro       CGWindDirectionS
-#define CGWindDirectionLibeccio    CGWindDirectionSW
-#define CGWindDirectionPonente     CGWindDirectionW
-#define CGWindDirectionMaestro     CGWindDirectionNW
-#define CGWindDirectionTramontana  CGWindDirectionN
+#define CAAngleRadiansGreco       CAAngleRadiansNE
+#define CAAngleRadiansLevante     CAAngleRadiansE
+#define CAAngleRadiansScirocco    CAAngleRadiansSE
+#define CAAngleRadiansOstro       CAAngleRadiansS
+#define CAAngleRadiansLibeccio    CAAngleRadiansSW
+#define CAAngleRadiansPonente     CAAngleRadiansW
+#define CAAngleRadiansMaestro     CAAngleRadiansNW
+#define CAAngleRadiansTramontana  CAAngleRadiansN
 
 #endif
 

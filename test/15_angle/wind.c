@@ -20,41 +20,41 @@ int   main( int argc, char *argv[])
    unsigned int   i;
    auto CAAngleRadians   directions[] =
    {
-      CGWindDirectionNNE,
-      CGWindDirectionNE ,
-      CGWindDirectionENE,
-      CGWindDirectionE  ,
-      CGWindDirectionESE,
-      CGWindDirectionSE ,
-      CGWindDirectionSSE,
-      CGWindDirectionS  ,
-      CGWindDirectionSSW,
-      CGWindDirectionSW ,
-      CGWindDirectionWSW,
-      CGWindDirectionW  ,
-      CGWindDirectionWNW,
-      CGWindDirectionNW ,
-      CGWindDirectionNNW,
-      CGWindDirectionN
+      CAAngleRadiansNNE,
+      CAAngleRadiansNE ,
+      CAAngleRadiansENE,
+      CAAngleRadiansE  ,
+      CAAngleRadiansESE,
+      CAAngleRadiansSE ,
+      CAAngleRadiansSSE,
+      CAAngleRadiansS  ,
+      CAAngleRadiansSSW,
+      CAAngleRadiansSW ,
+      CAAngleRadiansWSW,
+      CAAngleRadiansW  ,
+      CAAngleRadiansWNW,
+      CAAngleRadiansNW ,
+      CAAngleRadiansNNW,
+      CAAngleRadiansN
    };
    static char   *names[] =
    {
-      "CGWindDirectionNNE",
-      "CGWindDirectionNE ",
-      "CGWindDirectionENE",
-      "CGWindDirectionE  ",
-      "CGWindDirectionESE",
-      "CGWindDirectionSE ",
-      "CGWindDirectionSSE",
-      "CGWindDirectionS  ",
-      "CGWindDirectionSSW",
-      "CGWindDirectionSW ",
-      "CGWindDirectionWSW",
-      "CGWindDirectionW  ",
-      "CGWindDirectionWNW",
-      "CGWindDirectionNW ",
-      "CGWindDirectionNNW",
-      "CGWindDirectionN  "
+      "CAAngleRadiansNNE",
+      "CAAngleRadiansNE ",
+      "CAAngleRadiansENE",
+      "CAAngleRadiansE  ",
+      "CAAngleRadiansESE",
+      "CAAngleRadiansSE ",
+      "CAAngleRadiansSSE",
+      "CAAngleRadiansS  ",
+      "CAAngleRadiansSSW",
+      "CAAngleRadiansSW ",
+      "CAAngleRadiansWSW",
+      "CAAngleRadiansW  ",
+      "CAAngleRadiansWNW",
+      "CAAngleRadiansNW ",
+      "CAAngleRadiansNNW",
+      "CAAngleRadiansN  "
    };
 
    for( i = 0; i < sizeof(directions) / sizeof( directions[ 0]); i++)

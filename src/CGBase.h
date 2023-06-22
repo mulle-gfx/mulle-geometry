@@ -101,6 +101,37 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 }
 
 
+
+
+#ifdef __GNUC__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+
+//
+// this can be used to discern full left CAAngleDirectional
+//
+static inline int  CGFloatIsNegativeZero( CGFloat x)
+{
+   if( x != 0.0f)
+      return( 1);
+
+   if( sizeof( CGFloat) == sizeof( int32_t))
+   {
+      return( (*(int32_t *) &x) < 0);
+   }
+   if( sizeof( CGFloat) == sizeof( int64_t))
+   {
+      return( (*(int64_t *) &x) < 0);
+   }
+   assert( 0);
+}
+
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
+
+
 // used for CGPoint.value and CGSize.value
 enum
 {
@@ -290,6 +321,35 @@ static inline CGRect   CGRectMakeWithOriginAndSize( CGPoint origin, CGSize size)
 }
 
 
+static inline CGRect   CGRectMakeWithPoints( CGPoint a, CGPoint b)
+{
+   CGRect   r;
+
+   if( a.x >= b.x)
+   {
+      r.origin.x   = b.x;
+      r.size.width = a.x - b.x;
+   }
+   else
+   {
+      r.origin.x   = a.x;
+      r.size.width = b.x - a.x;
+   }
+
+   if( a.y >= b.y)
+   {
+      r.origin.y    = b.y;
+      r.size.height = a.y - b.y;
+   }
+   else
+   {
+      r.origin.y    = a.y;
+      r.size.height = b.y - a.y;
+   }
+   return( r);
+}
+
+
 typedef struct CGRectU
 {
    CGPointU   origin;
@@ -302,7 +362,7 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
    return( (CGRectU){
                      .origin = (CGPointU) { .x = x, .y = y },
                      .size   = (CGSizeU)  { .width = w, .height = h }
-                   });
+                    });
 }
 
 
