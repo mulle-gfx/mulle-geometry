@@ -9,63 +9,119 @@
 #include <math.h>
 
 /*
-// A polar point is a combination of an angle and a radius. The angle 0 is
-// at 3 o clock. If you keep the radius constant and change the angle you
-// are sweeping along a circle.
+// A CAPolarPoint is a combination of a rotation (radians) and a radius.
+// Radians has an origin 0 at 3 o clock, because otherwise its not
+// efficient for use with the math.h function. But rotation has an origin
+// at 0. Generally speaking, you should be using "CAAngle" preferably, if
+// you care about the angle. Use rotation for animation, use radians for
+// interfacing with "math.h" and keeping the number of rotations.
+//
+// If you keep the radius constant and change the rotation you are sweeping
+// along a circle.
+//
 //
 //         . -- ~~~ -- .
 //     .-~           ^   ~-.
 //    /             /       \
 //   /             /         \
 //  |             /           |
-//  |            /            |  --- 0 radians (!)
+//  |            /            |  --- 0 radians (internal!)
 //  |                         |
 //   \                       /
 //    \                     /
 //     `-.               .-'
 //         ~- . ___ . -~
 //
-// Notes: negative radius is the same as flipping the angle by 180° deg and
+// Notes: negative radius is the same as flipping the rotation by 180° deg and
 //        having a positive radius of the same value.
 //        So a CAPolarPoint can already have two representations of a CGPoint
 //        right there already. Furthermore you
-//        can have negative  and  positive multiples of the angle, which map to
-//        the same point (e.g. add 360° deg to the angle)
+//        can have negative and positive multiples of radians, which
+//        map to the same point (e.g. add 360° deg)
 //        In contrast a CGPoint is unique.
 //
 //        Ergo: conversion back and forth is a slightly lossy operation.
 //              comparing two CAPolarPoints is tricky and error prone.
 */
+
 typedef struct CAPolarPoint
 {
-   CGFloat          radius;
-   CAAngleRadians   angle;
+   CGFloat   radius;
+   CGFloat   radians;    // NOT a CGFloat! also not a "radiansRotation"
 } CAPolarPoint;
 
 
 // apparently the iso norm for spherical is radius first, then angle
 // assume this is the way to go for 2D also
-static inline CAPolarPoint   CAPolarPointMake( CGFloat r, CAAngleRadians a)
+static inline CAPolarPoint   CAPolarPointMakeWithRadians( CGFloat r, CGFloat a)
 {
-   return( (CAPolarPoint) { .radius = r, .angle = a });
+   // infinite radius ? why not
+   assert( ! isnan( r));
+   assert( ! isinf( a));
+   assert( ! isnan( a));
+
+   return( (CAPolarPoint) { .radius = r, .radians = a });
+}
+
+static inline CAPolarPoint   CAPolarPointMakeWithDegrees( CGFloat r, CGFloat d)
+{
+   return( CAPolarPointMakeWithRadians( r, CADegreesToRadians( d)));
 }
 
 
-static inline CAPolarPoint  CAPolarPointMakeWithPoint( CGPoint p)
+static inline CAPolarPoint   CAPolarPointMakeWithAngle( CGFloat r, CAAngle a)
 {
-   return( CAPolarPointMake( CGPointGetPolarRadius( p), 
-                             CGPointGetPolarAngle( p)));
+   assert( a >= 0.0 && a <= CA_2xPI);
+
+   return( CAPolarPointMakeWithRadians( r, a));
 }
 
 
-static inline CGPoint  CGPointMakeWithPolarPoint( CAPolarPoint v)
+//
+// rotation here is "orientation" too as CAPolarPoint sees a rotation of 0
+// as "North"
+//
+static inline CAPolarPoint   CAPolarPointMakeWithRotation( CGFloat r, CARotation a)
 {
-   return( CGPointMake( cosf( v.angle) * v.radius,
-                        sinf( v.angle) * v.radius));
+   CGFloat   radians;
+
+   radians = CARotationToRadians( a);
+   return( CAPolarPointMakeWithRadians( r, radians - M_PI_2f));
+}
+
+
+static inline CGFloat  CAPolarPointGetRadius( CAPolarPoint v)
+{
+   return( v.radius);
+}
+
+
+static inline CARotation  CAPolarPointGetRotation( CAPolarPoint v)
+{
+   return( CARadiansToRotation( v.radians) + 0.25);
+}
+
+
+static inline CGFloat  CAPolarPointGetRadians( CAPolarPoint v)
+{
+   return( v.radians);
+}
+
+static inline CGFloat  CAPolarPointGetDegrees( CAPolarPoint v)
+{
+   return( CARadiansToDegrees( v.radians));
 }
 
 
 
+static inline CAAngle  CAPolarPointGetAngle( CAPolarPoint v)
+{
+   return( CARadiansToAngle( v.radians));
+}
+
+// ##################
+// CAPoint / CGPoint
+// ##################
 //
 // makes angle between 0 and 2 PI, if radius is negative, flip the vector
 //
@@ -73,11 +129,56 @@ static inline CAPolarPoint  CAPolarPointStandardize( CAPolarPoint v)
 {
    if( v.radius < 0.0)
    {
-      v.angle  = v.angle + M_PI_f;
-      v.radius = -v.radius;
+      v.radians  = v.radians + M_PI_f;
+      v.radius   = -v.radius;
    }
-   v.angle = fmodf( v.angle, CA_2xPI);
+   v.radians = fmodf( v.radians, CA_2xPI);
    return( v);
+}
+
+
+// mulle addition:
+static inline CGFloat   CGPointGetPolarRadius( CGPoint p)
+{
+   return( sqrtf( p.x * p.x + p.y * p.y));
+}
+
+
+// mulle addition:
+// it's not an CGFloat, because it can be negative
+static inline CGFloat   CGPointGetPolarRadians( CGPoint p)
+{
+   if( CGPointEqualToPoint( p, CGPointZero))
+      return( 0.0);
+   return( atan2f( p.y, p.x));
+}
+
+static inline CAPolarPoint  CAPolarPointMakeWithPoint( CGPoint p)
+{
+   return( CAPolarPointMakeWithRadians( CGPointGetPolarRadius( p),
+                                        CGPointGetPolarRadians( p)));
+}
+
+
+static inline CGPoint  CGPointMakeWithPolarPoint( CAPolarPoint v)
+{
+   return( CGPointMake( cosf( v.radians) * v.radius,
+                        sinf( v.radians) * v.radius));
+}
+
+
+
+// http://paperjs.org/reference/point/#normalize
+//
+// Modifies the point so that it length is 1 without changing its angle
+// and returns it as a new point.
+//
+static inline CGPoint  CGPointNormalize( CGPoint a, CGFloat radius)
+{
+   CGFloat   radians;
+
+   radians = CGPointGetPolarRadians( a);
+   return( CGPointMake( cosf( radians) * radius, sinf( radians) * radius));
 }
 
 
@@ -87,7 +188,7 @@ static inline CAPolarPoint  CAPolarPointStandardize( CAPolarPoint v)
 //
 static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint q)
 {
-   return( p.radius == q.radius && p.angle == q.angle);
+   return( p.radius == q.radius && p.radians == q.radians);
 }
 
 
@@ -127,22 +228,63 @@ static inline CAPolarPoint  CAPolarPointSubtractPoint( CAPolarPoint v, CGPoint p
 }
 
 
-static inline CAPolarPoint  CAPolarPointAddAngle( CAPolarPoint v, CAAngleRadians a)
+//
+// MEMO: You can not add two polar points with different center point,
+//       by separately adding angle and radius. The radius will just increase
+//       and the angle will be changed.
+//
+static inline CAPolarPoint  CAPolarPointAddRadians( CAPolarPoint v, CGFloat radians)
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMake( v.radius, v.angle + a);
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians + radians);
+   return( r);
+}
+
+static inline CAPolarPoint  CAPolarPointSubtractRadians( CAPolarPoint v, CGFloat radians)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians - radians);
+   return( r);
+}
+
+static inline CAPolarPoint  CAPolarPointSubtractRotation( CAPolarPoint v, CARotation a)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians - a * CA_2xPI);
    return( r);
 }
 
 
-static inline CAPolarPoint  CAPolarPointSubtractAngle( CAPolarPoint v, CAAngleRadians a)
+static inline CAPolarPoint  CAPolarPointAddRadius( CAPolarPoint v, CGFloat d)
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMake( v.radius, v.angle - a);
+   r = CAPolarPointMakeWithRadians( v.radius + d, v.radians);
    return( r);
 }
+
+
+static inline CAPolarPoint  CAPolarPointSubtractRadius( CAPolarPoint v, CGFloat d)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius - d, v.radians);
+   return( r);
+}
+
+
+static inline CAPolarPoint  CAPolarPointRotate( CAPolarPoint v, CARotation a)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians + a * CA_2xPI);
+   return( r);
+}
+
+
 
 CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b);
 
@@ -177,22 +319,19 @@ static inline CGRect   CGRectMakeWithCenterPointAndInnerRadius( CGPoint center,
 // +---+
 //
 static inline CGRect   CGRectMakeWithCenterPointAndOuterRadius( CGPoint center, 
-                                                                 CGFloat radius)
+                                                                CGFloat radius)
 {
    CGRect         r;
    CAPolarPoint   corner;
    CGPoint        point1;
    CGPoint        point2;
 
-   corner = CAPolarPointMake( radius, CAAngleDegreesToRadians( 45.0f));
+   corner = CAPolarPointMakeWithAngle( radius, CAAngleSouthEast);
    point1 = CGPointMakeWithPolarPoint( corner);
    point2 = CGPointScale( point1, -1.0);
-   r      = CGRectMakeWithPoints( CGPointAdd( center, point1), CGPointAdd( center, point2));
+   r      = CGRectMakeWithPoints( CGPointAdd( center, point1),
+                                  CGPointAdd( center, point2));
    return( CGRectStandardize( r));
 }
-
-
-
-
 
 #endif

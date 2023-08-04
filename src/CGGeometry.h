@@ -17,8 +17,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #ifndef cg_geometry_h__
 #define cg_geometry_h__
 
+
 #include "CGBase.h"
 #include "CAAngle.h"
+#include "CADirection.h"
 
 #include <stdint.h>
 #include <math.h>
@@ -31,19 +33,29 @@ static inline CGFloat  CGVectorLength( CGVector v)
 }
 
 
+static inline CGFloat   CGVectorDotProduct( CGVector v1, CGVector v2)
+{
+   return( v1.dx * v2.dx + v1.dy * v2.dy);
+}
+
+
+
 /**
-@Status Interoperable
 */
-static inline int CGPointEqualToPoint(CGPoint a, CGPoint b) {
-    return( (a.x == b.x) && (a.y == b.y));
+static inline int   CGPointEqualToPoint( CGPoint a, CGPoint b)
+{
+   if( (a.x == b.x) && (a.y == b.y))
+      return( 1);
+   // this seems fairly cheap
+   return( isnan( a.x) && isnan( a.y) && isnan( b.x) && isnan( b.y));
 }
 
 
 static inline CGPoint   CGPointOffset( CGPoint a, CGFloat dx, CGFloat dy)
 {
-    a.x += dx;
-    a.y += dy;
-    return a;
+   a.x += dx;
+   a.y += dy;
+   return a;
 }
 
 
@@ -51,6 +63,7 @@ static inline CGPoint   CGPointAdd( CGPoint p, CGPoint q)
 {
    return( CGPointMake( p.x + q.x, p.y + q.y));
 }
+
 
 static inline CGPoint   CGPointAddVector( CGPoint p, CGVector q)
 {
@@ -62,6 +75,7 @@ static inline CGPoint   CGPointSubtract( CGPoint p, CGPoint q)
 {
    return( CGPointMake( p.x - q.x, p.y - q.y));
 }
+
 
 static inline CGPoint   CGPointNegate( CGPoint p)
 {
@@ -105,21 +119,9 @@ static inline CGSize   CGSizeScale( CGSize p, CGFloat scale)
 }
 
 
-
-// mulle addition:
-static inline CGFloat   CGPointGetPolarRadius( CGPoint p)
+static inline CGPoint   CGSizeGetCenterPoint( CGSize size)
 {
-   return( sqrtf( p.x * p.x + p.y * p.y));
-}
-
-
-
-// mulle addition:
-static inline CAAngleRadians   CGPointGetPolarAngle( CGPoint p)
-{
-   if( CGPointEqualToPoint( p, CGPointZero))
-      return( 0.0);
-   return( atan2f( p.y, p.x));
+   return( CGPointMake( size.width / 2.0f, size.height / 2.0f));
 }
 
 
@@ -172,84 +174,182 @@ static inline CGFloat  CGPointDistanceToPoint( CGPoint a, CGPoint b)
 }
 
 
-// http://paperjs.org/reference/point/#normalize
-static inline CGPoint  CGPointNormalize( CGPoint a, CGFloat radius)
+static inline CGPoint   CGPointMidPoint( CGPoint p1, CGPoint p2)
 {
-   CGFloat   angle;
-
-   angle = CGPointGetPolarAngle( a);
-   return( CGPointMake( cosf( angle) * radius,
-                        sinf( angle) * radius));
+   return( CGPointMake( (p1.x + p2.x) / 2, (p1.y + p2.y) / 2));
 }
 
+
+static inline CGFloat   CGPointSlope( CGPoint p1, CGPoint p2)
+{
+   return( (p2.y - p1.y) / (p2.x - p1.x));
+}
+
+
+// TODO: untested, coded by AI
+static inline CAAngle   CAAngleBetweenPoints( CGPoint p0, CGPoint p1, CGPoint p2)
+{
+   CGFloat   radians;
+
+   radians = atan2f( p2.y - p0.y, p2.x - p0.x) -
+             atan2f( p1.y - p0.y, p1.x - p0.x);
+   return( CARadiansToAngle( radians));
+}
+
+
+// TODO: untested, coded by AI
+static inline CGFloat   CGPointTriangleArea( CGPoint p0, CGPoint p1, CGPoint p2)
+{
+   CGFloat area;
+
+   area = fabsf( (p0.x * (p1.y - p2.y) + p1.x * (p2.y - p0.y) + p2.x * (p0.y - p1.y)) / 2.0);
+   return( area);
+}
+
+
+// TODO: untested
+static inline int  CGPointTriangleHasMinimumAngle( CGPoint p0,
+                                                   CGPoint p1,
+                                                   CGPoint p2,
+                                                   CGFloat minDegrees)
+{
+   CAAngle   angle;
+   CAAngle   minAngle;
+   CAAngle   maxAngle;
+
+   assert( minDegrees > 0.0 && minDegrees < 180.0);
+
+   minAngle = CADegreesToAngle( minDegrees);
+   maxAngle = CADegreesToAngle( 180.0 - minDegrees);
+
+   angle    = CAAngleBetweenPoints( p0, p1, p2);
+   if( isnan( angle) || angle < minAngle || angle > maxAngle)
+      return( 0);
+
+   angle = CAAngleBetweenPoints( p1, p2, p0);
+   if( isnan( angle) || angle < minAngle || angle > maxAngle)
+      return( 0);
+
+   // exploit triangle being 180 degrees angle sum
+   return( 1);
+}
+
+
+// TODO: untested
+static inline int  CGPointTriangleHasMinimumArea( CGPoint p0,
+                                                  CGPoint p1,
+                                                  CGPoint p2,
+                                                  CGFloat minArea)
+{
+   CGFloat   area;
+
+   area = CGPointTriangleArea( p0, p1, p2);
+   return( area >= minArea);
+}
 
 
 /**
-@Status Interoperable
 */
-static inline int CGSizeEqualToSize(CGSize a, CGSize b) {
-    return a.width == b.width && a.height == b.height;
+static inline int CGSizeEqualToSize( CGSize a, CGSize b)
+{
+   return( a.width == b.width && a.height == b.height);
 }
 
 
 /**
-@Status Interoperable
 */
-static inline double CGSizeGetArea(CGSize a) {
-    return a.width* a.height;
+static inline double CGSizeGetArea( CGSize a)
+{
+   return fabs( a.width* a.height);
 }
 
 
 /**
-@Status Interoperable
 */
-static inline double CGRectGetArea(CGRect a) {
-    return a.size.width * a.size.height;
+static inline int   CGRectIsInfinite( CGRect rect)
+{
+   return( isinf(rect.origin.x) || isinf(rect.origin.y) ||
+           isinf(rect.size.width) || isinf(rect.size.height));
 }
+
+static inline int   CGRectIsStandardized( CGRect rect)
+{
+   return( rect.size.width >= 0.0f && rect.size.height >= 0.0f);
+}
+
+
+/**
+*/
+// TODO: untested, coded by AI
+// TODO: untested, coded by AI
 
 
 // now this is sometimes useful, though it sounds bad
-static inline CGFloat CGVectorGetAspectRatio(CGVector a) {
-    return( a.dy == 0.0 ? 0.0 : a.dx / a.dy);
+static inline CGFloat CGVectorGetAspectRatio( CGVector a)
+{
+   return( a.dy == 0.0 ? 0.0 : a.dx / a.dy);
 }
 
 // now this is sometimes useful, though it sounds bad
-static inline CGFloat CGPointGetAspectRatio(CGPoint a) {
-    return( a.y == 0.0 ? 0.0 : a.x / a.y);
+static inline CGFloat CGPointGetAspectRatio( CGPoint a)
+{
+   return( a.y == 0.0 ? 0.0 : a.x / a.y);
 }
+
 
 // if a has no size, use 0.0 instead of INFINITY for 
 // easier code (?)
-static inline CGFloat CGSizeGetAspectRatio(CGSize a) {
-    return( a.height == 0.0 ? 0.0 : a.width / a.height);
+static inline CGFloat CGSizeGetAspectRatio( CGSize a)
+{
+   return( a.height == 0.0 ? 0.0 : a.width / a.height);
 }
+
 
 // returns either height or weight, which ever is smaller
-static inline CGFloat CGSizeGetMinimum(CGSize a) {
-    return( a.width < a.height ? a.width : a.height);
+static inline CGFloat CGSizeGetMinimum( CGSize a)
+{
+   return( a.width < a.height ? a.width : a.height);
 }
+
 
 // returns either height or weight, which ever is bigger
-static inline CGFloat CGSizeGetMaximum( CGSize a) {
-    return( a.width > a.height ? a.width : a.height);
+static inline CGFloat CGSizeGetMaximum( CGSize a)
+{
+   return( a.width > a.height ? a.width : a.height);
 }
 
 
-static inline CGFloat CGRectGetAspectRatio(CGRect a) {
-    return( CGSizeGetAspectRatio( a.size));
+static inline CGFloat CGRectGetMaximumSize( CGRect a)
+{
+   return( CGSizeGetMaximum( a.size));
+}
+
+
+static inline CGFloat CGRectGetMinimumSize( CGRect a)
+{
+   return( CGSizeGetMinimum( a.size));
+}
+
+
+static inline CGFloat CGRectGetAspectRatio( CGRect a)
+{
+   return( CGSizeGetAspectRatio( a.size));
 }
 
 
 // get the radius for a circle that touches the inside of a rectangle
 static inline CGFloat CGSizeGetInnerRadius( CGSize a)
 {
-    return( (a.width < a.height ? a.width : a.height) / 2.0);
+   a.width  = a.width < 0.0f ? -a.width : a.width;
+   a.height = a.height < 0.0f ? -a.height : a.height;
+   return( (a.width < a.height ? a.width : a.height) / 2.0);
 }
+
 
 // get the radius that "envelopes" a rectangle of given size
 static inline CGFloat CGSizeGetOuterRadius( CGSize a)
 {
-    return( sqrtf( a.width * a.width + a.height * a.height) / 2.0);
+   return( sqrtf( a.width * a.width + a.height * a.height) / 2.0);
 }
 
 
@@ -258,6 +358,7 @@ static inline CGFloat CGRectGetInnerRadius( CGRect r)
 {
    return( CGSizeGetInnerRadius( r.size));
 }
+
 
 // get the radius that "envelopes" a rectangle of given size
 static inline CGFloat CGRectGetOuterRadius( CGRect r)
@@ -269,7 +370,6 @@ static inline CGFloat CGRectGetOuterRadius( CGRect r)
 
 
 /**
-@Status Interoperable
 //  .-------------.
 //  |             |
 //  |             |
@@ -281,12 +381,14 @@ static inline CGFloat CGRectGetOuterRadius( CGRect r)
 //  CGRectGetMinX
 
 */
-static inline CGFloat CGRectGetMinX(CGRect rect) {
-    return rect.origin.x;
+static inline CGFloat CGRectGetMinX( CGRect rect)
+{
+   return( rect.size.width >= 0.0
+           ? rect.origin.x
+           : rect.origin.x + rect.size.width);
 }
 
 /**
-@Status Interoperable
 //  .-------------.
 //  |             |
 //  |             |
@@ -300,12 +402,13 @@ static inline CGFloat CGRectGetMinX(CGRect rect) {
 // GetMaxX is really the first X point not inside the rectangle.
 // 
 */
-static inline CGFloat CGRectGetMaxX(CGRect rect) {
-    return rect.origin.x + rect.size.width;
+static inline CGFloat CGRectGetMaxX( CGRect rect)
+{
+   return( rect.size.width >= 0.0
+           ? rect.origin.x + rect.size.width
+           : rect.origin.x);
 }
-
 /**
-@Status Interoperable
 //  .-------------.
 //  |      |      |
 //  |      |      |
@@ -316,12 +419,12 @@ static inline CGFloat CGRectGetMaxX(CGRect rect) {
 //         ^
 //         CGRectGetMidX
 */
-static inline CGFloat CGRectGetMidX(CGRect rect) {
-    return( rect.origin.x + rect.size.width / 2);
+static inline CGFloat CGRectGetMidX( CGRect rect)
+{
+   return( rect.origin.x + rect.size.width / 2);
 }
 
 /**
-@Status Interoperable
 //  .-------------. < CGRectGetMinY
 //  |             |
 //  |             |
@@ -331,12 +434,14 @@ static inline CGFloat CGRectGetMidX(CGRect rect) {
 //  '-------------'
 //
 */
-static inline CGFloat CGRectGetMinY(CGRect rect) {
-    return rect.origin.y;
+static inline CGFloat CGRectGetMinY( CGRect rect)
+{
+   return( rect.size.height >= 0.0
+           ? rect.origin.y
+           : rect.origin.y + rect.size.height);
 }
 
 /**
-@Status Interoperable
 //  .-------------.
 //  |             |
 //  |             |
@@ -348,8 +453,11 @@ static inline CGFloat CGRectGetMinY(CGRect rect) {
 //
 // GetMaxY is really the first Y point not inside the rectangle.
 */
-static inline CGFloat CGRectGetMaxY(CGRect rect) {
-    return(rect.origin.y + rect.size.height);
+static inline CGFloat CGRectGetMaxY( CGRect rect)
+{
+   return( rect.size.height >= 0.0
+           ? rect.origin.y + rect.size.height
+           : rect.origin.y);
 }
 
 /**
@@ -362,25 +470,32 @@ static inline CGFloat CGRectGetMaxY(CGRect rect) {
 //  |             |
 //  '-------------'
 */
-static inline CGFloat CGRectGetMidY(CGRect rect) {
-    return( rect.origin.y + rect.size.height / 2);
+static inline CGFloat CGRectGetMidY( CGRect rect)
+{
+   return( rect.origin.y + rect.size.height / 2);
 }
+
 
 /**
-@Status Interoperable
 */
-static inline CGFloat CGRectGetWidth(CGRect rect) {
-    return rect.size.width;
+static inline CGFloat CGRectGetWidth( CGRect rect)
+{
+   return( rect.size.width < 0.0 ? -rect.size.width : rect.size.width);
 }
+
 
 /**
-@Status Interoperable
 */
-static inline CGFloat CGRectGetHeight(CGRect rect) {
-    return rect.size.height;
+static inline CGFloat CGRectGetHeight( CGRect rect)
+{
+   return( rect.size.height < 0.0 ? -rect.size.height : rect.size.height);
 }
 
 
+static inline double CGRectGetArea( CGRect a)
+{
+   return CGRectGetWidth( a) * CGRectGetHeight( a);
+}
 
 
 //  .-------------.
@@ -414,9 +529,54 @@ static inline CGPoint   CGRectGetCornerPoint( CGRect rect, CADirection dir)
 }
 
 
+
+static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
+}
+
+
+
+static inline CGPoint   CGRectGetTopPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMinY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetBottomPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetRightPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMidY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetLeftPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMinX( rect), CGRectGetMidY( rect)));
+}
+
+
+
 static inline CGPoint   CGRectGetTopLeftPoint( CGRect rect)
 {
    return( CGPointMake( CGRectGetMinX( rect), CGRectGetMinY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetTopRightPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMinY( rect)));
+}
+
+
+static inline CGPoint   CGRectGetBottomLeftPoint( CGRect rect)
+{
+   return( CGPointMake( CGRectGetMinX( rect), CGRectGetMaxY( rect)));
 }
 
 
@@ -426,48 +586,34 @@ static inline CGPoint   CGRectGetBottomRightPoint( CGRect rect)
 }
 
 
-static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
-{
-   return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
-}
+/**
+*/
+MULLE__GEOMETRY_EXTERN_GLOBAL
+int CGRectContainsPoint( CGRect rect, CGPoint point);
+
 
 
 
 /**
-@Status Interoperable
 */
-static inline int CGRectContainsPoint(CGRect rect, CGPoint point) {
-    return (point.x >= CGRectGetMinX(rect) && point.x < CGRectGetMaxX(rect)) &&
-           (point.y >= CGRectGetMinY(rect) && point.y < CGRectGetMaxY(rect));
+static inline int   CGRectIsEmpty( CGRect rect)
+{
+   return ((rect.size.width == 0.0f) || (rect.size.height == 0.0f));
 }
 
-static inline CGRect   CGRectExpand( CGRect rect, CGFloat dx, CADirection direction)
+/**
+*/
+// YES if the two specified rectangles have equal size and origin values,
+// or if both rectangles are null rectangles.
+static inline int   CGRectEqualToRect( CGRect a, CGRect b)
 {
-    if( direction & CADirectionTop)
-    {
-        rect.origin.y    -= dx;
-        rect.size.height += dx;
-    }
-    if( direction & CADirectionBottom)
-    {
-        rect.size.height += dx;
-    }
-    if( direction & CADirectionLeft)
-    {
-        rect.origin.x   -= dx;
-        rect.size.width += dx;
-    }
-    if( direction & CADirectionRight)
-    {
-        rect.size.width += dx;
-    }
-    return( rect);
-}
+   // With memcmp we don't need special code to check for isnan. The produced
+   // code is still small enough for inlining IMI
+   return( ! memcmp( &a, &b, sizeof( CGRect)));
 
-
-static inline CGRect   CGRectContract( CGRect rect, CGFloat dx, CADirection direction)
-{
-    return( CGRectExpand( rect, -dx, direction));
+//   if( ! CGSizeEqualToSize( a.size, b.size))
+//      return( 0);
+//   return( CGPointEqualToPoint( a.origin, b.origin));
 }
 
 
@@ -484,13 +630,13 @@ static inline CGRect   CGRectContract( CGRect rect, CGFloat dx, CADirection dire
  *   .               dy              .
  *   .................................
  */
-static inline CGRect   CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
+static inline CGRect   CGRectInset( CGRect rect, CGFloat dx, CGFloat dy)
 {
-    rect.origin.x    += dx;
-    rect.origin.y    += dy;
-    rect.size.width  -= dx * 2;
-    rect.size.height -= dy * 2;
-    return rect;
+   rect.origin.x    += dx;
+   rect.origin.y    += dy;
+   rect.size.width  -= dx * 2;
+   rect.size.height -= dy * 2;
+   return rect;
 }
 
 
@@ -509,15 +655,18 @@ static inline CGRect   CGRectInset(CGRect rect, CGFloat dx, CGFloat dy)
  */
 static inline CGRect   CGRectExtrude( CGRect rect, CGFloat dx, CGFloat dy)
 {
-    rect.origin.x    -= dx;
-    rect.origin.y    -= dy;
-    rect.size.width  += dx * 2;
-    rect.size.height += dy * 2;
-    return rect;
+   rect.origin.x    -= dx;
+   rect.origin.y    -= dy;
+   rect.size.width  += dx * 2;
+   rect.size.height += dy * 2;
+   return rect;
 }
 
 
-static inline CGRectU   CGRectUExtrude( CGRectU rect, CGFloat dx, CGFloat dy, unsigned int index)
+static inline CGRectU   CGRectUExtrude( CGRectU rect,
+                                        CGFloat dx,
+                                        CGFloat dy,
+                                        unsigned int index)
 {
    assert( index <= 1);
    rect.origin.value[ index]   -= dx;
@@ -527,6 +676,56 @@ static inline CGRectU   CGRectUExtrude( CGRectU rect, CGFloat dx, CGFloat dy, un
    return rect;
 }
 
+
+// turns negative width/height rect, into positive with different x/y
+// mathematically its the same. But you may lose texture orientation.
+static inline CGRect   CGRectStandardize( CGRect r)
+{
+   if( r.size.width < 0.0f)
+   {
+      r.origin.x   += r.size.width;
+      r.size.width = -r.size.width;
+   }
+
+   if( r.size.height < 0.0f)
+   {
+      r.origin.y    += r.size.height;
+      r.size.height = -r.size.height;
+   }
+   return( r);
+}
+
+
+// returns a standardize CGRect
+static inline CGRect   CGRectExpand( CGRect rect, CGFloat d, CADirection direction)
+{
+    rect = CGRectStandardize( rect);
+    if( direction & CADirectionTop)
+    {
+        rect.origin.y    -= d;
+        rect.size.height += d;
+    }
+    if( direction & CADirectionBottom)
+    {
+        rect.size.height += d;
+    }
+    if( direction & CADirectionLeft)
+    {
+        rect.origin.x   -= d;
+        rect.size.width += d;
+    }
+    if( direction & CADirectionRight)
+    {
+        rect.size.width += d;
+    }
+   return( rect);
+}
+
+
+static inline CGRect   CGRectContract( CGRect rect, CGFloat d, CADirection direction)
+{
+   return( CGRectExpand( rect, -d, direction));
+}
 
 
 /*
@@ -543,77 +742,45 @@ static inline CGRectU   CGRectUExtrude( CGRectU rect, CGFloat dx, CGFloat dy, un
  *            '-------------'
  *
  */
-static inline CGRect   CGRectOffset(CGRect rect, CGFloat dx, CGFloat dy)
+static inline CGRect   CGRectOffset( CGRect rect, CGFloat dx, CGFloat dy)
 {
-    rect.origin.x += dx;
-    rect.origin.y += dy;
-    return rect;
+   rect.origin.x += dx;
+   rect.origin.y += dy;
+   return rect;
 }
 
-/**
-@Status Interoperable
-*/
-static inline int   CGRectIsEmpty(CGRect rect)
-{
-    return ((rect.size.width == 0) && (rect.size.height == 0));
-}
+
 
 /**
-@Status Interoperable
    CGRectMake( 2.0, 0.0, 2.0, 1.0) and CGRectMake( 0.0, 0.0, 2.0, 1.0)
    are not considered intersecting, though mathematically they are.
    This is so that "adjacent" rectangles are not considered intersecting.
    CGRectIntersection will return an intersection of 0 width or height though!
 */
-static inline int   CGRectIntersectsRect(CGRect a, CGRect b)
-{
-    return !((b.origin.x >= CGRectGetMaxX( a)) || (b.origin.y >= CGRectGetMaxY( a)) ||
-             (a.origin.x >= CGRectGetMaxX( b)) || (a.origin.y >= CGRectGetMaxY( b)));
-}
-
-/**
-@Status Interoperable
-*/
-static inline int   CGRectEqualToRect(CGRect a, CGRect b)
-{
-    return CGPointEqualToPoint(a.origin, b.origin) && CGSizeEqualToSize(a.size, b.size);
-}
+MULLE__GEOMETRY_EXTERN_GLOBAL
+int   CGRectIntersectsRect( CGRect a, CGRect b);
 
 
 /**
-@Status Interoperable
 */
-static inline int   CGRectIsInfinite(CGRect rect)
-{
-    return( isinf(rect.origin.x) || isinf(rect.origin.y) || isinf(rect.size.width) || isinf(rect.size.height));
-}
-
-/**
-@Status Interoperable
-*/
-static inline int CGRectContainsRect(CGRect a, CGRect b)
-{
-    return( CGRectGetMinX(b) >= CGRectGetMinX(a) &&
-            CGRectGetMaxX(b) <= CGRectGetMaxX(a) &&
-            CGRectGetMinY(b) >= CGRectGetMinY(a) &&
-            CGRectGetMaxY(b) <= CGRectGetMaxY(a));
-}
+MULLE__GEOMETRY_EXTERN_GLOBAL
+int   CGRectContainsRect( CGRect a, CGRect b);
 
 // CGRectIntegral rounds the rectangle’s origin downward and its size upward
 // to the nearest whole integers, such that the result contains the original
 // rectangle
-CGRect   CGRectIntegral(CGRect rect);
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGRect   CGRectIntegral( CGRect rect);
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGRect   CGRectIntegralFuzzy( CGRect r, CGFloat fuzz);
 
 //
 // Returns a rect that represents the intersection of r1 and r2.
 // Returns CGRectNull if r1 and r2 do not intersect
 //
-CGRect   CGRectIntersection(CGRect r1, CGRect r2);
-
-// turns negative width/height rect, into positive with different x/y
-// mathematically its the same.
-CGRect   CGRectStandardize(CGRect rect);
-
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGRect   CGRectIntersection( CGRect r1, CGRect r2);
 
 
 // Combine two rectangles to form another
@@ -636,6 +803,12 @@ CGRect   CGRectStandardize(CGRect rect);
 
 CGRect   CGRectUnion( CGRect a, CGRect b);
 
+
+//
+// Extend CGRect to enclose point into area, the returned rectangle
+// is standardized
+//
+CGRect   CGRectEnclosePoint( CGRect r, CGPoint p);
 
 
 // mulle addition:

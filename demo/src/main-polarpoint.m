@@ -3,7 +3,7 @@
 #import <string.h>
 
 
-static void   drawStuff( CALayer *layer, CGContext *context)
+static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
    struct NVGcontext   *vg;
    CGFloat             deg;
@@ -27,7 +27,7 @@ static void   drawStuff( CALayer *layer, CGContext *context)
          for( deg = 0; deg < 360.0; deg += 2.0)
          {
             pPoint = CAPolarPointMake( canvas.size.height / 2.0 - (circles + 1) * 10.0,
-                                       CAAngleDegreesToRadians( deg));
+                                       CAAngleDegreesToAngle( deg));
             point  = CGPointMakeWithPolarPoint( pPoint);
 
             nvgBeginPath( vg);
@@ -39,6 +39,8 @@ static void   drawStuff( CALayer *layer, CGContext *context)
       }
    }
    nvgRestore( vg);
+
+   return( YES);
 }
 
 

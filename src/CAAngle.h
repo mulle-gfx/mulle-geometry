@@ -10,337 +10,260 @@
 #include <math.h>
 #include <assert.h>
 
-
-
-#ifndef M_PI_f
-# define M_PI_f     ((float) 3.141592653589793238462643383279502884L)
-#endif
-
-#ifndef M_PI_2f
-# define M_PI_2f    ((float) (3.141592653589793238462643383279502884L / 2.0))
-#endif
-
-// this doesn't exist usually (or name it M_2_PI_f ??)
-#define CA_2xPI  ((float) (3.141592653589793238462643383279502884L * 2.0))
-
-
-
-// Angles with orientation.
-// With radians and degrees '0' is actually three o clock.
-// But when thinking about rotation, you want the orientation like with an
-// analog clock, that is CAAngleHour.
-//
-// Conversion between Radians and Degrees and back is lossless (within FP
-// limitations). Conversion from and to CAAngleHour and CAAngleDirectional are
-// lossy though.
-//
-// You will lose the amplitude of the rotation (i.e. 15* M_PI can
-// be thought of as 15 turns) and the sign (CAAngleHour).
-//
-// If you have an indicator needle, that is usually centered and goes left
-// (negative) or right (positive), the CAAngleDirectional is nice.
+#include "CARotation.h"
 
 
 //
-//          -M_PI/2
+// This is CAAngle. It's a typedef for float radians. The origin 0 is east.
+// three o clock.
+//
+//
+//          CA_2xPI
 //        .---------.
-// +/-M_PI| radians |0.0
+//   M_PI | radians | 0.0
 //        '---------'
-//           M_PI/2
+//          M_PI_2f
+//
+// Angles normalize to their range. Use CARotation, for non-normalized use.
+// In general consider the CAAngle being "radians" an implementation detail,
+// and use the various functions to convert radians, degrees, hour or rotation
+// from and to CAAngle.
+//
+typedef CGFloat   CAAngle;
 
-typedef CGFloat   CAAngleRadians;
 
-//           270
-//       .---------.
-//    180| degrees |0
-//       '---------'
-//           90
+#define CAAngleNNE         ((CAAngle) (13.0f / 16.0f) * CA_2xPI)
+#define CAAngleNE          ((CAAngle) (14.0f / 16.0f) * CA_2xPI)
+#define CAAngleENE         ((CAAngle) (15.0f / 16.0f) * CA_2xPI)
+#define CAAngleE           ((CAAngle)  (0.0f / 16.0f) * CA_2xPI)
+#define CAAngleESE         ((CAAngle)  (1.0f / 16.0f) * CA_2xPI)
+#define CAAngleSE          ((CAAngle)  (2.0f / 16.0f) * CA_2xPI)
+#define CAAngleSSE         ((CAAngle)  (3.0f / 16.0f) * CA_2xPI)
+#define CAAngleS           ((CAAngle)  (4.0f / 16.0f) * CA_2xPI)
+#define CAAngleSSW         ((CAAngle)  (5.0f / 16.0f) * CA_2xPI)
+#define CAAngleSW          ((CAAngle)  (6.0f / 16.0f) * CA_2xPI)
+#define CAAngleWSW         ((CAAngle)  (7.0f / 16.0f) * CA_2xPI)
+#define CAAngleW           ((CAAngle)  (8.0f / 16.0f) * CA_2xPI)
+#define CAAngleWNW         ((CAAngle)  (9.0f / 16.0f) * CA_2xPI)
+#define CAAngleNW          ((CAAngle) (10.0f / 16.0f) * CA_2xPI)
+#define CAAngleNNW         ((CAAngle) (11.0f / 16.0f) * CA_2xPI)
+#define CAAngleN           ((CAAngle) (12.0f / 16.0f) * CA_2xPI)
 
-typedef CGFloat   CAAngleDegrees;
+
+static inline CGFloat   CAAngleToRadians( CAAngle a)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+
+   return( a);
+}
+
+
+static inline CAAngle   CARadiansToAngle( CGFloat radians)
+{
+   CAAngle   a;
+
+   // avoid -0.0f for -CA_2XPI, but 1.0 for 0.0 or -0.0
+   if( radians == 0.0f)
+      return( 0.0f);
+   a = fmodf( radians, CA_2xPI);
+   if( a <= 0)
+      a += CA_2xPI;
+   return( a);
+}
+
+
+static inline CAAngle   CAAngleRotate( CAAngle a, CARotation b)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+
+   return( CARadiansToAngle( CAAngleToRadians( a) + CARotationToRadians( b)));
+}
+
+
+// make it -pi to +pi
+static inline CAAngle   CAAngleAddAngle( CAAngle a, CAAngle b)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+   assert( b >= 0 && b <= CA_2xPI);
+
+   return( fmodf( a - b, CA_2xPI));
+}
+
+
+static inline CAAngle   CAAngleSubtractAngle( CAAngle a, CAAngle b)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+   assert( b >= 0 && b <= CA_2xPI);
+
+   return( CARadiansToAngle( a - b));
+}
+
+
+static inline CAAngle   CARotationToAngle( CARotation rotation)
+{
+   CAAngle   angle;
+
+   MULLE_C_ASSERT( M_PI_f >= 3.141 && M_PI_f <= 3.142);
+   MULLE_C_ASSERT( CA_2xPI >= 6.282 && CA_2xPI <= 6.284);
+
+   rotation = CARotationTurn90CounterClockWise( rotation);
+   angle    = CARadiansToAngle( CARotationToRadians( rotation));
+   return( angle);
+}
+
+
+static inline CARotation   CAAngleToRotation( CAAngle angle)
+{
+   CARotation   rotation;
+
+   assert( angle >= 0 && angle <= CA_2xPI);
+
+   MULLE_C_ASSERT( M_PI_f >= 3.141 && M_PI_f <= 3.142);
+   MULLE_C_ASSERT( CA_2xPI >= 6.282 && CA_2xPI <= 6.284);
+
+   rotation = angle + M_PI_2f;
+   if( rotation >= CA_2xPI)
+      rotation -= CA_2xPI;
+   return( rotation / CA_2xPI);
+}
+
+
 
 
 //
-// There are no negative values (usually)
+//             0
+//        .---------.
+//    270 | degrees | 90
+//        '---------'
+//            180
 //
-//            0 (12)
+static inline CGFloat   CADegreesNormalize( CGFloat value)
+{
+   CGFloat   result;
+
+   // so 0.0 stays AS 0.0, but others are 1.0
+   // this is nicer as it avoids -0.0 which is ugly
+   if( value == 0.0f)
+      return( 0.0f);
+
+   result = fmodf( value, 360.0f);
+   if( result <= 0.0f)
+      result += 360.0f;
+   return( result);
+}
+
+
+static inline CARotation   CADegreesToRotation( CGFloat deg)
+{
+   return( deg / 360.f);
+}
+
+
+static inline CGFloat   CARotationToDegrees( CARotation rotation)
+{
+   return( CADegreesNormalize( rotation * 360.f));
+}
+
+
+static inline CAAngle   CADegreesToAngle( CGFloat deg)
+{
+   return( CARotationToAngle( deg / 360.f));
+}
+
+
+static inline CGFloat   CAAngleToDegrees( CAAngle angle)
+{
+   assert( angle >= 0 && angle <= CA_2xPI);
+
+   return( CAAngleToRotation( angle) * 360.0f);
+}
+
+
+static inline CGFloat   CADegreesToRadians( CGFloat deg)
+{
+   return( CARotationToRadians( CADegreesToRotation( deg)));
+}
+
+
+static inline CGFloat   CARadiansToDegrees( CGFloat rad)
+{
+   return( CARotationToDegrees( CARadiansToRotation( rad)));
+}
+
+
+
+//
+// There are no negative values, there is no zero (as on a clock). There being
+// no two values is supposed to be a simplification. If it really is a useful
+// one, remains to be seen.
+//
+//           12
 //        .------.
 //       9| hour |3
 //        '------'
 //            6
 
-typedef CGFloat   CAAngleHour;
-
-//              0.0
-//        .-------------.
-//    -0.5| directional |0.5
-//        '-------------'
-//         -0.999  0.999
-
-typedef CGFloat   CAAngleDirectional;
-
-//            0.0
-//        .---------.
-//    0.75|  unity  |0.25
-//        '---------'
-//            0.5
-
-typedef CGFloat   CAAngleUnity;
-
-
-
-// MEMO: use CANormalizedFloatToRadians and not CANormalizedFloatAsRadians
-//       because there is a calculation involved.
-//       but...
-static inline CAAngleRadians   CANormalizedFloatToRadians( CGFloat x)
+static inline CGFloat   CAHourNormalize( CGFloat value)
 {
-   assert( x >= 0.0 && x <= 1.0);
-//   deg = fmodf( deg, 360.0f);
-   return( x * M_PI_2f);
+   CGFloat   result;
+
+   result = fmodf( value, 12.0f);
+   if( result <= 0)
+      result += 12.0f;
+   return( result);
 }
 
 
-static inline CAAngleUnity   CAAngleRadiansToUnity( CAAngleRadians rad)
+static inline CARotation   CAHourToRotation( CGFloat hour)
 {
-   CAAngleUnity   unity;
+   assert( hour > 0.0f && hour <= 360.0f);
 
-   unity = (rad + M_PI_2f) / CA_2xPI;
-   unity = fmodf( unity, 1.0f);
-   unity = unity < 0.0f ? 1.0f + unity : unity;
-   return( unity);
+   return( hour == 12.0f ? 0.0f : hour / 12.0f);
 }
 
 
-#define CAAngleRadiansDataWithUnity( unity)  \
-   ((unity) * CA_2xPI - M_PI_f + M_PI_2f)
-
-
-static inline CAAngleRadians   CAAngleUnityToRadians( CAAngleUnity unity)
+static inline CGFloat   CARotationToHour( CARotation rotation)
 {
-   CAAngleRadians   rad;
-
-   assert( unity >= 0.0f && unity <= 1.0f);
-
-   MULLE_C_ASSERT( M_PI_f >= 3.141 && M_PI_f <= 3.142);
-   MULLE_C_ASSERT( CA_2xPI >= 6.282 && CA_2xPI <= 6.284);
-
-   rad  = unity * CA_2xPI;
-   rad  = rad - M_PI_f + M_PI_2f;
-   return( rad);
+   return( CAHourNormalize( rotation * 12.0f));
 }
 
 
-static inline CAAngleHour   CAAngleRadiansToHour( CAAngleRadians rad)
+static inline CGFloat   CAAngleToHour( CAAngle angle)
 {
-   CAAngleHour   hour;
+   assert( angle >= 0 && angle <= CA_2xPI);
 
-   hour = (rad + M_PI_2f) * 12.0f / CA_2xPI;
-   hour = fmodf( hour, 12.0f);
-   hour = hour < 0.0f ? 12.0f + hour : hour;
-   return( hour);
+   return( angle == CAAngleN
+           ? 12.0f
+           : CAAngleToRotation( angle) * 12.0f);
 }
 
 
-static inline CAAngleRadians   CAAngleHourToRadians( CAAngleHour hour)
+static inline CAAngle   CAHourToAngle( CGFloat hour)
 {
-   CAAngleRadians   rad;
+   assert( hour > 0.0f && hour <= 12.0f);
 
-   assert( hour >= 0.0f && hour <= 12.0f);
-
-   rad = hour / 12.0f * CA_2xPI;
-   rad = rad - M_PI_2f;
-   return( rad);
+   return( CARotationToAngle( hour / 12.0f));
 }
 
 
 
-static inline CAAngleDegrees   CAAngleRadiansToDegrees( CAAngleRadians rad)
-{
-//   rad = fmodf( rad, CA_2xPI);
-   return( (CGFloat) (rad * 360.0f / CA_2xPI));
-}
+#define CAAngleNorth       CAAngleN
+#define CAAngleNorthEast   CAAngleNE
+#define CAAngleEast        CAAngleE
+#define CAAngleSouthEast   CAAngleSE
+#define CAAngleSouth       CAAngleS
+#define CAAngleSouthWest   CAAngleSW
+#define CAAngleWest        CAAngleW
+#define CAAngleNorthWest   CAAngleNW
 
 
-#define CAAngleRadiansDataWithDegrees( deg)   ((deg) * M_PI_f / 180.0f)
-
-
-static inline CAAngleRadians   CAAngleDegreesToRadians( CAAngleDegrees deg)
-{
-//   deg = fmodf( deg, 360.0f);
-   return( deg * M_PI_f / 180.0f);
-}
-
-// this normalizes
-static inline CAAngleRadians   CAAngleDegreesToUnity( CAAngleDegrees deg)
-{
-   return( CAAngleRadiansToUnity( CAAngleDegreesToRadians( deg)));
-}
-
-
-// this normalizes
-static inline CAAngleRadians   CAAngleDegreesToHour( CAAngleDegrees deg)
-{
-   return( CAAngleRadiansToHour( CAAngleDegreesToRadians( deg)));
-}
-
-
-//
-// an angle from -180 to +180 this is converted to  -1.0 - 1.0 (actually -0.9999 - 0.99999)
-//
-static inline CAAngleDirectional   CAAngleDegreesToDirectional( CAAngleDegrees deg)
-{
-   CAAngleDirectional   dir;
-
-   dir = fmodf( (deg + 90.0f) / 360.0, 1.0f);
-   return( dir);
-}
-
-
-// make an angle between -pi and +pi
-// https://stackoverflow.com/questions/24234609/standard-way-to-normalize-an-angle-to-%CF%80-radians-in-java
-//
-static inline CAAngleRadians   CAAngleRadiansNormalize( CAAngleRadians rad)
-{
-   return( rad - CA_2xPI * floorf( (rad + M_PI_f) / CA_2xPI));
-}
-
-
-//
-// make a positive angle value between 0 and 360
-//
-static inline CAAngleDegrees   CAAngleDegreesNormalize( CAAngleDegrees deg)
-{
-   CAAngleDegrees   normalized;
-
-   normalized = fmodf( deg, 360.0f);
-   if( normalized < 0.0f)
-      normalized = 360.0f + normalized;
-   return( normalized);
-}
-
-
-//
-// degrees will be always positive, to this is a lossy conversion
-//
-static inline CAAngleDegrees   CAAngleDirectionalToDegrees( CAAngleDirectional dir)
-{
-   CAAngleDegrees   deg;
-
-   deg = fmodf( dir * 360.0f, 360.0f);
-   deg = deg - 90.0f; //  deg < 0.0 ? deg + 360.0f : deg);
-   if( deg < 0.0f)
-      return( 360.0f + deg);
-   return( deg);
-}
-
-
-
-enum
-{
-   CADirectionTop    = 1,
-   CADirectionBottom = 2,
-   CADirectionLeft   = 4,
-   CADirectionRight  = 8
-};
-
-#define CADirectionUp    CADirectionTop
-#define CADirectionDown  CADirectionBottom
-
-typedef uintptr_t    CADirection;
-
-
-CADirection   CADirectionTurn45ClockWise( CADirection direction);
-CADirection   CADirectionTurn45CounterClockWise( CADirection direction);
-CADirection   CADirectionTurn90ClockWise( CADirection direction);
-CADirection   CADirectionTurn90CounterClockWise( CADirection direction);
-CADirection   CADirectionTurn180( CADirection direction);
-
-static inline CADirection   CADirectionTurn270ClockWise( CADirection direction)
-{
-   return( CADirectionTurn90CounterClockWise( direction));
-}
-
-
-static inline CADirection   CADirectionTurn270CounterClockWise( CADirection direction)
-{
-   return( CADirectionTurn90ClockWise( direction));
-}
-
-
-char       *CADirectionUTF8String( CADirection direction);
-uint32_t   CADirectionBoxCharacter( CADirection direction);
-uint32_t   CADirectionArrowCharacter( CADirection direction);
-
-
-static inline CAAngleRadians   CADirectionToAngleRadians( CADirection direction)
-{
-   switch( direction)
-   {
-   case CADirectionTop|CADirectionLeft     : return( CAAngleHourToRadians( 12.0 - 3.0 / 2.0));
-   case CADirectionTop                     : return( CAAngleHourToRadians( 12.0));
-   case CADirectionTop|CADirectionRight    : return( CAAngleHourToRadians( 3.0 / 2.0));
-   case CADirectionRight                   : return( CAAngleHourToRadians( 3.0));
-   case CADirectionBottom|CADirectionRight : return( CAAngleHourToRadians( 6.0 - 3.0 / 2.0));
-   case CADirectionBottom                  : return( CAAngleHourToRadians( 6.0));
-   case CADirectionBottom|CADirectionLeft  : return( CAAngleHourToRadians( 6.0 + 3.0 / 2.0));
-   case CADirectionLeft                    : return( CAAngleHourToRadians( 9.0));
-   }
-   return( 0.0); // or what ?
-}
-
-
-static inline CADirection   CAAngleRadiansToDirection( CAAngleRadians radians)
-{
-   CAAngleHour   h;
-   CADirection   dir;
-
-   h = CAAngleRadiansToHour( radians);
-
-   // split into top and bottom sector,
-   dir = 0;
-   if( h > (9.0 + 3.0 / 2.0 / 2.0) || h < (3.0 - 3.0 / 2.0 / 2.0))
-      dir = CADirectionTop;
-   else
-      if( h < (9.0 - 3.0 / 2.0 / 2.0) && h > (3.0 + 3.0 / 2.0 / 2.0))
-         dir = CADirectionBottom;
-
-   // then split into right and left sector
-   if( h > (0.0 + 3.0 / 2.0 / 2.0) && h < (6.0 - 3.0 / 2.0 / 2.0))
-      dir |= CADirectionRight;
-   else
-      if( h < (12.0 - 3.0 / 2.0 / 2.0) && h > (6.0 + 3.0 / 2.0 / 2.0))
-         dir |= CADirectionLeft;
-
-   return( dir);
-}
-
-
-#define CAAngleRadiansNNE         CAAngleRadiansDataWithUnity(  1.0 / 16.0)
-#define CAAngleRadiansNE          CAAngleRadiansDataWithUnity(  2.0 / 16.0)
-#define CAAngleRadiansENE         CAAngleRadiansDataWithUnity(  3.0 / 16.0)
-#define CAAngleRadiansE           CAAngleRadiansDataWithUnity(  4.0 / 16.0)
-#define CAAngleRadiansESE         CAAngleRadiansDataWithUnity(  5.0 / 16.0)
-#define CAAngleRadiansSE          CAAngleRadiansDataWithUnity(  6.0 / 16.0)
-#define CAAngleRadiansSSE         CAAngleRadiansDataWithUnity(  7.0 / 16.0)
-#define CAAngleRadiansS           CAAngleRadiansDataWithUnity(  8.0 / 16.0)
-#define CAAngleRadiansSSW         CAAngleRadiansDataWithUnity(  9.0 / 16.0)
-#define CAAngleRadiansSW          CAAngleRadiansDataWithUnity( 10.0 / 16.0)
-#define CAAngleRadiansWSW         CAAngleRadiansDataWithUnity( 11.0 / 16.0)
-#define CAAngleRadiansW           CAAngleRadiansDataWithUnity( 12.0 / 16.0)
-#define CAAngleRadiansWNW         CAAngleRadiansDataWithUnity( 13.0 / 16.0)
-#define CAAngleRadiansNW          CAAngleRadiansDataWithUnity( 14.0 / 16.0)
-#define CAAngleRadiansNNW         CAAngleRadiansDataWithUnity( 15.0 / 16.0)
-#define CAAngleRadiansN           CAAngleRadiansDataWithUnity( 16.0 / 16.0)
-
-
-#define CAAngleRadiansGreco       CAAngleRadiansNE
-#define CAAngleRadiansLevante     CAAngleRadiansE
-#define CAAngleRadiansScirocco    CAAngleRadiansSE
-#define CAAngleRadiansOstro       CAAngleRadiansS
-#define CAAngleRadiansLibeccio    CAAngleRadiansSW
-#define CAAngleRadiansPonente     CAAngleRadiansW
-#define CAAngleRadiansMaestro     CAAngleRadiansNW
-#define CAAngleRadiansTramontana  CAAngleRadiansN
+#define CAAngleTramontana  CAAngleN
+#define CAAngleGreco       CAAngleNE
+#define CAAngleLevante     CAAngleE
+#define CAAngleScirocco    CAAngleSE
+#define CAAngleOstro       CAAngleS
+#define CAAngleLibeccio    CAAngleSW
+#define CAAnglePonente     CAAngleW
+#define CAAngleMaestro     CAAngleNW
 
 #endif
-
-

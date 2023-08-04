@@ -1,7 +1,7 @@
 #import "import.h"
 
 
-static void   drawStuff( CALayer *layer, CGContext *context)
+static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
    struct NVGcontext   *vg;
    CGRect              canvas;
@@ -11,13 +11,17 @@ static void   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 
-   mvgFillRect( vg, rect, CGColorMakeBlue());
-   mvgStrokeCircle( vg, CGRectGetCenterPoint( rect),
-                        CGRectGetInnerRadius( rect),
-                        CGColorMakeYellow());
-   mvgStrokeCircle( vg, CGRectGetCenterPoint( rect),
-                        CGRectGetOuterRadius( rect),
-                        CGColorMakeOrange());
+   mvgFillRectWithColor( vg, rect, CGColorMakeBlue());
+   mvgStrokeCircleWithColor( vg, CGRectGetCenterPoint( rect),
+                                 CGRectGetInnerRadius( rect),
+                                 1.0f,
+                                 CGColorMakeYellow());
+   mvgStrokeCircleWithColor( vg, CGRectGetCenterPoint( rect),
+                                 CGRectGetOuterRadius( rect),
+                                 1.0f,
+                                 CGColorMakeOrange());
+
+   return( YES);
 }
 
 

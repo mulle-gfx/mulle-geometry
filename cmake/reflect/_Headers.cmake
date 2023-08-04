@@ -49,8 +49,10 @@ src/include.h
 #
 set( PUBLIC_HEADERS
 src/CAAngle.h
+src/CADirection.h
 src/CAPolarPoint.h
 src/CAQuadratic.h
+src/CARotation.h
 src/CGAffineTransform.h
 src/CGBase.h
 src/CGGeometry.h

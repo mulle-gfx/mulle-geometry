@@ -8,16 +8,18 @@
 int   main( int argc, char *argv[])
 {
    CADirection     direction;
-   CAAngleHour     hour;
+   CGFloat     hour;
 
-   for( hour = 0.0; hour <= 12.0; hour += 0.5)
+   for( hour = 0.5f; hour <= 12.01; hour += 0.5)
    {
-      direction = CAAngleRadiansToDirection( CAAngleHourToRadians( hour));
+      if( hour > 12.0f)
+         hour = 12.0f;
+      direction = CAAngleToDirection( CAHourToAngle( hour));
 
-      mulle_printf( "%.1f°: [%C] -> %.1f°\n",
+      mulle_printf( "%.1fh: [%C] -> %.1fh\n",
                     hour,
                     CADirectionArrowCharacter( direction),
-                    CAAngleRadiansToHour( CADirectionToAngleRadians( direction)));
+                    CAAngleToHour( CADirectionToAngle( direction)));
    }
 
    return( 0);

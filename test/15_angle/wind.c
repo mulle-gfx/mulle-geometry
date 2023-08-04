@@ -2,68 +2,59 @@
 
 #include <stdio.h>
 
-CGFloat   degrees( CGFloat rad)
-{
-   CGFloat   deg;
-
-   deg = CAAngleRadiansToDegrees( rad);
-   if( deg < 0.0)
-      deg += 360.0;
-   return( deg);
-}
-
 
 int   main( int argc, char *argv[])
 {
-   CGFloat        rad;
+   CAAngle        ang;
    CADirection    direction;
    unsigned int   i;
-   auto CAAngleRadians   directions[] =
+   auto CAAngle   directions[] =
    {
-      CAAngleRadiansNNE,
-      CAAngleRadiansNE ,
-      CAAngleRadiansENE,
-      CAAngleRadiansE  ,
-      CAAngleRadiansESE,
-      CAAngleRadiansSE ,
-      CAAngleRadiansSSE,
-      CAAngleRadiansS  ,
-      CAAngleRadiansSSW,
-      CAAngleRadiansSW ,
-      CAAngleRadiansWSW,
-      CAAngleRadiansW  ,
-      CAAngleRadiansWNW,
-      CAAngleRadiansNW ,
-      CAAngleRadiansNNW,
-      CAAngleRadiansN
+      CAAngleNNE,
+      CAAngleNE ,
+      CAAngleENE,
+      CAAngleE  ,
+      CAAngleESE,
+      CAAngleSE ,
+      CAAngleSSE,
+      CAAngleS  ,
+      CAAngleSSW,
+      CAAngleSW ,
+      CAAngleWSW,
+      CAAngleW  ,
+      CAAngleWNW,
+      CAAngleNW ,
+      CAAngleNNW,
+      CAAngleN
    };
    static char   *names[] =
    {
-      "CAAngleRadiansNNE",
-      "CAAngleRadiansNE ",
-      "CAAngleRadiansENE",
-      "CAAngleRadiansE  ",
-      "CAAngleRadiansESE",
-      "CAAngleRadiansSE ",
-      "CAAngleRadiansSSE",
-      "CAAngleRadiansS  ",
-      "CAAngleRadiansSSW",
-      "CAAngleRadiansSW ",
-      "CAAngleRadiansWSW",
-      "CAAngleRadiansW  ",
-      "CAAngleRadiansWNW",
-      "CAAngleRadiansNW ",
-      "CAAngleRadiansNNW",
-      "CAAngleRadiansN  "
+      "CAAngleNNE",
+      "CAAngleNE ",
+      "CAAngleENE",
+      "CAAngleE  ",
+      "CAAngleESE",
+      "CAAngleSE ",
+      "CAAngleSSE",
+      "CAAngleS  ",
+      "CAAngleSSW",
+      "CAAngleSW ",
+      "CAAngleWSW",
+      "CAAngleW  ",
+      "CAAngleWNW",
+      "CAAngleNW ",
+      "CAAngleNNW",
+      "CAAngleN  "
    };
 
    for( i = 0; i < sizeof(directions) / sizeof( directions[ 0]); i++)
    {
-      rad       = directions[ i];
-      direction = CAAngleRadiansToDirection( rad);
-      printf( "%s : rad: %.3f direction: %s\n",
+      ang       = directions[ i];
+      direction = CAAngleToDirection( ang);
+      printf( "%s : rad: %.3f (%.3f) direction: %s\n",
                      names[ i],
-                     rad,
+                     ang,
+                     CAAngleToHour( ang),
                      CADirectionUTF8String( direction));
    }
    return( 0);

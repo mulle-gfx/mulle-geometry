@@ -45,9 +45,9 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
 
 
 
-CGAffineTransform   CGAffineTransformMakeRotation( CGFloat angle)
+CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians)
 {
-   return( CGAffineTransformMakeRotationInline( angle));
+   return( CGAffineTransformMakeRotationInline( radians));
 }
 
 
@@ -57,9 +57,9 @@ CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTrans
 }
 
 
-CGAffineTransform CGAffineTransformRotate( CGAffineTransform t, float angle)
+CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians)
 {
-   return( CGAffineTransformRotateInline( t, angle));
+   return( CGAffineTransformRotateRadiansInline( t, radians));
 }
 
 
@@ -148,8 +148,9 @@ CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds
    }
 
    //if( ! CGPointEqualToPoint( frame.origin, CGPointMake( 0, 0)))
-      t = CGAffineTransformConcatInline( t, CGAffineTransformMakeTranslationInline( frame.origin.x,
-                                                                                   frame.origin.y));
+      t = CGAffineTransformConcatInline( t,
+                                         CGAffineTransformMakeTranslationInline( frame.origin.x,
+                                                                                 frame.origin.y));
    return( t);
 }
 

@@ -16,6 +16,8 @@
 #ifndef cg_base_h__
 #define cg_base_h__
 
+#include "include.h"
+
 #include <float.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -30,6 +32,19 @@ typedef float CGFloat;
 
 
 
+#ifndef M_PI_f
+# define M_PI_f     ((float) 3.141592653589793238462643383279502884L)
+#endif
+
+#ifndef M_PI_2f
+# define M_PI_2f    ((float) (3.141592653589793238462643383279502884L / 2.0))
+#endif
+
+// this doesn't exist usually (or name it M_2_PI_f ??)
+#define CA_2xPI  ((float) (3.141592653589793238462643383279502884L * 2.0))
+
+
+
 // mulle addition:
 static inline CGFloat   CGFloatMakeRandom( void)
 {
@@ -40,6 +55,24 @@ static inline CGFloat   CGFloatMakeRandom( void)
 static inline CGFloat   CGFloatMakeRandomMinMax( CGFloat min, CGFloat max)
 {
    return( CGFloatMakeRandom() * (max - min) + min);
+}
+
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGFloat   CGFloatMakeNormalDistributionMinMax( CGFloat min, CGFloat max);
+
+static inline double   CGFloatMakeNormalDistribution( void)
+{
+   return( CGFloatMakeNormalDistributionMinMax( 0.0, 1.0));
+}
+
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGFloat   CGFloatMakeAbnormalDistributionMinMax( CGFloat min, CGFloat max);
+
+static inline double   CGFloatMakeAbnormalDistribution( void)
+{
+   return( CGFloatMakeAbnormalDistributionMinMax( 0.0, 1.0));
 }
 
 
@@ -108,9 +141,6 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 # pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-//
-// this can be used to discern full left CAAngleDirectional
-//
 static inline int  CGFloatIsNegativeZero( CGFloat x)
 {
    if( x != 0.0f)
@@ -288,8 +318,8 @@ static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
 //
 typedef struct CGRect
 {
-    CGPoint  origin;
-    CGSize   size;
+   CGPoint  origin;
+   CGSize   size;
 } CGRect;
 
 
@@ -375,7 +405,7 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 //
 #define CGPointZero       CGPointMake( 0, 0)
 #define CGPointUZero      CGPointUMake( 0, 0)
-#define CGPointNull       CGPointMake( -INFINITY, -INFINITY)
+#define CGPointNull       CGPointMake( NAN, NAN)
 #define CGSizeZero        CGSizeMake( 0, 0)
 #define CGSizeUZero       CGSizeUMake( 0, 0)
 // there is no CGSizeNull
@@ -384,10 +414,10 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 
 #define CGRectZero        CGRectMake( 0, 0, 0, 0)
 #define CGRectUZero       CGRectUMake( 0, 0, 0, 0)
-#define CGRectNull        CGRectMake( -INFINITY, -INFINITY, 0.0f, 0.0f)
-#define CGRectUNull       CGRectUMake( NSIntegerMin, NSIntegerMin, 0.0f, 0.0f)
+#define CGRectNull        CGRectMake( NAN, NAN, 0.0f, 0.0f)
+#define CGRectUNull       CGRectUMake( NAN, NAN, 0.0f, 0.0f)
 #define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
-#define CGRectUInfinite   CGRectUMake( NSIntegerMin, NSIntegerMin, NSIntegerMax, NSIntegerMax)
+#define CGRectUInfinite   CGRectUMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 
 
 #ifdef __GNUC__

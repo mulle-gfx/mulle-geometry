@@ -6,25 +6,27 @@
 int   main( int argc, char *argv[])
 {
    int       angle;
+   CGFloat   ang;
+   CGFloat   rot;
    CGFloat   deg;
-   CGFloat   hour;
-   CGFloat   dir;
    CGFloat   rad;
-   CGFloat   degdir;
+   CGFloat   hour;
    CGFloat   radhour;
 
    for( angle = -720; angle <= 720; angle += 45)
    {
-      deg  = (CGFloat) angle;
-      rad  = CAAngleDegreesToRadians( deg);
-      hour = CAAngleRadiansToHour( rad);
-      dir  = CAAngleDegreesToDirectional( deg);
 
-      degdir= CAAngleDirectionalToDegrees( dir);
-      radhour= CAAngleHourToRadians( hour);
+      rot     = CADegreesToRotation( (CGFloat) angle);
 
-      printf( "a: %d d: %3.f r:%.3f h: %.3f (%.3f) d: %.3f (%.3f)\n", angle,
-                     deg, rad, hour, radhour, dir, degdir);
+      deg     = CARotationToDegrees( rot);
+      rad     = CARotationToAngle( rot);
+      hour    = CARotationToHour( rot);
+      radhour = CAHourToAngle( hour);
+
+      printf( "[%d°] rot: %.3f deg: %.3f rad:%.3f | hour: %.3f (%.3f)\n",
+                  angle,
+                  rot, deg, rad,
+                  hour, radhour);
    }
    return( 0);
 }

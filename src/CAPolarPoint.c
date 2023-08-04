@@ -22,11 +22,11 @@ CAPolarPoint   CAPolarPointAdd2( CAPolarPoint p, CAPolarPoint q)
    CGFloat        u;
    CGFloat        v;
 
-   a        = q.angle - p.angle;
+   a        = q.radians - p.radians;
    u        = q.radius * cosf( a);
    v        = q.radius * sinf( a);
    r.radius = sqrtf( (p.radius + u) * (p.radius + u) + (v * v));
-   r.angle  = p.angle + atan2( v, p.radius + u);
+   r.radians  = p.radians + atan2( v, p.radius + u);
    return( r);
 }
 
@@ -50,11 +50,11 @@ CAPolarPoint   CAPolarPointSubtract2( CAPolarPoint p, CAPolarPoint q)
    CGFloat        u;
    CGFloat        v;
 
-   a        = q.angle - p.angle;
+   a        = q.radians - p.radians;
    u        = q.radius * cosf( a);
    v        = q.radius * sinf( a);
    r.radius = sqrtf( (p.radius - u) * (p.radius - u) + (v * v));
-   r.angle  = p.angle - atan2( v, p.radius - u);
+   r.radians  = p.radians - atan2( v, p.radius - u);
    return( r);
 }
 
@@ -70,5 +70,5 @@ CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b)
    // 2 * 0.1 * 0.1 = 0.2 * (-1 .. 1) 
    // doesn't look like it
    return( sqrtf( a.radius * a.radius + b.radius * b.radius -           /* P1 */ 
-                  2 * a.radius * b.radius * cosf( a.angle - b.angle))); /* P2 */
+                  2 * a.radius * b.radius * cosf( a.radians - b.radians))); /* P2 */
 }

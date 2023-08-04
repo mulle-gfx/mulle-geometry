@@ -11,7 +11,9 @@ endif()
 # contents selected with patternfile ??-source--sources
 #
 set( SOURCES
-src/main-layout.m
+src/main-gaussian.m
 src/main-polarpoint.m
 src/main-radius.m
+src/main-rect.m
+src/main-trigonometry.m
 )

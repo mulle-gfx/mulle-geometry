@@ -2,32 +2,26 @@
 
 #include <stdio.h>
 
-CGFloat   degrees( CGFloat rad)
-{
-   CGFloat   deg;
-
-   deg = CAAngleRadiansToDegrees( rad);
-   if( deg < 0.0)
-      deg += 360.0;
-   return( deg);
-}
-
-
 int   main( int argc, char *argv[])
 {
-   CGFloat   val;
-   CGFloat   rad;
-   CGFloat   revhour;
+   CGFloat          val;
+   CGFloat          ang;
+   CGFloat      revhour;
+   CGFloat   deg;
 
-   for( val = 0.0f; val <= 12.0f; val += 1.0f)
+   for( val = 1.0f; val <= 12.01f; val += 1.0f)
    {
-      rad     = CAAngleHourToRadians( val);
-      revhour = CAAngleRadiansToHour( rad);
+      if( val > 12.0f)
+         val = 12.0f;
 
-      printf( "val: %.3f rad: %.3f deg: %.3f (%.3f)\n",
+      ang     = CAHourToAngle( val);
+      revhour = CAAngleToHour( ang);
+      deg     = CAAngleToDegrees( ang);
+
+      printf( "val: %.3f ang: %.3f deg: %.3f (%.3f)\n",
                      val,
-                     rad,
-                     degrees( rad),
+                     ang,
+                     deg,
                      revhour);
    }
    return( 0);

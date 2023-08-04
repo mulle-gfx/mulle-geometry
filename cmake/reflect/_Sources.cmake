@@ -11,7 +11,7 @@ endif()
 # contents selected with patternfile ??-source--sources
 #
 set( SOURCES
-src/CAAngle.c
+src/CADirection.c
 src/CAPolarPoint.c
 src/CAQuadratic.c
 src/CGAffineTransform.c

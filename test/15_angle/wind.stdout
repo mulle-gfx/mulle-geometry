@@ -1,16 +1,16 @@
-CAAngleRadiansNNE : rad: -1.178 direction: CADirectionTop
-CAAngleRadiansNE  : rad: -0.785 direction: CADirectionTop|CADirectionRight
-CAAngleRadiansENE : rad: -0.393 direction: CADirectionRight
-CAAngleRadiansE   : rad: 0.000 direction: CADirectionRight
-CAAngleRadiansESE : rad: 0.393 direction: CADirectionRight
-CAAngleRadiansSE  : rad: 0.785 direction: CADirectionBottom|CADirectionRight
-CAAngleRadiansSSE : rad: 1.178 direction: CADirectionBottom
-CAAngleRadiansS   : rad: 1.571 direction: CADirectionBottom
-CAAngleRadiansSSW : rad: 1.963 direction: CADirectionBottom
-CAAngleRadiansSW  : rad: 2.356 direction: CADirectionBottom|CADirectionLeft
-CAAngleRadiansWSW : rad: 2.749 direction: CADirectionLeft
-CAAngleRadiansW   : rad: 3.142 direction: CADirectionLeft
-CAAngleRadiansWNW : rad: 3.534 direction: CADirectionLeft
-CAAngleRadiansNW  : rad: 3.927 direction: CADirectionTop|CADirectionLeft
-CAAngleRadiansNNW : rad: 4.320 direction: CADirectionTop|CADirectionLeft
-CAAngleRadiansN   : rad: 4.712 direction: CADirectionTop
+CAAngleNNE : rad: 5.105 (0.750) direction: CADirectionTop|CADirectionRight
+CAAngleNE  : rad: 5.498 (1.500) direction: CADirectionTop|CADirectionRight
+CAAngleENE : rad: 5.890 (2.250) direction: CADirectionTop|CADirectionRight
+CAAngleE   : rad: 0.000 (3.000) direction: CADirectionRight
+CAAngleESE : rad: 0.393 (3.750) direction: CADirectionBottom|CADirectionRight
+CAAngleSE  : rad: 0.785 (4.500) direction: CADirectionBottom|CADirectionRight
+CAAngleSSE : rad: 1.178 (5.250) direction: CADirectionBottom|CADirectionRight
+CAAngleS   : rad: 1.571 (6.000) direction: CADirectionBottom
+CAAngleSSW : rad: 1.963 (6.750) direction: CADirectionBottom|CADirectionLeft
+CAAngleSW  : rad: 2.356 (7.500) direction: CADirectionBottom|CADirectionLeft
+CAAngleWSW : rad: 2.749 (8.250) direction: CADirectionBottom|CADirectionLeft
+CAAngleW   : rad: 3.142 (9.000) direction: CADirectionLeft
+CAAngleWNW : rad: 3.534 (9.750) direction: CADirectionTop|CADirectionLeft
+CAAngleNW  : rad: 3.927 (10.500) direction: CADirectionTop|CADirectionLeft
+CAAngleNNW : rad: 4.320 (11.250) direction: CADirectionTop|CADirectionLeft
+CAAngleN   : rad: 4.712 (12.000) direction: CADirectionTop

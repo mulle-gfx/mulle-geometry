@@ -24,8 +24,9 @@
    sourcetree, then you don't need it.
  */
 #include "_mulle-geometry-include.h"
-#ifndef MULLE__LAYOUT_EXTERN_GLOBAL
-# define MULLE__LAYOUT_EXTERN_GLOBAL MULLE_C_EXTERN_GLOBAL
+
+#ifndef MULLE__GEOMETRY_EXTERN_GLOBAL
+# define MULLE__GEOMETRY_EXTERN_GLOBAL   MULLE_C_EXTERN_GLOBAL
 #endif
 
 

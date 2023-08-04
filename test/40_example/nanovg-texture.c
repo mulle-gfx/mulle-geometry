@@ -59,13 +59,13 @@ static CGAffineTransform   fragment_transform( CGAffineTransform paint, CGSize e
 
 
 
-static CGAffineTransform   paint_transform( CGPoint point, CGFloat angle)
+static CGAffineTransform   paint_transform( CGPoint point, CARotation rotation)
 {
    CGAffineTransform   rotate;
    CGAffineTransform   xform;
    CGAffineTransform   translate;
 
-   rotate    = CGAffineTransformMakeRotation( angle);
+   rotate    = CGAffineTransformMakeRotation( rotation);
    translate = CGAffineTransformMakeTranslation( point.x, point.y);
    xform     = CGAffineTransformConcat( rotate, translate);
 
@@ -74,7 +74,7 @@ static CGAffineTransform   paint_transform( CGPoint point, CGFloat angle)
 
 
 static CGAffineTransform  reverse_texture_mapper( CGPoint point,
-                                                  CGFloat angle,
+                                                  CARotation rotation,
                                                   CGSize extent,
                                                   CGSize bitmapSize)
 {
@@ -98,7 +98,7 @@ static CGAffineTransform  reverse_texture_mapper( CGPoint point,
    //                          float angle,
    //                          int image,
    //                          float alpha)
-   paint    = paint_transform( point, angle);
+   paint    = paint_transform( point, rotation);
    combined = CGAffineTransformConcat( current, paint);
    shader   = CGAffineTransformInvert( combined);
 
@@ -119,7 +119,11 @@ static CGAffineTransform  reverse_texture_mapper( CGPoint point,
 
 
 
-static void   test( CGPoint vertex, CGPoint point, CGFloat angle, CGSize extent, CGSize bitmapSize)
+static void   test( CGPoint vertex,
+                    CGPoint point,
+                    CARotation rotation,
+                    CGSize extent,
+                    CGSize bitmapSize)
 {
    CGAffineTransform   paint;
    CGAffineTransform   shader;
@@ -151,7 +155,7 @@ static void   test( CGPoint vertex, CGPoint point, CGFloat angle, CGSize extent,
    //                          float angle,
    //                          int image,
    //                          float alpha)
-   paint         = paint_transform( point, angle);
+   paint         = paint_transform( point, rotation);
    combined      = CGAffineTransformConcat( current, paint);
 
    // this is what gets passed to the shader

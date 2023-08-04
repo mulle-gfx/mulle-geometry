@@ -95,34 +95,42 @@ static inline CGAffineTransform   CGAffineTransformMakeScaleInline(CGFloat sx, C
 //
 // Many of these functions are actually too big for inlining
 // nevertheless especially for constants there might be nice gains
-// So its up to you, to chose either the inlining version or the
+// So its up to you, to choose either the inlining version or the
 // non-inlining version
 //
-static inline CGAffineTransform   CGAffineTransformMakeRotationInline(CGFloat angle)
+static inline CGAffineTransform   CGAffineTransformMakeRotationRadiansInline( CGFloat radians)
 {
-   CGAffineTransform ret;
+   CGAffineTransform   ret;
 
-    // TODO: is this desirable ?
-    if (CG_ANGLE_IS_NEAR( angle, ((CGFloat) 3.14159265358979323846f / 2.0f), 0.0001f))
-    {
-        ret.a = 0;
-        ret.b = 1.0f;
-        ret.c = -1.0f;
-        ret.d = 0.0f;
-        ret.tx = 0.0f;
-        ret.ty = 0.0f;
+   if( CG_ANGLE_IS_NEAR( radians, ((CGFloat) 3.14159265358979323846f / 2.0f), 0.0001f))
+   {
+      ret.a  = 0;
+      ret.b  = 1.0f;
+      ret.c  = -1.0f;
+      ret.d  = 0.0f;
+      ret.tx = 0.0f;
+      ret.ty = 0.0f;
 
-        return ret;
-    }
+      return ret;
+   }
 
-    ret.a = cosf(angle);
-    ret.b = sinf(angle);
-    ret.c = -ret.b;
-    ret.d = ret.a;
-    ret.tx = 0.0f;
-    ret.ty = 0.0f;
+   ret.a  = cosf( radians);
+   ret.b  = sinf( radians);
+   ret.c  = -ret.b;
+   ret.d  = ret.a;
+   ret.tx = 0.0f;
+   ret.ty = 0.0f;
 
-    return ret;
+   return ret;
+}
+
+
+static inline CGAffineTransform   CGAffineTransformMakeRotationInline( CGFloat rotation)
+{
+   CGFloat   radians;
+
+   radians = CARotationToRadians( rotation);
+   return( CGAffineTransformMakeRotationRadiansInline( radians));
 }
 
 
@@ -143,11 +151,24 @@ static inline CGAffineTransform
 
 
 static inline CGAffineTransform
-   CGAffineTransformRotateInline( CGAffineTransform t, float angle)
+   CGAffineTransformRotateRadiansInline( CGAffineTransform t, CGFloat value)
 {
     CGAffineTransform   ret;
 
-    ret = CGAffineTransformMakeRotationInline( angle);
+    ret = CGAffineTransformMakeRotationRadiansInline( value);
+    ret = CGAffineTransformConcatInline( ret, t);
+
+    return ret;
+}
+
+
+
+static inline CGAffineTransform
+   CGAffineTransformRotateInline( CGAffineTransform t, CARotation rotation)
+{
+    CGAffineTransform   ret;
+
+    ret = CGAffineTransformMakeRotationInline( rotation);
     ret = CGAffineTransformConcatInline( ret, t);
 
     return ret;
@@ -223,8 +244,8 @@ static inline CGSize
    // TODO: not sure why we cast to double here and not elsewhere
     return( (CGSize)
     {
-        .width  = (CGFloat)((double) t.a * size.width + (double) t.c * size.height),
-        .height = (CGFloat)((double) t.b * size.width + (double) t.d * size.height)
+        .width  = (CGFloat) ((double) t.a * size.width + (double) t.c * size.height),
+        .height = (CGFloat) ((double) t.b * size.width + (double) t.d * size.height)
     });
 }
 
@@ -273,8 +294,7 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
 
 
 /**
- @Status Interoperable
-*/
+ */
 
 /*
  * Non-inlining counterparts (except when still inlining :))
@@ -317,16 +337,34 @@ static inline CGAffineTransform   CGAffineTransformMake( CGFloat a,
 // now truely non-inlining functions, where it makes sense (IMO)
 
 CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTransform t1);
-CGAffineTransform   CGAffineTransformMakeRotation( CGFloat angle);
+// rotation is usally 0 to +1, but can be anything
+CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians);
 CGAffineTransform   CGAffineTransformInvert( CGAffineTransform t);
 
-CGAffineTransform   CGAffineTransformRotate( CGAffineTransform t, CGFloat radians);
+CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians);
+
 CGAffineTransform   CGAffineTransformScale( CGAffineTransform t, CGFloat sx, CGFloat sy);
 CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, CGFloat tx, CGFloat ty);
 
 CGPoint  CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t);
 CGSize   CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t);
 CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
+
+static inline CGAffineTransform   CGAffineTransformMakeRotation( CARotation rotation)
+{
+   CGFloat   radians;
+
+   radians = CARotationToRadians( rotation);
+   return( CGAffineTransformMakeRotationRadians( radians));
+}
+
+static inline CGAffineTransform   CGAffineTransformRotate( CGAffineTransform t, CARotation rotation)
+{
+   CGFloat   radians;
+
+   radians = CARotationToRadians( rotation);
+   return( CGAffineTransformRotate( t, radians));
+}
 
 // useful for scalings of UIViews may be
 CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,

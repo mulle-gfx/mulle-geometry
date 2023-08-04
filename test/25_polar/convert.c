@@ -11,11 +11,11 @@ int   main( int argc, char *argv[])
    a  = CGPointMake( 18, 48);
    printf( "[%.1f, %.1f]\n", a.x, a.y);
    ap = CAPolarPointMakeWithPoint( a);
-   printf( "[%.1f / %.1f]\n", ap.radius, ap.angle);
+   printf( "[%.1f / %.1f]\n", ap.radius, ap.radians);
    b  = CGPointMakeWithPolarPoint( ap);
    printf( "[%.1f %.1f]\n", b.x, b.y);
    bp = CAPolarPointMakeWithPoint( b);
-   printf( "[%.1f / %.1f]\n", bp.radius, bp.angle);
+   printf( "[%.1f / %.1f]\n", bp.radius, bp.radians);
    c  = CGPointMakeWithPolarPoint( bp);
    printf( "[%.1f %.1f]\n", c.x, c.y);
 

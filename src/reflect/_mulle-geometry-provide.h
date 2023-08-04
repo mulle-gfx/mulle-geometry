@@ -10,8 +10,10 @@
  *      mulle-sde environment set MULLE_MATCH_TO_C_RUN DISABLE
  */
 #include "CAAngle.h"
+#include "CADirection.h"
 #include "CAPolarPoint.h"
 #include "CAQuadratic.h"
+#include "CARotation.h"
 #include "CGAffineTransform.h"
 #include "CGBase.h"
 #include "CGGeometry.h"
