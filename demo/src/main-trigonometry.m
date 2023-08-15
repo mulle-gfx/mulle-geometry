@@ -8,8 +8,8 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGRect              rect;
    NSUInteger          i;
    CGFloat             radius;
-   CAAngleRadians      startAngle;
-   CAAngleRadians      endAngle;
+   CAAngle             startAngle;
+   CAAngle             endAngle;
    CGPoint             p1;
    CGPoint             p2;
    int                 dir;
@@ -26,24 +26,24 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    radius = 1 + CGRectGetInnerRadius( rect) / 359 * i;
 
    nvgBeginPath( vg);
-   startAngle = CAAngleRadiansN + (i / 359.0) * 2 * M_PI_f;
-   endAngle   = startAngle + (i / 359.0) * 2 * M_PI_f;
+   startAngle = CARadiansToAngle( CAAngleNorth + (i / 359.0) * 2 * M_PI_f);
+   endAngle   = CAAngleAddRadians( startAngle, (i / 359.0) * 2 * M_PI_f);
 
    nvgMoveTo( vg, 0, 0);
-   p1 = CGPointMake( cosf( startAngle) * radius, sinf( startAngle) * radius);
+   p1 = CGPointMake( cosf( CAAngleToRadians( startAngle)) * radius, sinf( CAAngleToRadians( startAngle)) * radius);
    mvgLineTo( vg, p1);
 
    nvgArc( vg, 0, 0, radius, startAngle, endAngle, dir);
 
    nvgClosePath( vg);
 
-   p2 = CGPointMake( cosf( endAngle) * radius, sinf( endAngle) * radius);
+   p2 = CGPointMake( cosf( CAAngleToRadians( endAngle)) * radius, sinf( CAAngleToRadians( endAngle)) * radius);
    nvgFillColor( vg, CGColorMakeWithHSLA( 0.1 + 0.9 * i / 359.0, 1.0, 0.5, 1.0));
    nvgFill( vg);
 
    // draw helper points
-   mvgFillCircleWithColor( vg, p1, 2.0, CGColorMakeRed());
-   mvgFillCircleWithColor( vg, p2, 2.0, CGColorMakeGreen());
+   mvgFillCircleWithColor( vg, CACircleMake( p1, 2.0), CGColorMakeRed());
+   mvgFillCircleWithColor( vg, CACircleMake( p2, 2.0), CGColorMakeGreen());
 
    return( YES);
 }

@@ -81,22 +81,39 @@ static inline CAAngle   CAAngleRotate( CAAngle a, CARotation b)
 
 
 // make it -pi to +pi
-static inline CAAngle   CAAngleAddAngle( CAAngle a, CAAngle b)
+static inline CAAngle   CAAngleAdd( CAAngle a, CAAngle b)
 {
    assert( a >= 0 && a <= CA_2xPI);
    assert( b >= 0 && b <= CA_2xPI);
 
-   return( fmodf( a - b, CA_2xPI));
+   return( fmodf( a + b, CA_2xPI));  // shortcut because both domains are known
 }
 
 
-static inline CAAngle   CAAngleSubtractAngle( CAAngle a, CAAngle b)
+static inline CAAngle   CAAngleSubtract( CAAngle a, CAAngle b)
 {
    assert( a >= 0 && a <= CA_2xPI);
    assert( b >= 0 && b <= CA_2xPI);
 
    return( CARadiansToAngle( a - b));
 }
+
+
+static inline CAAngle   CAAngleAddRadians( CAAngle a, CGFloat b)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+
+   return( CARadiansToAngle( a + b));
+}
+
+
+static inline CAAngle   CAAngleSubtractRadians( CAAngle a, CGFloat b)
+{
+   assert( a >= 0 && a <= CA_2xPI);
+
+   return( CARadiansToAngle( a - b));
+}
+
 
 
 static inline CAAngle   CARotationToAngle( CARotation rotation)
@@ -128,6 +145,40 @@ static inline CARotation   CAAngleToRotation( CAAngle angle)
 }
 
 
+static inline CGFloat   CAAngleToSlope( CAAngle angle)
+{
+   return( tanf( CAAngleToRadians( angle)));
+}
+
+
+static inline CAAngle   CASlopeToAngle( CGFloat slope)
+{
+   return( atanf( CAAngleToRadians( slope)));
+}
+
+
+#include <math.h>
+
+// not compatible with nanovg
+enum
+{
+   CAAngleDirectionCounterClockWise = 0,
+   CAAngleDirectionClockWise        = 1,
+};
+
+
+//
+// find rotation direction, where a1 is closer to a0
+// returns -1 for counter clock wise
+// returns 1 for clockwise
+//
+static inline int   CAAngleRotationDirection( CAAngle a0, CAAngle a1)
+{
+   CGFloat   diff;
+
+   diff = CAAngleSubtract( a0, a1);
+   return( diff < M_PI_f ? CAAngleDirectionCounterClockWise : CAAngleDirectionClockWise);
+}
 
 
 //
@@ -191,6 +242,11 @@ static inline CGFloat   CARadiansToDegrees( CGFloat rad)
 }
 
 
+
+static inline int   CAAngleIsOpposingAngle( CAAngle a, CAAngle b)
+{
+   return( CARotationIsOpposingRotation( CAAngleToRotation( a), CAAngleToRotation( b)));
+}
 
 //
 // There are no negative values, there is no zero (as on a clock). There being

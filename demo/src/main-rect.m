@@ -19,15 +19,15 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
    mvgStrokeRectWithColor( vg, rect, 1.5, CGColorMakeBlack());
 
-   mvgFillCircleWithColor( vg, CGRectGetTopLeftPoint( rect),     4.0, CGColorMakeWithHSL( 0.0, 0.75, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetTopPoint( rect),         4.0, CGColorMakeWithHSL( 1 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetTopRightPoint( rect),    4.0, CGColorMakeWithHSL( 2 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetLeftPoint( rect),        4.0, CGColorMakeWithHSL( 3 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetCenterPoint( rect),      4.0, CGColorMakeWithHSL( 4 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetRightPoint( rect),       4.0, CGColorMakeWithHSL( 5 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetBottomLeftPoint( rect),  4.0, CGColorMakeWithHSL( 6 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetBottomPoint( rect),      4.0, CGColorMakeWithHSL( 7 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CGRectGetBottomRightPoint( rect), 4.0, CGColorMakeWithHSL( 8 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopLeftPoint( rect),     4.0), CGColorMakeWithHSL( 0.0, 0.75, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopPoint( rect),         4.0), CGColorMakeWithHSL( 1 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopRightPoint( rect),    4.0), CGColorMakeWithHSL( 2 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetLeftPoint( rect),        4.0), CGColorMakeWithHSL( 3 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetCenterPoint( rect),      4.0), CGColorMakeWithHSL( 4 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetRightPoint( rect),       4.0), CGColorMakeWithHSL( 5 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomLeftPoint( rect),  4.0), CGColorMakeWithHSL( 6 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomPoint( rect),      4.0), CGColorMakeWithHSL( 7 / 8.0, 1.0, 0.75));
+   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomRightPoint( rect), 4.0), CGColorMakeWithHSL( 8 / 8.0, 1.0, 0.75));
 
    return( YES);
 }

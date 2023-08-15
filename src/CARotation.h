@@ -149,6 +149,18 @@ static inline CARotation   CARotationTurn270CounterClockWise( CARotation rotatio
 }
 
 
+//
+// considering a circle, rotation a is in a different hemisphere (0.25 / 0.5)
+// than b
+//
+static inline int   CARotationIsOpposingRotation( CARotation a, CARotation b)
+{
+   CARotation  d;
+
+   d = fmodf( a - b, 1.0f);
+   return( (d > 0.25 && d < 0.75) || (d < -0.25 && d > -0.75));
+}
+
 
 
 #define CARotationNone        ((CARotation) (0.0f / 8.0f))

@@ -90,4 +90,22 @@ static inline CADirection   CAAngleToDirection( CAAngle angle)
    return( CARotationToDirection( CAAngleToRotation( angle)));
 }
 
+
+static inline int   CADirectionIsOpposingDirection( CADirection direction, CADirection other)
+{
+   switch( direction)
+   {
+   case CADirectionTop     : return( (other & CADirectionBottom) ? 1 : 0);
+   case CADirectionBottom  : return( (other & CADirectionTop) ? 1 : 0);
+   case CADirectionLeft    : return( (other & CADirectionRight) ? 1 : 0);
+   case CADirectionRight   : return( (other & CADirectionLeft) ? 1 : 0);
+
+   case CADirectionTop|CADirectionLeft      : return( (other & (CADirectionBottom|CADirectionRight)) ? 1 : 0);
+   case CADirectionTop|CADirectionRight     : return( (other & (CADirectionBottom|CADirectionLeft)) ? 1 : 0);
+   case CADirectionBottom|CADirectionLeft   : return( (other & (CADirectionTop|CADirectionRight)) ? 1 : 0);
+   case CADirectionBottom|CADirectionRight  : return( (other & (CADirectionTop|CADirectionLeft)) ? 1 : 0);
+   }
+   return( 0);
+}
+
 #endif

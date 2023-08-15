@@ -33,6 +33,12 @@ static inline CGFloat  CGVectorLength( CGVector v)
 }
 
 
+static inline CGFloat  CGVectorSquaredLength( CGVector v)
+{
+   return( v.dx * v.dx + v.dy * v.dy);
+}
+
+
 static inline CGFloat   CGVectorDotProduct( CGVector v1, CGVector v2)
 {
    return( v1.dx * v2.dx + v1.dy * v2.dy);
@@ -48,14 +54,6 @@ static inline int   CGPointEqualToPoint( CGPoint a, CGPoint b)
       return( 1);
    // this seems fairly cheap
    return( isnan( a.x) && isnan( a.y) && isnan( b.x) && isnan( b.y));
-}
-
-
-static inline CGPoint   CGPointOffset( CGPoint a, CGFloat dx, CGFloat dy)
-{
-   a.x += dx;
-   a.y += dy;
-   return a;
 }
 
 
@@ -98,6 +96,27 @@ static inline CGPoint   CGPointMultiply( CGPoint p, CGPoint q)
 static inline CGPoint   CGPointMultiplyVector( CGPoint p, CGVector q)
 {
    return( CGPointMake( p.x * q.dx, p.y * q.dy));
+}
+
+
+static inline CGPoint   CGPointOffset( CGPoint a, CGFloat dx, CGFloat dy)
+{
+   a.x += dx;
+   a.y += dy;
+   return a;
+}
+
+
+static inline CGPoint   CGPointTranslate( CGPoint point,
+                                          CGFloat slope,
+                                          CGFloat distance)
+{
+   CGVector   v;
+
+   v.dx = sqrtf( distance * distance / (1 + slope * slope));
+   v.dy = slope * v.dx;
+
+   return( CGPointMake( point.x + v.dx, point.y + v.dy));
 }
 
 
@@ -165,12 +184,23 @@ static inline CGPoint  CGPointClampToSize( CGPoint point, CGSize size)
 }
 
 
+
+
 static inline CGFloat  CGPointDistanceToPoint( CGPoint a, CGPoint b)
 {
    CGVector  d;
 
    d = CGVectorMake( b.x - a.x, b.y - a.y);
    return( CGVectorLength( d));
+}
+
+
+static inline CGFloat  CGPointSquaredDistanceToPoint( CGPoint a, CGPoint b)
+{
+   CGVector  d;
+
+   d = CGVectorMake( b.x - a.x, b.y - a.y);
+   return( CGVectorSquaredLength( d));
 }
 
 

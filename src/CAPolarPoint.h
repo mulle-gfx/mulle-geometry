@@ -63,11 +63,6 @@ static inline CAPolarPoint   CAPolarPointMakeWithRadians( CGFloat r, CGFloat a)
    return( (CAPolarPoint) { .radius = r, .radians = a });
 }
 
-static inline CAPolarPoint   CAPolarPointMakeWithDegrees( CGFloat r, CGFloat d)
-{
-   return( CAPolarPointMakeWithRadians( r, CADegreesToRadians( d)));
-}
-
 
 static inline CAPolarPoint   CAPolarPointMakeWithAngle( CGFloat r, CAAngle a)
 {
@@ -249,6 +244,25 @@ static inline CAPolarPoint  CAPolarPointSubtractRadians( CAPolarPoint v, CGFloat
    return( r);
 }
 
+
+static inline CAPolarPoint  CAPolarPointAddDegrees( CAPolarPoint v, CGFloat degrees)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians + CADegreesToRadians( degrees));
+   return( r);
+}
+
+
+static inline CAPolarPoint  CAPolarPointSubtractDegrees( CAPolarPoint v, CGFloat degrees)
+{
+   CAPolarPoint  r;
+
+   r = CAPolarPointMakeWithRadians( v.radius, v.radians - CADegreesToRadians( degrees));
+   return( r);
+}
+
+
 static inline CAPolarPoint  CAPolarPointSubtractRotation( CAPolarPoint v, CARotation a)
 {
    CAPolarPoint  r;
@@ -294,44 +308,5 @@ static inline CGPoint   CGPointAddPolarPoint( CGPoint p, CAPolarPoint v)
    return( CGPointAdd( p, CGPointMakeWithPolarPoint( v)));
 }
 
-
-
-// inner radius touches the edge points:
-//
-// --+--
-// +   +
-// --+--
-static inline CGRect   CGRectMakeWithCenterPointAndInnerRadius( CGPoint center, 
-                                                                CGFloat radius)
-{
-   CGRect   r;
-
-   r.origin = CGPointMake( center.x - radius, center.y - radius);
-   r.size   = CGSizeMake( radius * 2.0, radius * 2.0);
-   return( r);
-}
-
-
-// outer radius touches the corner points:
-//
-// +---+
-// -   -
-// +---+
-//
-static inline CGRect   CGRectMakeWithCenterPointAndOuterRadius( CGPoint center, 
-                                                                CGFloat radius)
-{
-   CGRect         r;
-   CAPolarPoint   corner;
-   CGPoint        point1;
-   CGPoint        point2;
-
-   corner = CAPolarPointMakeWithAngle( radius, CAAngleSouthEast);
-   point1 = CGPointMakeWithPolarPoint( corner);
-   point2 = CGPointScale( point1, -1.0);
-   r      = CGRectMakeWithPoints( CGPointAdd( center, point1),
-                                  CGPointAdd( center, point2));
-   return( CGRectStandardize( r));
-}
 
 #endif

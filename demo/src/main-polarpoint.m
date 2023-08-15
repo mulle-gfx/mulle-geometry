@@ -26,13 +26,14 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       {
          for( deg = 0; deg < 360.0; deg += 2.0)
          {
-            pPoint = CAPolarPointMake( canvas.size.height / 2.0 - (circles + 1) * 10.0,
-                                       CAAngleDegreesToAngle( deg));
+            pPoint = CAPolarPointMakeWithAngle( canvas.size.height / 2.0 - (circles + 1) * 10.0,
+                                                CADegreesToAngle( deg));
             point  = CGPointMakeWithPolarPoint( pPoint);
 
             nvgBeginPath( vg);
             nvgCircle( vg, point.x, point.y, 3.0);
-            hue = CAAngleDegreesToUnity( (circles * 90.0) + deg + (numberOfFrames * (circles + 1) / 0.4));
+            hue = CADegreesToRotation( (circles * 90.0) + deg + (numberOfFrames * (circles + 1) / 0.4));
+            hue = fmodf( hue, 1.0f);
             nvgFillColor( vg, CGColorMakeWithHSL( hue, 1.0, 0.5));
             nvgFill( vg);
          }
