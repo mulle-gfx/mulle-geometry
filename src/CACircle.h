@@ -15,8 +15,6 @@
 
 
 
-#define CA_EPSILON   0.00001
-
 //
 // A CACircle is somewhat like a polar point, with a cartesian center.
 //
@@ -32,6 +30,12 @@ static inline CACircle   CACircleMake( CGPoint p, CGFloat radius)
    assert( radius >= 0.0f);
 
    return( (CACircle) { p, radius });
+}
+
+
+static inline CACircle   CACircleOffset( CACircle circle, CGFloat x, CGFloat y)
+{
+   return( CACircleMake( CGPointOffset( circle.center, x, y), circle.radius));
 }
 
 
@@ -52,7 +56,6 @@ static inline CACircle   CACircleInset( CACircle circle, CGFloat amount)
 }
 
 
-
 // if its on the circle its ok
 static inline int   CACircleContainsPoint( CACircle circle, CGPoint point)
 {
@@ -61,7 +64,7 @@ static inline int   CACircleContainsPoint( CACircle circle, CGPoint point)
 
    p = CGPointSubtract( point, circle.center);
    r = CGPointGetPolarRadius( p);
-   return( r <= circle.radius + CA_EPSILON);
+   return( r <= circle.radius);
 }
 
 
@@ -73,20 +76,8 @@ static inline int   CGPointIsInsideCircle( CGPoint point, CACircle circle)
 
    p = CGPointSubtract( point, circle.center);
    r = CGPointGetPolarRadius( p);
-   return( r  < circle.radius);
+   return( r < circle.radius);
 }
-
-
-static inline int   CGPointIsOnCircle( CGPoint point, CACircle circle)
-{
-   CGPoint   p;
-   CGFloat   r;
-
-   p = CGPointSubtract( point, circle.center);
-   r = CGPointGetPolarRadius( p);
-   return( r - CA_EPSILON >= circle.radius && r + CA_EPSILON < circle.radius);
-}
-
 
 
 static inline CGPoint   CACirclePointAtAngle( CACircle circle, CAAngle a)
@@ -94,12 +85,15 @@ static inline CGPoint   CACirclePointAtAngle( CACircle circle, CAAngle a)
    CGFloat         radians;
    CAPolarPoint    polar;
    CGPoint         point;
-
    radians = CAAngleToRadians( a);
    polar   = CAPolarPointMakeWithAngle( circle.radius, radians);
    point   = CGPointMakeWithPolarPoint( polar);
    point   = CGPointAdd( circle.center, point);
    return( point);
+
+// MEMO: same as
+//  return CGPointMake( circle.center.x + circle.radius * cosf(angle),
+//                      circle.center.y + circle.radius * sinf(angle));
 }
 
 
@@ -108,11 +102,15 @@ static inline CGFloat   CARadiusDistanceBetweenAngles( CGFloat radius,
                                                        CAAngle b)
 {
    CGFloat  radians;
+   CGFloat  distance;
 
    radians = CAAngleToRadians( b) - CAAngleToRadians( a);
    if( radians < 0.0)
       radians += CA_2xPI;
-   return( radius * radians);
+   distance = radius * radians;
+   if( distance < CA_EPSILON)
+      return( 0.0f);
+   return( distance);
 }
 
 
@@ -124,7 +122,9 @@ static inline CGFloat   CACircleDistanceBetweenAngles( CACircle circle,
 }
 
 
-CGPoint   CACirclePointAtDistance( CACircle circle, CAAngle startAngle, CGFloat distance);
+CGPoint   CACirclePointAtDistance( CACircle circle,
+                                   CAAngle startAngle,
+                                   CGFloat distance);
 
 
 static inline CGPoint   CACircleGetCenterPoint( CACircle circle)
@@ -177,7 +177,7 @@ static inline CGRect   CACircleGetInnerRect( CACircle circle)
 
    corner = CAPolarPointMakeWithAngle( circle.radius, CAAngleSouthEast);
    point1 = CGPointMakeWithPolarPoint( corner);
-   point2 = CGPointScale( point1, -1.0);
+   point2 = CGPointScale( point1, -1.0f);
    r      = CGRectMakeWithPoints( CGPointAdd( circle.center, point1),
                                   CGPointAdd( circle.center, point2));
    return( CGRectStandardize( r));
@@ -197,6 +197,16 @@ static inline CACircle   CGRectGetOuterCircle( CGRect rect)
                          CGRectGetOuterRadius( rect)));
 }
 
+
+static inline CGRect   CGRectEncloseCircle( CGRect r, CACircle c)
+{
+   return( CGRectUnion( r, CACircleGetOuterRect( c)));
+}
+
+
+CGRect   CACircleOuterRectOfSector( CACircle circle, 
+                                    CAAngle startAngle, 
+                                    CAAngle endAngle); 
 
 //
 // Returns the number of intersections of circle by the infinite line,
@@ -231,6 +241,13 @@ CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
 CGPoint   CACirclePointAtDistance( CACircle circle,
                                    CAAngle startAngle,
                                    CGFloat distance);
+
+
+
+static inline CGFloat3   CACircleGetFloat3( CACircle c)
+{
+   return( CGFloat3Make( c.center.x, c.center.y, c.radius));;
+}
 
 #endif
 

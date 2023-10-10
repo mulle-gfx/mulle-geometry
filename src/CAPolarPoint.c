@@ -1,6 +1,8 @@
 #include "CAPolarPoint.h"
 
 
+#include "CAAngle.h"
+
 
 // these functions get fairly huge!
 CAPolarPoint   CAPolarPointAdd1( CAPolarPoint p, CAPolarPoint q)
@@ -22,10 +24,10 @@ CAPolarPoint   CAPolarPointAdd2( CAPolarPoint p, CAPolarPoint q)
    CGFloat        u;
    CGFloat        v;
 
-   a        = q.radians - p.radians;
-   u        = q.radius * cosf( a);
-   v        = q.radius * sinf( a);
-   r.radius = sqrtf( (p.radius + u) * (p.radius + u) + (v * v));
+   a          = q.radians - p.radians;
+   u          = q.radius * cosf( a);
+   v          = q.radius * sinf( a);
+   r.radius   = sqrtf( (p.radius + u) * (p.radius + u) + (v * v));
    r.radians  = p.radians + atan2( v, p.radius + u);
    return( r);
 }
@@ -64,11 +66,14 @@ CAPolarPoint   CAPolarPointSubtract2( CAPolarPoint p, CAPolarPoint q)
 //
 CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b)
 {
+   CGFloat   distance;
+
    // cosf returns values from -1 to +1, negative sqrtf is bad though
    // Can we produce negative ?
    // 0.1 * 0.1 = 0.01  0.1 * 0.1 = 0.01  0.01 + 0.01 = 0.02
    // 2 * 0.1 * 0.1 = 0.2 * (-1 .. 1) 
    // doesn't look like it
-   return( sqrtf( a.radius * a.radius + b.radius * b.radius -           /* P1 */ 
-                  2 * a.radius * b.radius * cosf( a.radians - b.radians))); /* P2 */
+   distance = sqrtf( a.radius * a.radius + b.radius * b.radius -              /* P1 */
+                     2 * a.radius * b.radius * cosf( a.radians - b.radians)); /* P2 */
+   return( distance < CA_EPSILON ? 0.0f : distance);
 }

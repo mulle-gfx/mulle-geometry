@@ -27,9 +27,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
+// Basically the EPSILON is only used in distance calculations
+
+// https://randomascii.wordpress.com/category/floating-point/
+#ifndef CG_VECTOR_EPSILON
+# define CG_VECTOR_EPSILON  0.0001f
+#endif
+
+
 static inline CGFloat  CGVectorLength( CGVector v)
 {
-   return( sqrtf( v.dx * v.dx + v.dy * v.dy));
+   CGFloat   length;
+
+   length = sqrtf( v.dx * v.dx + v.dy * v.dy);
+   if( length < CG_VECTOR_EPSILON)
+      return( 0.0f);
+   return( length);
 }
 
 
@@ -43,7 +56,6 @@ static inline CGFloat   CGVectorDotProduct( CGVector v1, CGVector v2)
 {
    return( v1.dx * v2.dx + v1.dy * v2.dy);
 }
-
 
 
 /**
@@ -232,7 +244,7 @@ static inline CGFloat   CGPointTriangleArea( CGPoint p0, CGPoint p1, CGPoint p2)
 {
    CGFloat area;
 
-   area = fabsf( (p0.x * (p1.y - p2.y) + p1.x * (p2.y - p0.y) + p2.x * (p0.y - p1.y)) / 2.0);
+   area = fabsf( (p0.x * (p1.y - p2.y) + p1.x * (p2.y - p0.y) + p2.x * (p0.y - p1.y)) / 2.0f);
    return( area);
 }
 
@@ -298,8 +310,8 @@ static inline double CGSizeGetArea( CGSize a)
 */
 static inline int   CGRectIsInfinite( CGRect rect)
 {
-   return( isinf(rect.origin.x) || isinf(rect.origin.y) ||
-           isinf(rect.size.width) || isinf(rect.size.height));
+   return( isinf( rect.origin.x) || isinf(rect.origin.y) ||
+           isinf( rect.size.width) || isinf(rect.size.height));
 }
 
 static inline int   CGRectIsStandardized( CGRect rect)
@@ -317,13 +329,13 @@ static inline int   CGRectIsStandardized( CGRect rect)
 // now this is sometimes useful, though it sounds bad
 static inline CGFloat CGVectorGetAspectRatio( CGVector a)
 {
-   return( a.dy == 0.0 ? 0.0 : a.dx / a.dy);
+   return( CGFloatIsZero( a.dy) ? 0.0f : a.dx / a.dy);
 }
 
 // now this is sometimes useful, though it sounds bad
 static inline CGFloat CGPointGetAspectRatio( CGPoint a)
 {
-   return( a.y == 0.0 ? 0.0 : a.x / a.y);
+   return( CGFloatIsZero( a.y) ? 0.0f : a.x / a.y);
 }
 
 
@@ -331,7 +343,7 @@ static inline CGFloat CGPointGetAspectRatio( CGPoint a)
 // easier code (?)
 static inline CGFloat CGSizeGetAspectRatio( CGSize a)
 {
-   return( a.height == 0.0 ? 0.0 : a.width / a.height);
+   return( CGFloatIsZero( a.height) ? 0.0f : a.width / a.height);
 }
 
 
@@ -795,6 +807,7 @@ int   CGRectIntersectsRect( CGRect a, CGRect b);
 */
 MULLE__GEOMETRY_EXTERN_GLOBAL
 int   CGRectContainsRect( CGRect a, CGRect b);
+
 
 // CGRectIntegral rounds the rectangle’s origin downward and its size upward
 // to the nearest whole integers, such that the result contains the original

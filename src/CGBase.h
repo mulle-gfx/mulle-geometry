@@ -31,6 +31,76 @@ typedef float CGFloat;
 #define CGFLOAT_IS_DOUBLE   0
 
 
+// for _mulle_objc_typeinfo_compare to CGFloat2 be compatible with CGPoint
+//
+typedef struct CGFloat2
+{
+   CGFloat   v0;
+   CGFloat   v1;
+} CGFloat2;
+
+
+static inline CGFloat2   CGFloat2Make( CGFloat a, CGFloat b)
+{
+   return( (CGFloat2){ .v0 = a, .v1 = b });
+}
+
+static inline int   CGFloat2EqualToFloat2( CGFloat2 a, CGFloat2 b)
+{
+   // compatible to CGPoint but not neccessarily to CGSize.. is this ba
+   if( (a.v0 == b.v0) && (a.v1 == b.v1))
+      return( 1);
+   // this seems fairly cheap
+   return( isnan( a.v0) && isnan( b.v0) && isnan( a.v1) && isnan( b.v1));
+}
+
+
+typedef struct CGFloat3
+{
+   CGFloat   v0;
+   CGFloat   v1;
+   CGFloat   v2;
+} CGFloat3;
+
+
+static inline CGFloat3   CGFloat3Make( CGFloat a, CGFloat b, CGFloat c)
+{
+   return( (CGFloat3){ .v0 = a, .v1 = b, .v2 = c });
+}
+
+static inline int   CGFloat3EqualToFloat3( CGFloat3 a, CGFloat3 b)
+{
+   return( ! memcmp( &a, &b, sizeof( CGFloat3)));
+}
+
+
+
+typedef struct CGFloat4
+{
+   CGFloat   v0;
+   CGFloat   v1;
+   CGFloat   v2;
+   CGFloat   v3;
+} CGFloat4;
+
+
+static inline CGFloat4   CGFloat4Make( CGFloat a, CGFloat b, CGFloat c, CGFloat d)
+{
+   return( (CGFloat4){ .v0 = a, .v1 = b, .v2 = c, .v3 = d });
+}
+
+
+static inline int   CGFloat4EqualToFloat4( CGFloat4 a, CGFloat4 b)
+{
+   // With memcmp we don't need special code to check for isnan. The produced
+   // code is still small enough for inlining IMI
+   return( ! memcmp( &a, &b, sizeof( CGFloat4)));
+
+//   if( ! CGSizeEqualToSize( a.size, b.size))
+//      return( 0);
+//   return( CGPointEqualToPoint( a.origin, b.origin));
+}
+
 
 #ifndef M_PI_f
 # define M_PI_f     ((float) 3.141592653589793238462643383279502884L)
@@ -76,6 +146,20 @@ static inline double   CGFloatMakeAbnormalDistribution( void)
 }
 
 
+//
+// https://bitbashing.io/comparing-floats.html
+//
+static inline CGFloat   CGFloatIsZero( CGFloat x)
+{
+   return( x == 0.0);
+}
+
+static inline CGFloat   CGFloatIsOne( CGFloat x)
+{
+   return( x == 1.0f);
+}
+
+
 static inline CGFloat   CGFloatMaximum( CGFloat x, CGFloat y)
 {
    return( x > y ? x : y);
@@ -100,19 +184,34 @@ static inline CGFloat   CGFloatSign( CGFloat x)
 }
 
 
-static inline CGFloat   CGFloatClamp( CGFloat x)
+static inline CGFloat   CGFloatClampToUnity( CGFloat x)
 {
    return( x > 1.0f ? 1.0f : (x < 0.0f ? 0.0f : x));
 }
 
 
-static inline CGFloat   CGFloatClampToMinMax( CGFloat x, CGFloat min, CGFloat max)
+static inline CGFloat   CGFloatModToUnity( CGFloat x)
+{
+   CGFloat    y;
+
+   y = fmodf( x, 1.0f);
+   if( y != 0.0f || x == 0.0f)
+      return( y);
+   return( x < 0 ? -1.0f : 1.0f);
+}
+
+
+
+static inline CGFloat   CGFloatClamp( CGFloat x, CGFloat min, CGFloat max)
 {
    return( x > max ? max : (x < min ? min : x));
 }
 
 
 // this is p5js.map, but "project" sounds more like what it does IMO
+// The CGFloatProject is used to project a number having range
+// from start1 to stop2 unto a range of start2 to stop2.
+
 static inline CGFloat   CGFloatProject( CGFloat value,
                                         CGFloat start1, CGFloat stop1,
                                         CGFloat start2, CGFloat stop2)
@@ -121,6 +220,8 @@ static inline CGFloat   CGFloatProject( CGFloat value,
 }
 
 
+// this function ensures that the returned value does not exceed
+// start2 stop2
 static inline CGFloat   CGFloatProjectClamped( CGFloat value,
                                                CGFloat start1, CGFloat stop1,
                                                CGFloat start2, CGFloat stop2)
@@ -129,8 +230,8 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 
    projected = CGFloatProject( value, start1, stop1, start1, stop2);
    if( start2 < stop2)
-      return( CGFloatClampToMinMax( projected, start2, stop2));
-   return( CGFloatClampToMinMax( projected, stop2, start2));
+      return( CGFloatClamp( projected, start2, stop2));
+   return( CGFloatClamp( projected, stop2, start2));
 }
 
 
@@ -189,6 +290,8 @@ static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
 {
    return( (CGPoint){ .x = x, .y = y });
 }
+
+
 
 
 //
@@ -403,6 +506,14 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 //       Now, with a macro, you can't take the address of a CGRectZero
 //       anymore though.
 //
+#define CGFloat2Null      CGFloat2Make( NAN, NAN)
+#define CGFloat2Zero      CGFloat2Make( 0, 0)
+#define CGFloat4Null      CGFloat4Make( NAN, NAN, 0.0f, 0.0f)
+#define CGFloat4Infinite  CGFloat4Make( -INFINITY, -INFINITY, INFINITY, INFINITY)
+
+
+
+
 #define CGPointZero       CGPointMake( 0, 0)
 #define CGPointUZero      CGPointUMake( 0, 0)
 #define CGPointNull       CGPointMake( NAN, NAN)
@@ -444,6 +555,11 @@ static inline CGPoint   CGPointMakeWithPointU( CGPointU v)
    return( *(CGPoint *) &v);
 }
 
+static inline CGPoint   CGPointMakeWithFloat2( CGFloat2 v2)
+{
+   return( *(CGPoint *) &v2);
+}
+
 
 
 static inline CGVector   CGVectorMakeWithPoint( CGPoint v)
@@ -464,6 +580,12 @@ static inline CGVector   CGVectorMakeWithSize( CGSize v)
 }
 
 
+static inline CGVector   CGVectorMakeWithFloat2( CGFloat2 v2)
+{
+   return( *(CGVector *) &v2);
+}
+
+
 
 static inline CGSize   CGSizeMakeWithPoint( CGPoint v)
 {
@@ -477,6 +599,13 @@ static inline CGSize   CGSizeMakeWithSizeU( CGSizeU v)
 }
 
 
+static inline CGSize   CGSizeMakeWithFloat2( CGFloat2 v2)
+{
+   return( *(CGSize *) &v2);
+}
+
+
+
 static inline CGSize   CGSizeMakeWithVector( CGVector v)
 {
    return( *(CGSize *) &v);
@@ -486,6 +615,12 @@ static inline CGSize   CGSizeMakeWithVector( CGVector v)
 static inline CGRect   CGRectMakeWithRectU( CGRectU v)
 {
    return( *(CGRect *) &v);
+}
+
+
+static inline CGRect   CGRectMakeWithFloat4( CGFloat4 v4)
+{
+   return( *(CGRect *) &v4);
 }
 
 
@@ -503,9 +638,22 @@ static inline CGVectorU   CGVectorUMakeWithVector( CGVector v)
 }
 
 
+static inline CGVectorU   CGVectorUMakeWithFloat2( CGFloat2 v2)
+{
+   return( *(CGVectorU *) &v2);
+}
+
+
+
 static inline CGSizeU   CGSizeUMakeWithSize( CGSize v)
 {
    return( *(CGSizeU *) &v);
+}
+
+
+static inline CGSizeU   CGSizeUMakeWithFloat2( CGFloat2 v2)
+{
+   return( *(CGSizeU *) &v2);
 }
 
 
@@ -513,6 +661,13 @@ static inline CGRectU   CGRectUMakeWithRect( CGRect v)
 {
    return( *(CGRectU *) &v);
 }
+
+
+static inline CGRectU   CGRectUMakeWithFloat4( CGFloat4 v4)
+{
+   return( *(CGRectU *) &v4);
+}
+
 
 
 // ----- old API - phased out, because MakeWith is more common
@@ -613,6 +768,62 @@ static inline int   CGRectIsNull( CGRect v)
 static inline int   CGPointIsNull( CGPoint p)
 {
    return( isnan( p.x));
+}
+
+
+
+// CGFloat2 is kinda low level, so we don't expect it to know CGPoint
+// therefore use a getter instead of a maker
+// in the end this is basically just a type cast
+static inline CGFloat2   CGPointGetFloat2( CGPoint p)
+{
+   return( *(CGFloat2 *) CGPointUMakeWithPoint( p).value);
+}
+
+static inline CGFloat2   CGVectorGetFloat2( CGVector p)
+{
+   return( *(CGFloat2 *) CGVectorUMakeWithVector( p).value);
+}
+
+static inline CGFloat2   CGSizeGetFloat2( CGSize p)
+{
+   return( *(CGFloat2 *) CGSizeUMakeWithSize( p).value);
+}
+
+// CGRectGetFloat4
+//
+// With -O2 this code should compile down to just simple function calls
+// without any copying of the parameters:
+//
+// extern int  foo( CGFloat4 x);
+//
+//
+// int bar( CGRect x, CGRect y)
+// {
+//     return( foo( CGRectGetFloat4( x)) - foo( CGRectGetFloat4( y)));
+// }
+//
+// gcc13.2: (gcc4.8 seems to be the first who can do fairly well)
+// bar:
+//         push    rbx
+//         sub     rsp, 16
+//         movq    QWORD PTR [rsp], xmm2
+//         movq    QWORD PTR [rsp+8], xmm3
+//         call    foo
+//         movq    xmm0, QWORD PTR [rsp]
+//         movq    xmm1, QWORD PTR [rsp+8]
+//         mov     ebx, eax
+//         call    foo
+//         add     rsp, 16
+//         mov     edx, eax
+//         mov     eax, ebx
+//         pop     rbx
+//         sub     eax, edx
+//         ret
+//
+static inline CGFloat4   CGRectGetFloat4( CGRect p)
+{
+   return( CGFloat4Make( p.origin.x, p.origin.y, p.size.width, p.size.height));
 }
 
 

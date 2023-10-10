@@ -15,6 +15,10 @@
 #include <assert.h>
 
 
+#define CA_EPSILON   CG_VECTOR_EPSILON
+
+
+
 //
 // This is CARotation
 //
@@ -51,8 +55,12 @@ static inline CARotation   CARotationNormalize( CARotation v)
    assert( ! isnan( v));
 
    a = fmodf( v, 1.0);
-   if( a < 0.0)
+   if( a <= 0.0)
+   {
+      if( v == 0.0f) // get rid of -0.0f
+         return( 0.0f);
       a += 1.0;
+   }
    return( a);
 }
 

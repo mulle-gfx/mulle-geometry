@@ -203,7 +203,7 @@ static inline CGAffineTransform
    float               determinant;
 
    determinant = (t.a * t.d - t.c * t.b);
-   if( determinant == 0.0)
+   if( CGFloatIsZero( determinant))
      return t; // ?
 
    ret.a  = t.d / determinant;
@@ -268,12 +268,12 @@ static inline CGRect
 // this is likely to be profitable to be inlined
 static inline int   CGAffineTransformIsIdentityInline( CGAffineTransform t)
 {
-   return(  t.a == 1.0f && 
-            t.b == 0.0f &&    
-            t.c == 0.0f &&    
-            t.d == 1.0f &&    
-            t.tx == 0.0f &&    
-            t.ty == 0.0f);      
+   return( t.a == 1.0f &&
+           t.b == 0.0f &&
+           t.c == 0.0f &&
+           t.d == 1.0f &&
+           t.tx == 0.0f &&
+           t.ty == 0.0f);
 }
 
 // this is likely to be profitable to be inlined

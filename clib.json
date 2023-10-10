@@ -7,6 +7,8 @@
    "repo" : "MulleUI/mulle-geometry",
    "src" : [
       "src/CAAngle.h",
+      "src/CACircle.c",
+      "src/CACircle.h",
       "src/CADirection.c",
       "src/CADirection.h",
       "src/CAPolarPoint.c",

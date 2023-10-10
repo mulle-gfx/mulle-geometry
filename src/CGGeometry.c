@@ -227,6 +227,8 @@ int   CGRectContainsRect( CGRect a, CGRect b)
            CGRectGetMaxY(b) <= CGRectGetMaxY(a));
 }
 
+
+
 //
 //
 // uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects)
@@ -269,7 +271,7 @@ static CGFloat   _CGFloatNormalDistribution( void)
       v = (rand() / ((double)RAND_MAX)) * 2 - 1;
       q = u * u + v * v;
    }
-   while( q >= 1 || q == 0);
+   while( q >= 1 || CGFloatIsZero( q));
 
    // this produces values from 0 to +infinity (but infinity very rarely)
    p = sqrtf( 2 * -logf(q) / q);

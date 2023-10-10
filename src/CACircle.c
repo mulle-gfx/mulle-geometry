@@ -2,9 +2,9 @@
 
 
 unsigned int   CACircleIntersectionsWithLine( CACircle circle,
-                                                   CGPoint start,
-                                                   CGPoint end,
-                                                   CGPoint intersection[ 2])
+                                              CGPoint start,
+                                              CGPoint end,
+                                              CGPoint intersection[ 2])
 {
    CGFloat t1;
    CGFloat t2;
@@ -25,11 +25,11 @@ unsigned int   CACircleIntersectionsWithLine( CACircle circle,
 
    discriminant = b * b - 4 * a * c;
 
-   if( discriminant < 0)
-      return( 0);
-
-   if( discriminant == 0)
+   if( discriminant <= 0.0f + CA_EPSILON)
    {
+      if( discriminant < 0.0f)
+         return( 0);
+
       t1 = -b / (2 * a);
       intersection[ 0] = CGPointMake( start.x + t1 * dx, start.y + t1 * dy);
       return( 1);
@@ -63,9 +63,6 @@ CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
    d1 = CGPointSquaredDistanceToPoint( near, intersection[ 1]);
    return( d0 < d1 ? intersection[ 0] : intersection[ 1]);
 }
-
-
-
 
 
 unsigned int  CACircleIntersectionsWithCircle( CACircle c0,
@@ -103,10 +100,11 @@ unsigned int  CACircleIntersectionsWithCircle( CACircle c0,
 
 
 
-CGPoint   CACirclePointAtDistance( CACircle circle, CAAngle startAngle, CGFloat distance)
+CGPoint   CACirclePointAtDistance( CACircle circle, 
+                                   CAAngle startAngle, 
+                                   CGFloat distance)
 {
    CAPolarPoint   q0;
-   CAPolarPoint   q1;
    CGPoint        p0;
    CGPoint        intersection[ 2];
 
@@ -116,7 +114,9 @@ CGPoint   CACirclePointAtDistance( CACircle circle, CAAngle startAngle, CGFloat 
    q0 = CAPolarPointMakeWithAngle( circle.radius, startAngle);
    p0 = CGPointMakeWithPolarPoint( q0);
    p0 = CGPointAdd( p0, circle.center);
-   if( ! CACircleIntersectionsWithCircle( circle, CACircleMake( p0, fabsf( distance)), intersection))
+   if( ! CACircleIntersectionsWithCircle( circle, 
+                                          CACircleMake( p0, fabsf( distance)), 
+                                          intersection))
       return( CGPointNull);
 
    //
@@ -126,3 +126,44 @@ CGPoint   CACirclePointAtDistance( CACircle circle, CAAngle startAngle, CGFloat 
    return( distance > 0 ? intersection[ 0] : intersection[ 1]);
 }
 
+
+// MEMO: AI generated and untested
+CGRect   CACircleOuterRectOfSector( CACircle circle, 
+                                    CAAngle startAngle, 
+                                    CAAngle endAngle) 
+{
+   CGPoint   p1;
+   CGPoint   p2;
+   CGPoint   p3;
+   CGPoint   p4;   
+   CGFloat   minX;
+   CGFloat   maxX;
+   CGFloat   minY;
+   CGFloat   maxY;
+   CGFloat   startRadians;
+   CGFloat   endRadians;
+
+   if( startAngle == endAngle)
+      return( CGRectZero);
+
+   startRadians = CAAngleToRadians( startAngle);
+   endRadians   = CAAngleToRadians( endAngle);
+
+   // Compute the four points that define the bounding box of the circle sector
+   p1 = CGPointMake( circle.center.x + circle.radius * cosf( startRadians), 
+                     circle.center.y + circle.radius * sinf( startRadians));
+   p2 = CGPointMake( circle.center.x + circle.radius * cosf( endRadians), 
+                     circle.center.y + circle.radius * sinf( endRadians));
+   p3 = CGPointMake( circle.center.x + circle.radius * cosf( startRadians + M_PI_f), 
+                     circle.center.y + circle.radius * sinf( startRadians + M_PI_f));
+   p4 = CGPointMake( circle.center.x + circle.radius * cosf( endRadians + M_PI_f), 
+                     circle.center.y + circle.radius * sinf( endRadians + M_PI_f));
+   
+    // Find the minimum and maximum x and y coordinates of these four points
+   minX = fminf( fminf( p1.x, p2.x), fminf( p3.x, p4.x));
+   maxX = fmaxf( fmaxf( p1.x, p2.x), fmaxf( p3.x, p4.x));
+   minY = fminf( fminf( p1.y, p2.y), fminf( p3.y, p4.y));
+   maxY = fmaxf( fmaxf( p1.y, p2.y), fmaxf( p3.y, p4.y));
+    
+   return( CGRectMake( minX, minY, maxX - minX, maxY - minY));
+}

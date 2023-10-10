@@ -4,31 +4,49 @@
 #### 🔭 Basic geometric types
 
 This library contains definitions and functions for (macOS/iOS) familiar
-datatypes like **CGRect**. CG prefixed datatypes are legacy names. The
-advantage of reusing the names is, that they are familiar already and that
-documentation already exists outside of the project.
+data types like **CGRect** and custom data types like **CACircle** or
+**CAPolarPoint**. `CG` prefixed datatypes are legacy names, which may already
+be familiar to you. Documentation for these data types already exists outside
+of the project.
 
-For a nice overview read [NSHipster:Core​Graphics Geometry Primitives](https://nshipster.com/cggeometry/).
+For a nice overview read [NSHipster:Core Graphics Geometry Primitives](https://nshipster.com/cggeometry/).
 
-CA prefixed datetypes are custom and not documented elsewhere.
-
-
-Datatype            | Description
---------------------|---------------------------
-CGFloat             | legacy name of `float` in CoreGraphics
-CGPoint             | cartesian point
-CGRect              | rectangle
-CGSize              | size
-CGVector            | cartesian vector (rarely used)
+CA prefixed data types are custom and not documented elsewhere.
 
 
-Datatype            | Description
---------------------|---------------------------
-CAAngleDegrees      | the angle in 0-360 degrees (0 is leftwards)
-CAAngleDirectional  | angle from -0.999 to +0.999 (0 is upwards)
-CAAngleHour         | maps angle to analog hours (0 is upwards)
-CAAngleRadians      | the usual angle in radians (0 is leftwards)
-CAPolarPoint        | point as an angle and distance from 0,0
-CAQuadratic         | interpolation value
-CAQuadraticBezier   | bezier curve
+| Data type           | Description
+|---------------------|---------------------------
+| `CGFloat`           | legacy name of `float` in CoreGraphics
+| `CGPoint`           | cartesian point
+| `CGRect`            | rectangle
+| `CGSize`            | size
+| `CGVector`          | cartesian vector (rarely used)
+
+
+| Data type           | Description
+|---------------------|---------------------------
+| `CAAngle`           | a datatype for angles
+| `CACircle`          | a representation of a center point with a radius
+| `CAPolarPoint`      | point as an angle and distance from 0,0
+| `CAQuadratic`       | interpolation value
+| `CAQuadraticBezier` | bezier curve
+| `CARotation`        | the rotation of something (0: none, 0.25: 90° right)
+
+
+### CAAngle
+
+Instead of using `float` radians, use `CAAngle`. Angles are always normalized
+and therefore comparable. Though internally represented as *radians*, you
+should use `CAAngleToRadians` and `CARadiansToAngle` to convert back and
+forth.
+
+
+### CACircle
+
+Having a separate `CACircle` is useful for layout purposes.
+
+
+### CAPolarPoint
+
+Polar points are invaluable for animations of circular motions.
 

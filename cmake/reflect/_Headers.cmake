@@ -49,6 +49,7 @@ src/include.h
 #
 set( PUBLIC_HEADERS
 src/CAAngle.h
+src/CACircle.h
 src/CADirection.h
 src/CAPolarPoint.h
 src/CAQuadratic.h

@@ -32,7 +32,7 @@ static void   test( CGPoint center, CGFloat radius)
 {
    CGRect   rect;
 
-   rect = CGRectMakeWithCenterPointAndOuterRadius( center, radius);
+   rect = CACircleGetOuterRect( CACircleMake( center, radius));
 
    printf( "[c=");
    CGPointPrint( center);
