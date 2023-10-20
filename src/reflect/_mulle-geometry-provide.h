@@ -9,6 +9,10 @@
  *
  *      mulle-sde environment set MULLE_MATCH_TO_C_RUN DISABLE
  */
+#ifndef mulle_geometry_provide_h__
+#define mulle_geometry_provide_h__
+
+
 #include "CAAngle.h"
 #include "CACircle.h"
 #include "CADirection.h"
@@ -18,3 +22,6 @@
 #include "CGAffineTransform.h"
 #include "CGBase.h"
 #include "CGGeometry.h"
+
+
+#endif
