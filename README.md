@@ -1,35 +1,70 @@
+# mulle-geometry
+
+#### 🔭 Basic geometric types
+
+
 # 🔭 mulle-geometry
 
 #### 🔭 Basic geometric types
 
 This library contains definitions and functions for (macOS/iOS) familiar
-datatypes like **CGRect**. CG prefixed datatypes are legacy names. The
-advantage of reusing the names is, that they are familiar already and that
-documentation already exists outside of the project.
+data types like **CGRect** and custom data types like **CACircle** or
+**CAPolarPoint**. `CG` prefixed datatypes are legacy names, which may already
+be familiar to you. Documentation for these data types already exists outside
+of the project.
 
-For a nice overview read [NSHipster:Core​Graphics Geometry Primitives](https://nshipster.com/cggeometry/).
+For a nice overview read [NSHipster:Core Graphics Geometry Primitives](https://nshipster.com/cggeometry/).
 
-CA prefixed datetypes are custom and not documented elsewhere.
-
-
-Datatype            | Description
---------------------|---------------------------
-CGFloat             | legacy name of `float` in CoreGraphics
-CGPoint             | cartesian point
-CGRect              | rectangle
-CGSize              | size
-CGVector            | cartesian vector (rarely used)
+CA prefixed data types are custom and not documented elsewhere.
 
 
-Datatype            | Description
---------------------|---------------------------
-CAAngleDegrees      | the angle in 0-360 degrees (0 is leftwards)
-CAAngleDirectional  | angle from -0.999 to +0.999 (0 is upwards)
-CAAngleHour         | maps angle to analog hours (0 is upwards)
-CAAngleRadians      | the usual angle in radians (0 is leftwards)
-CAPolarPoint        | point as an angle and distance from 0,0
-CAQuadratic         | interpolation value
-CAQuadraticBezier   | bezier curve
+| Data type           | Description
+|---------------------|---------------------------
+| `CGFloat`           | legacy name of `float` in CoreGraphics
+| `CGPoint`           | cartesian point
+| `CGRect`            | rectangle
+| `CGSize`            | size
+| `CGVector`          | cartesian vector (rarely used)
+
+
+| Data type           | Description
+|---------------------|---------------------------
+| `CAAngle`           | a datatype for angles
+| `CACircle`          | a representation of a center point with a radius
+| `CAPolarPoint`      | point as an angle and distance from 0,0
+| `CAQuadratic`       | interpolation value
+| `CAQuadraticBezier` | bezier curve
+| `CARotation`        | the rotation of something (0: none, 0.25: 90° right)
+
+
+### CAAngle
+
+Instead of using `float` radians, use `CAAngle`. Angles are always normalized
+and therefore comparable. Though internally represented as *radians*, you
+should use `CAAngleToRadians` and `CARadiansToAngle` to convert back and
+forth.
+
+
+### CACircle
+
+Having a separate `CACircle` is useful for layout purposes.
+
+
+### CAPolarPoint
+
+Polar points are invaluable for animations of circular motions.
+
+
+
+
+| Release Version                                       | Release Notes
+|-------------------------------------------------------|--------------
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-gfx/mulle-geometry.svg?branch=release) [![Build Status](https://github.com/mulle-gfx/mulle-geometry/workflows/CI/badge.svg?branch=release)](//github.com/mulle-gfx/mulle-geometry/actions) | [RELEASENOTES](RELEASENOTES.md) |
+
+
+
+
+
 
 ### You are here
 
@@ -37,28 +72,54 @@ CAQuadraticBezier   | bezier curve
 
 
 
-## mulle-sde
 
-This is a [mulle-sde](//github.com/mulle-sde) project. mulle-sde combines
-recursive package management with cross-platform builds via **cmake**:
 
-Action  | Command                               | Description
---------|---------------------------------------|---------------
-Build   | `mulle-sde craft [--release|--debug]` | Builds into local `kitchen` folder
-Add     | `mulle-sde dependency add --c --github MulleUI mulle-geometry` | Add mulle-geometry to another mulle-sde project as a dependency
-Install | `mulle-sde install --prefix /usr/local https://github.com/MulleUI/mulle-geometry.git` | Like `make install`
+## Add
 
+**This project is a component of the [mulle-core](//github.com/mulle-core/mulle-core) library. As such you usually will *not* add or install it
+individually, unless you specifically do not want to link against
+`mulle-core`.**
+
+
+### Add as an individual component
+
+Use [mulle-sde](//github.com/mulle-sde) to add mulle-geometry to your project:
+
+``` sh
+mulle-sde add github:mulle-gfx/mulle-geometry
+```
+
+To only add the sources of mulle-geometry with dependency
+sources use [clib](https://github.com/clibs/clib):
+
+
+``` sh
+clib install --out src/mulle-gfx mulle-gfx/mulle-geometry
+```
+
+Add `-isystem src/mulle-gfx` to your `CFLAGS` and compile all the sources that were downloaded with your project.
+
+
+## Install
+
+### Install with mulle-sde
+
+Use [mulle-sde](//github.com/mulle-sde) to build and install mulle-geometry and all dependencies:
+
+``` sh
+mulle-sde install --prefix /usr/local \
+   https://github.com/mulle-gfx/mulle-geometry/archive/latest.tar.gz
+```
 
 ### Manual Installation
 
-
 Install the requirements:
 
-Requirements                                      | Description
---------------------------------------------------|-----------------------
-[some-requirement](//github.com/some/requirement) | Some requirement
+| Requirements                                 | Description
+|----------------------------------------------|-----------------------
+| [mulle-core](https://github.com/mulle-core/mulle-core)             | 🌋 Almagamated library of mulle-core and mulle-c
 
-Install into `/usr/local`:
+Install **mulle-geometry** into `/usr/local` with [cmake](https://cmake.org):
 
 ``` sh
 cmake -B build \
@@ -70,11 +131,9 @@ cmake --install build --config Release
 ```
 
 
-## Attribution
+## Author
 
-The library may still contain some code from :
+[Nat!](https://mulle-kybernetik.com/weblog) for Mulle kybernetiK  
 
-```
-Copyright (c) 2006-2007 Christopher J. W. Lloyd
-Copyright (c) Microsoft. All rights reserved.
-```
+
+

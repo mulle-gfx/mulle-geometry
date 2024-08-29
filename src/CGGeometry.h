@@ -196,8 +196,6 @@ static inline CGPoint  CGPointClampToSize( CGPoint point, CGSize size)
 }
 
 
-
-
 static inline CGFloat  CGPointDistanceToPoint( CGPoint a, CGPoint b)
 {
    CGVector  d;
@@ -250,10 +248,10 @@ static inline CGFloat   CGPointTriangleArea( CGPoint p0, CGPoint p1, CGPoint p2)
 
 
 // TODO: untested
-static inline int  CGPointTriangleHasMinimumAngle( CGPoint p0,
-                                                   CGPoint p1,
-                                                   CGPoint p2,
-                                                   CGFloat minDegrees)
+static inline int   CGPointTriangleHasMinimumAngle( CGPoint p0,
+                                                    CGPoint p1,
+                                                    CGPoint p2,
+                                                    CGFloat minDegrees)
 {
    CAAngle   angle;
    CAAngle   minAngle;
@@ -278,10 +276,10 @@ static inline int  CGPointTriangleHasMinimumAngle( CGPoint p0,
 
 
 // TODO: untested
-static inline int  CGPointTriangleHasMinimumArea( CGPoint p0,
-                                                  CGPoint p1,
-                                                  CGPoint p2,
-                                                  CGFloat minArea)
+static inline int   CGPointTriangleHasMinimumArea( CGPoint p0,
+                                                   CGPoint p1,
+                                                   CGPoint p2,
+                                                   CGFloat minArea)
 {
    CGFloat   area;
 
@@ -290,9 +288,29 @@ static inline int  CGPointTriangleHasMinimumArea( CGPoint p0,
 }
 
 
+// Or center of mass, but centroid seems to be an "official" name
+// like Schwerpunkt, center of mass
+//
+static inline CGPoint   CGPointTriangleGetCentroid( CGPoint p0,
+                                                    CGPoint p1,
+                                                    CGPoint p2)
+{
+   return( CGPointMake( (p0.x + p1.x + p2.x) / 3.0f,
+                        (p0.y + p1.y + p2.y) / 3.0f));
+}
+
+static inline CGPoint   CGPointTriangleGetCenterOfMass( CGPoint p0,
+                                                        CGPoint p1,
+                                                        CGPoint p2)
+{
+   return( CGPointTriangleGetCentroid( p0, p1, p2));
+}
+
+
+
 /**
 */
-static inline int CGSizeEqualToSize( CGSize a, CGSize b)
+static inline int   CGSizeEqualToSize( CGSize a, CGSize b)
 {
    return( a.width == b.width && a.height == b.height);
 }
@@ -300,9 +318,15 @@ static inline int CGSizeEqualToSize( CGSize a, CGSize b)
 
 /**
 */
-static inline double CGSizeGetArea( CGSize a)
+static inline double   CGSizeGetArea( CGSize a)
 {
-   return fabs( a.width* a.height);
+   return fabs( a.width * a.height);
+}
+
+
+static inline int   CGSizeContainsSize( CGSize a, CGSize b)
+{
+   return( a.width >= b.width && a.height >= b.height);
 }
 
 
@@ -327,13 +351,13 @@ static inline int   CGRectIsStandardized( CGRect rect)
 
 
 // now this is sometimes useful, though it sounds bad
-static inline CGFloat CGVectorGetAspectRatio( CGVector a)
+static inline CGFloat   CGVectorGetAspectRatio( CGVector a)
 {
    return( CGFloatIsZero( a.dy) ? 0.0f : a.dx / a.dy);
 }
 
 // now this is sometimes useful, though it sounds bad
-static inline CGFloat CGPointGetAspectRatio( CGPoint a)
+static inline CGFloat   CGPointGetAspectRatio( CGPoint a)
 {
    return( CGFloatIsZero( a.y) ? 0.0f : a.x / a.y);
 }
@@ -341,46 +365,46 @@ static inline CGFloat CGPointGetAspectRatio( CGPoint a)
 
 // if a has no size, use 0.0 instead of INFINITY for 
 // easier code (?)
-static inline CGFloat CGSizeGetAspectRatio( CGSize a)
+static inline CGFloat   CGSizeGetAspectRatio( CGSize a)
 {
    return( CGFloatIsZero( a.height) ? 0.0f : a.width / a.height);
 }
 
 
 // returns either height or weight, which ever is smaller
-static inline CGFloat CGSizeGetMinimum( CGSize a)
+static inline CGFloat   CGSizeGetMinimum( CGSize a)
 {
    return( a.width < a.height ? a.width : a.height);
 }
 
 
 // returns either height or weight, which ever is bigger
-static inline CGFloat CGSizeGetMaximum( CGSize a)
+static inline CGFloat   CGSizeGetMaximum( CGSize a)
 {
    return( a.width > a.height ? a.width : a.height);
 }
 
 
-static inline CGFloat CGRectGetMaximumSize( CGRect a)
+static inline CGFloat   CGRectGetMaximumSize( CGRect a)
 {
    return( CGSizeGetMaximum( a.size));
 }
 
 
-static inline CGFloat CGRectGetMinimumSize( CGRect a)
+static inline CGFloat   CGRectGetMinimumSize( CGRect a)
 {
    return( CGSizeGetMinimum( a.size));
 }
 
 
-static inline CGFloat CGRectGetAspectRatio( CGRect a)
+static inline CGFloat   CGRectGetAspectRatio( CGRect a)
 {
    return( CGSizeGetAspectRatio( a.size));
 }
 
 
 // get the radius for a circle that touches the inside of a rectangle
-static inline CGFloat CGSizeGetInnerRadius( CGSize a)
+static inline CGFloat   CGSizeGetInnerRadius( CGSize a)
 {
    a.width  = a.width < 0.0f ? -a.width : a.width;
    a.height = a.height < 0.0f ? -a.height : a.height;
@@ -389,21 +413,21 @@ static inline CGFloat CGSizeGetInnerRadius( CGSize a)
 
 
 // get the radius that "envelopes" a rectangle of given size
-static inline CGFloat CGSizeGetOuterRadius( CGSize a)
+static inline CGFloat   CGSizeGetOuterRadius( CGSize a)
 {
    return( sqrtf( a.width * a.width + a.height * a.height) / 2.0);
 }
 
 
 // get the radius for a circle that touches the inside of a rectangle
-static inline CGFloat CGRectGetInnerRadius( CGRect r)
+static inline CGFloat   CGRectGetInnerRadius( CGRect r)
 {
    return( CGSizeGetInnerRadius( r.size));
 }
 
 
 // get the radius that "envelopes" a rectangle of given size
-static inline CGFloat CGRectGetOuterRadius( CGRect r)
+static inline CGFloat   CGRectGetOuterRadius( CGRect r)
 {
    return( CGSizeGetOuterRadius( r.size));
 }
@@ -681,6 +705,17 @@ static inline CGRect   CGRectInset( CGRect rect, CGFloat dx, CGFloat dy)
    return rect;
 }
 
+//
+// like above, but if insets are too large, make the CGRect zero
+//
+static inline CGRect   CGRectInsetOrZero( CGRect rect, CGFloat dx, CGFloat dy)
+{
+   if( rect.size.width <= dx * 2 || rect.size.height <= dy * 2)
+      return( CGRectZero);
+   return( CGRectInset( rect, dx, dy));
+}
+
+
 
 /*
  *   .-------------------------------.
@@ -852,6 +887,25 @@ CGRect   CGRectUnion( CGRect a, CGRect b);
 // is standardized
 //
 CGRect   CGRectEnclosePoint( CGRect r, CGPoint p);
+
+
+// mulle addition:
+// use circle routines for outer radius
+static inline CGRect   CGRectMakeWithCenterPointAndInnerRadius( CGPoint center, CGFloat radius)
+{
+   return( CGRectMake( center.x - radius, center.y - radius, radius * 2, radius * 2));
+}
+
+
+// mulle addition:
+static inline CGRect   CGRectMakeWithCenterPointAndSize( CGPoint center, CGSize size)
+{
+   return( CGRectMake( center.x - size.width / 2.0,
+                       center.y - size.height / 2.0,
+                       size.width,
+                       size.height));
+}
+
 
 
 // mulle addition:

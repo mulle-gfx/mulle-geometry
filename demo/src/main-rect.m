@@ -36,7 +36,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 400, 300),
                                            NULL,
                                            0.0f));

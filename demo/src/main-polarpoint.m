@@ -14,8 +14,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGFloat             hue;
    NSUInteger          numberOfFrames;
 
-   canvas = [layer canvas];
-
+   canvas         = [layer canvas];
    vg             = CGContextGetNVGContext( context);
    numberOfFrames = [context numberOfFrames];
 
@@ -58,7 +57,7 @@ void   setupScene( UIWindowPlane *contentPlane)
 
    view  = [UIView viewWithFrame:frame];
    layer = [view layer];
-   [layer setDrawCallback:drawStuff];
+   [layer setDrawCallback:(CGGraphicsLayerDrawCallback_t *) drawStuff];
    [contentPlane addSubview:view];
 }
 
@@ -76,14 +75,14 @@ int   main()
    {
       window = [UIWindow windowWithFrame:CGRectMake( 0.0, 0.0, 800.0, 600.0)];
 
-      [app addWindow:window];
-
       [window setBackgroundColor:CGColorMakeWithRGBA( 0.0, 0.0, 0.0, 1.0)];
       [window setFrameRateHz:60.0];
 
       setupScene( [window contentPlane]);
+
+      [app addWindow:window];
    }
-   return( [app run]);
+   return( [app runApp]);
 }
 
 

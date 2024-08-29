@@ -387,4 +387,40 @@ CGAffineTransform
                                                           CGRect bounds);
 #endif
 
+
+static inline CGPoint   CGPointProjectToFrame( CGPoint location,
+                                                CGRect frame,
+                                                CGRect bounds)
+{
+   CGPoint             point;
+   CGAffineTransform   transform;
+//   CGAffineTransform   identity;
+
+//   identity   = CGAffineTransformMakeIdentity();
+//   nvgTransformIdentity( transform);
+//   transform = CGAffineTransformConcatFrameAndBoundsInverseTransform( identity, [self frame], [self bounds]);
+   transform = CGAffineTransformMakeProjection( frame, bounds);
+   point     = CGPointApplyAffineTransformInline( location, transform);
+//   nvgTransformPoint( &translated.x, &translated.y, transform, point.x, point.y);
+   return( point);
+}
+
+
+static inline CGPoint   CGPointProjectToBounds( CGPoint location,
+                                               CGRect frame,
+                                               CGRect bounds)
+{
+   CGPoint             point;
+   CGAffineTransform   transform;
+
+//   CGAffineTransform   identity;
+//   identity   = CGAffineTransformMakeIdentity();
+//   nvgTransformIdentity( transform);
+   transform = CGAffineTransformMakeInverseProjection( frame, bounds);
+//   transform = CGAffineTransformConcatFrameAndBoundsTransform( identity, [self frame], [self bounds]);
+   point     = CGPointApplyAffineTransformInline( location, transform);
+//   nvgTransformPoint( &translated.x, &translated.y, transform, point.x, point.y);
+   return( point);
+}
+
 #endif

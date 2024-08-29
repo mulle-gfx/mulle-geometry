@@ -1,8 +1,3 @@
-
-# 🔭 mulle-geometry
-
-#### 🔭 Basic geometric types
-
 This library contains definitions and functions for (macOS/iOS) familiar
 data types like **CGRect** and custom data types like **CACircle** or
 **CAPolarPoint**. `CG` prefixed datatypes are legacy names, which may already

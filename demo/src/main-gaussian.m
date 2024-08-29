@@ -1,16 +1,17 @@
 #import "import.h"
 
 
-static int   CGFloatPointerCompare( CGFloat *a, CGFloat *b)
+static int   CGFloatPointerCompare( CGFloat *a, CGFloat *b, void *unused)
 {
    return( *a >= *b ? (*a != *b) : -1);
 }
 
 
-static int   CGFloatPointerInvCompare( CGFloat *a, CGFloat *b)
+static int   CGFloatPointerInvCompare( CGFloat *a, CGFloat *b, void *unused)
 {
    return( *a > *b ? -1 : (*a != *b));
 }
+
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
@@ -33,13 +34,13 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       {
          for( i = 0; i < n; i++)   
             buf[ i] = CGFloatMakeAbnormalDistributionMinMax( 0.0, rect.size.height);
-         qsort( buf, n, sizeof( CGFloat), CGFloatPointerCompare);
+         mulle_qsort( buf, n, sizeof( CGFloat), (mulle_qsort_cmp_t *) CGFloatPointerCompare);
       }
       else
       {
          for( i = 0; i < n; i++)   
             buf[ i] = CGFloatMakeNormalDistributionMinMax( 0.0, rect.size.height);
-         qsort( buf, n, sizeof( CGFloat), CGFloatPointerInvCompare);
+         mulle_qsort( buf, n, sizeof( CGFloat), (mulle_qsort_cmp_t *) CGFloatPointerInvCompare);
       }
 
 
@@ -76,7 +77,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 200, 250),
                                            NULL,
                                            10.0f));

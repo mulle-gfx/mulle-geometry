@@ -123,7 +123,8 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       [context useDefaultFont];
 
       nvgFontSize( vg, 11.0);
-      nvgTextColor( vg, CGColorMakeBlack(), CGColorMakeWhite());
+      nvgTextColor( vg, CGColorMakeBlack());
+      nvgTextBackgroundColor( vg, CGColorMakeWhite());
       mvgFormatInRect( vg, CGRectMake( p0.x + 4.0, p0.y, 200, 16), 0, 0, "d: %g (%g)",
                            CGPointDistanceToPoint( p0, p4),
                            (q1.radians - q0.radians) * innerCircle.radius);
@@ -135,7 +136,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 800, 800),
                                            NULL,
                                            60.0f));

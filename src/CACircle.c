@@ -58,7 +58,8 @@ CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
 
    n = CACircleIntersectionsWithLine( circle, start, end, intersection);
    assert( n == 2);
-
+   MULLE_C_UNUSED( n);
+   
    d0 = CGPointSquaredDistanceToPoint( near, intersection[ 0]);
    d1 = CGPointSquaredDistanceToPoint( near, intersection[ 1]);
    return( d0 < d1 ? intersection[ 0] : intersection[ 1]);

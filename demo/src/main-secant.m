@@ -10,7 +10,8 @@ static void  drawDotWithLabel( CGContext *context, CGPoint p, CGFloat radians, C
    vg = CGContextGetNVGContext( context);
 
    mvgFontSize( vg, 10.0);
-   mvgTextColor( vg, CGColorMakeBlack(), CGColorMakeWhite());
+   mvgTextColor( vg, CGColorMakeBlack());
+   mvgTextBackgroundColor( vg, CGColorMakeWhite());
    mvgFormatInRect( vg, CGRectMake( p.x + 4.0, p.y, 100, 16), 0, 0, "%g", radians);
 
    nvgBeginPath( vg);
@@ -96,7 +97,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 800, 800),
                                            NULL,
                                            60.0f));

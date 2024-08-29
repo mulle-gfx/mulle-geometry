@@ -19,9 +19,9 @@ static void   mvgSectorPath( struct NVGcontext *vg,
    {
       mvgBeginPath( vg);
       mvgMoveTo( vg, p0);
-      mvgArc( vg, center, innerRadius, startAngle, endAngle, NVG_CW);
+      mvgArc( vg, innerCircle, startAngle, endAngle, NVG_CW);
       // amusingly mvgArc already draws a line up to p2
-      mvgArc( vg, center, CACircleGetRadius( circle), endAngle, startAngle, NVG_CCW);
+      mvgArc( vg, circle, endAngle, startAngle, NVG_CCW);
       mvgClosePath( vg);
    }
 }
@@ -111,7 +111,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 800, 800),
                                            NULL,
                                            60.0f));

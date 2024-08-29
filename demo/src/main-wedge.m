@@ -96,8 +96,8 @@ static void   mvgWedgePath( struct NVGcontext *vg, CAWedge *wedge)
 
    {
       mvgMoveTo( vg, p0);
-      mvgArc( vg, center, wedge->innerRadius, wedge->innerStartAngle, wedge->innerEndAngle, NVG_CW);
-      mvgArc( vg, center, CACircleGetRadius( wedge->circle), wedge->endAngle, wedge->startAngle, NVG_CCW);
+      mvgArc( vg, innerCircle, wedge->innerStartAngle, wedge->innerEndAngle, NVG_CW);
+      mvgArc( vg, wedge->circle, wedge->endAngle, wedge->startAngle, NVG_CCW);
       mvgClosePath( vg);
    }
 }
@@ -151,9 +151,10 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 //   mvgStrokeCircleWithColor( vg, outerCircle.center, outerCircle.radius, 1.0, CGColorMakeGray());
 
    [context useDefaultFont];
-   mvgTextColor( vg, CGColorMakeBlack(), CGColorMakeWhite());
+   mvgTextColor( vg, CGColorMakeBlack());
+   mvgTextBackgroundColor( vg, CGColorMakeWhite());
    mvgTextInRect( vg, "VfL Bochum 1848",
-                       NULL,
+                       (size_t) -1,
                        CACircleGetOuterRect( outerCircle),
                        CGContentModeScaleAspectFit,
                        MVGTextAlignVisually);
@@ -272,7 +273,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 int   main( int argc, char *argv[])
 {
-   return( UIApplicationRunDrawCallbackHz( (CALayerDrawCallback_t *) drawStuff,
+   return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
                                            CGSizeMake( 800, 800),
                                            NULL,
 #ifdef ANIMATION

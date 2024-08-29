@@ -1,0 +1,23 @@
+{
+   project =
+   {
+      description="🔭 Basic geometric types";
+      domain="github";
+      name="mulle-geometry";
+      user="mulle-gfx";
+      repo="mulle-geometry";
+      homepage="https://github.com/MulleUI/mulle-geometry/tree/mulle-geometry.git";
+      license="UNLICENSED"
+   };
+   dependencies =
+   (
+      {
+         description="🌋 Almagamated library of mulle-core and mulle-c";
+         domain="github";
+         name="mulle-core";
+         repo="mulle-core";
+         url="https://github.com/mulle-core/mulle-core";
+         user="mulle-core";
+      }
+   );
+}

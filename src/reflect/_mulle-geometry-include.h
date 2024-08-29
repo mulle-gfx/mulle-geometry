@@ -14,39 +14,48 @@
 #ifndef _mulle_geometry_include_h__
 #define _mulle_geometry_include_h__
 
-// You can tweak the following #include with these commands.
-// (Use C188D99D-CCBD-414D-A471-8F0E2AA68E25 instead of m if there are duplicate entries)
-//    remove #include:: `mulle-sde dependency mark m no-header`
-//    rename:              `mulle-sde dependency|library set m include whatever.h`
-//    reorder:             `mulle-sde dependency move m <up|down>`
-//    toggle #include:    `mulle-sde dependency mark m [no-]import`
-//    toggle public:       `mulle-sde dependency mark m [no-]public`
-//    toggle optional:     `mulle-sde dependency mark m [no-]require`
-//    remove for platform: `mulle-sde dependency mark m no-platform-<uname>`
+// To remove the following dependency (headers and library) completely:
+//   `mulle-sde dependency remove m`
+// (Use C188D99D-CCBD-414D-A471-8F0E2AA68E25 instead of m, if there are duplicate entries)
+//
+// You can tweak the following #include with these commands:
+//    remove #include: `mulle-sde dependency mark m no-header`
+//    rename              : `mulle-sde dependency|library set m include whatever.h`
+//    reorder             : `mulle-sde dependency move m <up|down>`
+//    toggle #include: `mulle-sde dependency mark m [no-]import`
+//    toggle public       : `mulle-sde dependency mark m [no-]public`
+//    toggle optional     : `mulle-sde dependency mark m [no-]require`
+//    remove for platform : `mulle-sde dependency mark m no-platform-<uname>`
 //        (use `mulle-sourcetree-to-c --unames` to list known values)
 #include <math.h>   // m
 
-// You can tweak the following #include with these commands.
-// (Use BF05D5CF-8F51-4F08-8583-7FCBBAE0939D instead of mulle-core if there are duplicate entries)
-//    remove #include:: `mulle-sde dependency mark mulle-core no-header`
-//    rename:              `mulle-sde dependency|library set mulle-core include whatever.h`
-//    reorder:             `mulle-sde dependency move mulle-core <up|down>`
-//    toggle #include:    `mulle-sde dependency mark mulle-core [no-]import`
-//    toggle public:       `mulle-sde dependency mark mulle-core [no-]public`
-//    toggle optional:     `mulle-sde dependency mark mulle-core [no-]require`
-//    remove for platform: `mulle-sde dependency mark mulle-core no-platform-<uname>`
+// To remove the following dependency (headers and library) completely:
+//   `mulle-sde dependency remove mulle-core`
+// (Use BF05D5CF-8F51-4F08-8583-7FCBBAE0939D instead of mulle-core, if there are duplicate entries)
+//
+// You can tweak the following #include with these commands:
+//    remove #include: `mulle-sde dependency mark mulle-core no-header`
+//    rename              : `mulle-sde dependency|library set mulle-core include whatever.h`
+//    reorder             : `mulle-sde dependency move mulle-core <up|down>`
+//    toggle #include: `mulle-sde dependency mark mulle-core [no-]import`
+//    toggle public       : `mulle-sde dependency mark mulle-core [no-]public`
+//    toggle optional     : `mulle-sde dependency mark mulle-core [no-]require`
+//    remove for platform : `mulle-sde dependency mark mulle-core no-platform-<uname>`
 //        (use `mulle-sourcetree-to-c --unames` to list known values)
 #include <mulle-core/mulle-core.h>   // mulle-core
 
-// You can tweak the following #include with these commands.
-// (Use B3B23976-BBD9-4282-AFE0-7A179F43E700 instead of math if there are duplicate entries)
-//    remove #include:: `mulle-sde dependency mark math no-header`
-//    rename:              `mulle-sde dependency|library set math include whatever.h`
-//    reorder:             `mulle-sde dependency move math <up|down>`
-//    toggle #include:    `mulle-sde dependency mark math [no-]import`
-//    toggle public:       `mulle-sde dependency mark math [no-]public`
-//    toggle optional:     `mulle-sde dependency mark math [no-]require`
-//    remove for platform: `mulle-sde dependency mark math no-platform-<uname>`
+// To remove the following dependency (headers and library) completely:
+//   `mulle-sde dependency remove math`
+// (Use B3B23976-BBD9-4282-AFE0-7A179F43E700 instead of math, if there are duplicate entries)
+//
+// You can tweak the following #include with these commands:
+//    remove #include: `mulle-sde dependency mark math no-header`
+//    rename              : `mulle-sde dependency|library set math include whatever.h`
+//    reorder             : `mulle-sde dependency move math <up|down>`
+//    toggle #include: `mulle-sde dependency mark math [no-]import`
+//    toggle public       : `mulle-sde dependency mark math [no-]public`
+//    toggle optional     : `mulle-sde dependency mark math [no-]require`
+//    remove for platform : `mulle-sde dependency mark math no-platform-<uname>`
 //        (use `mulle-sourcetree-to-c --unames` to list known values)
 # if ! defined( _WIN32)
 # include <math.h>   // math

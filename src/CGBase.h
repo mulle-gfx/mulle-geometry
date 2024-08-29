@@ -291,6 +291,7 @@ static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
    return( (CGPoint){ .x = x, .y = y });
 }
 
+#define CGPointData( xvalue, yvalue) ((CGPoint){ .x = xvalue, .y = yvalue })
 
 
 
@@ -318,6 +319,9 @@ static inline CGPointU   CGPointUMake(CGFloat x, CGFloat y)
 }
 
 
+#define CGPointUData( xvalue, yvalue) ((CGPointU){ .x = (xvalue), .y = (yvalue) })
+
+
 
 //
 //    .-------------.
@@ -341,6 +345,8 @@ static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
    return( (CGSize){ .width = w, .height = h });
 }
 
+
+#define CGSizeData( w, h) ((CGSize){ .width = (w), .height = (h) })
 
 //
 // this can be used for variable axis code like:
@@ -368,6 +374,7 @@ static inline CGSizeU   CGSizeUMake( CGFloat w, CGFloat h)
 }
 
 
+#define CGSizeUData( w, h) ((CGSize){ .width = (w), .height = (height) })
 
 //
 // hardly ever used. Use CAPolarPoint for real vector stuff
@@ -383,6 +390,9 @@ static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
 {
    return( (CGVector){ .dx = dx, .dy = dy });
 }
+
+
+#define CGVectorData( xvalue, yvalue) ((CGSize){ .dx = (xvalue), .dy = (yvalue) })
 
 
 typedef struct CGVectorU
@@ -405,6 +415,7 @@ static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
 }
 
 
+#define CGVectorUData( xvalue, yvalue) ((CGSize){ .dx = (xvalue), .dy = (yvalue) })
 
 
 //
@@ -433,6 +444,14 @@ static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
                      .size   = (CGSize)  { .width = w, .height = h }
                    });
 }
+
+
+#define CGRectData( xvalue, yvalue, w, h)                   \
+((CGRect)                                                   \
+{                                                           \
+   .origin = (CGPoint) { .x = (xvalue), .y = (yvalue) },    \
+   .size   = (CGSize)  { .width = (w), .height = (h) }      \
+})
 
 
 static inline CGRect   CGRectMakeWithSize( CGSize size)
@@ -499,6 +518,14 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 }
 
 
+#define CGRectUData( xvalue, yvalue, w, h)                   \
+((CGRect)                                                    \
+{                                                            \
+   .origin = (CGPointU) { .x = (xvalue), .y = (yvalue) },    \
+   .size   = (CGSizeU)  { .width = (w), .height = (h) }      \
+})
+
+
 //
 // MEMO: Using extern const is probably the worst way to initialize to zero
 //       as it can't be inlined and forces read/write, though we only need to
@@ -510,9 +537,6 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 #define CGFloat2Zero      CGFloat2Make( 0, 0)
 #define CGFloat4Null      CGFloat4Make( NAN, NAN, 0.0f, 0.0f)
 #define CGFloat4Infinite  CGFloat4Make( -INFINITY, -INFINITY, INFINITY, INFINITY)
-
-
-
 
 #define CGPointZero       CGPointMake( 0, 0)
 #define CGPointUZero      CGPointUMake( 0, 0)
