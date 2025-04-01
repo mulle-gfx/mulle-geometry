@@ -31,7 +31,9 @@ typedef float CGFloat;
 #define CGFLOAT_IS_DOUBLE   0
 
 
+//
 // for _mulle_objc_typeinfo_compare to CGFloat2 be compatible with CGPoint
+// used by MulleCA
 //
 typedef struct CGFloat2
 {
@@ -115,7 +117,7 @@ static inline int   CGFloat4EqualToFloat4( CGFloat4 a, CGFloat4 b)
 
 
 
-// mulle addition:
+// mulle addition: returns a value between 0.0 and +1.0
 static inline CGFloat   CGFloatMakeRandom( void)
 {
    return( (CGFloat) (rand() * 1.0 / RAND_MAX));
@@ -257,6 +259,28 @@ static inline int  CGFloatIsNegativeZero( CGFloat x)
    }
    assert( 0);
 }
+
+
+typedef struct CGFloatRange
+{
+   CGFloat  min;
+   CGFloat  max;
+} CGFloatRange;
+
+
+static inline CGFloatRange   CGFloatRangeMake( CGFloat min, CGFloat max)
+{
+   return( (CGFloatRange){ .min = min, .max = max });
+}
+
+#define CGFloatRangeData( minvalue, maxvalue) ((CGPoint){ .min = minvalue, max = maxvalue })
+
+
+static inline int  CGFloatRangeContains( CGFloatRange range, CGFloat value)
+{
+   return( value >= range.min && value <= range.max);
+}
+
 
 #ifdef __GNUC__
 # pragma GCC diagnostic pop

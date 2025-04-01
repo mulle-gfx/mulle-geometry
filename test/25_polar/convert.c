@@ -9,15 +9,15 @@ int   main( int argc, char *argv[])
    CAPolarPoint   ap, bp;
 
    a  = CGPointMake( 18, 48);
-   printf( "[%.1f, %.1f]\n", a.x, a.y);
+   mulle_printf( "[%.1f, %.1f]\n", a.x, a.y);
    ap = CAPolarPointMakeWithPoint( a);
-   printf( "[%.1f / %.1f]\n", ap.radius, ap.radians);
+   mulle_printf( "[%.1f / %.1f]\n", ap.radius, ap.radians);
    b  = CGPointMakeWithPolarPoint( ap);
-   printf( "[%.1f %.1f]\n", b.x, b.y);
+   mulle_printf( "[%.1f %.1f]\n", b.x, b.y);
    bp = CAPolarPointMakeWithPoint( b);
-   printf( "[%.1f / %.1f]\n", bp.radius, bp.radians);
+   mulle_printf( "[%.1f / %.1f]\n", bp.radius, bp.radians);
    c  = CGPointMakeWithPolarPoint( bp);
-   printf( "[%.1f %.1f]\n", c.x, c.y);
+   mulle_printf( "[%.1f %.1f]\n", c.x, c.y);
 
    return( 0);
 }

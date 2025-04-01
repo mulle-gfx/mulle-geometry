@@ -315,3 +315,5 @@ CGFloat   CGFloatMakeAbnormalDistributionMinMax( CGFloat min, CGFloat max)
    return( r * (max - min) + min);
 }
 
+
+

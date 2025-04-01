@@ -48,7 +48,7 @@
 typedef struct CAPolarPoint
 {
    CGFloat   radius;
-   CGFloat   radians;    // NOT a CGFloat! also not a "radiansRotation"
+   CGFloat   radians;    // not a "radiansRotation"
 } CAPolarPoint;
 
 

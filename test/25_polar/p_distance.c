@@ -27,8 +27,8 @@ int   main( int argc, char *argv[])
                r  = CGPointDistanceToPoint( a, b);
                rb = CAPolarPointDistanceToPolarPoint( ap, bp);
                if( fabs( r - rb) > 0.001)
-                  printf( "*********");
-               printf( "[%.1f %.1f] to [%.1f %.1f] = %.1f / %.1f\n",
+                  mulle_printf( "*********");
+               mulle_printf( "[%.1f %.1f] to [%.1f %.1f] = %.1f / %.1f\n",
                         a.x, a.y,
                         b.x, b.y,
                         r, rb);

@@ -307,6 +307,22 @@ static inline CGPoint   CGPointTriangleGetCenterOfMass( CGPoint p0,
 }
 
 
+// ceilf is compatible with CGRectIntegral
+static inline CGPoint   CGPointIntegral( CGPoint p)
+{
+   return( CGPointMake( floorf( p.x),
+                        floorf( p.y)));
+}
+
+
+// ceilf is compatible with CGRectIntegral
+static inline CGPoint   CGPointIntegralFuzzy( CGPoint p, CGFloat fuzz)
+{
+   return( CGPointMake( floorf( p.x + fuzz),
+                        floorf( p.y + fuzz)));
+}
+
+
 
 /**
 */
@@ -330,6 +346,23 @@ static inline int   CGSizeContainsSize( CGSize a, CGSize b)
 }
 
 
+// ceilf is compatible with CGRectIntegral
+static inline CGSize   CGSizeIntegral( CGSize a)
+{
+   return( CGSizeMake( ceilf( a.width),
+                       ceilf( a.height)));
+}
+
+
+// ceilf is compatible with CGRectIntegral
+static inline CGSize   CGSizeIntegralFuzzy( CGSize a, CGFloat fuzz)
+{
+   return( CGSizeMake( ceilf( a.width - fuzz),
+                       ceilf( a.height - fuzz)));
+}
+
+
+
 /**
 */
 static inline int   CGRectIsInfinite( CGRect rect)
@@ -337,6 +370,7 @@ static inline int   CGRectIsInfinite( CGRect rect)
    return( isinf( rect.origin.x) || isinf(rect.origin.y) ||
            isinf( rect.size.width) || isinf(rect.size.height));
 }
+
 
 static inline int   CGRectIsStandardized( CGRect rect)
 {
@@ -656,8 +690,6 @@ static inline CGPoint   CGRectGetBottomRightPoint( CGRect rect)
 */
 MULLE__GEOMETRY_EXTERN_GLOBAL
 int CGRectContainsPoint( CGRect rect, CGPoint point);
-
-
 
 
 /**

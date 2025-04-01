@@ -13,6 +13,7 @@ endif()
 set( SOURCES
 src/main-equidistant.m
 src/main-gaussian.m
+src/main-gouraud.m
 src/main-intersection.m
 src/main-parallel.m
 src/main-polarpoint.m

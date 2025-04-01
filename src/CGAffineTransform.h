@@ -363,7 +363,7 @@ static inline CGAffineTransform   CGAffineTransformRotate( CGAffineTransform t, 
    CGFloat   radians;
 
    radians = CARotationToRadians( rotation);
-   return( CGAffineTransformRotate( t, radians));
+   return( CGAffineTransformRotateRadians( t, radians));
 }
 
 // useful for scalings of UIViews may be
