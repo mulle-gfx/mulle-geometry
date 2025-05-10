@@ -859,6 +859,60 @@ static inline CGRect   CGRectOffset( CGRect rect, CGFloat dx, CGFloat dy)
 }
 
 
+static inline CGRect   CGRectBySettingMinX( CGRect rect, CGFloat x)
+{
+   rect.origin.x = x;
+   return( rect);
+}
+
+
+static inline CGRect   CGRectBySettingMinY( CGRect rect, CGFloat y)
+{
+   rect.origin.y = y;
+   return( rect);
+}
+
+
+// 0 1 2 3 4
+// w=4 midX=2
+// 0 1 2 3 4 5 6
+// w=6 midX=3
+static inline CGRect   CGRectBySettingMidX( CGRect rect, CGFloat x)
+{
+   CGFloat   diff;
+
+   diff             = x - CGRectGetMidX( rect);
+   rect.origin.x   -= diff / 2.0;
+   rect.size.width += diff;
+   return( rect);
+}
+
+
+static inline CGRect   CGRectBySettingMidY( CGRect rect, CGFloat y)
+{
+   CGFloat   diff;
+
+   diff              = y - CGRectGetMidY( rect);
+   rect.origin.y    -= diff / 2.0;
+   rect.size.height += diff;
+   return( rect);
+}
+
+
+// more interesting :)
+static inline CGRect   CGRectBySettingMaxX( CGRect rect, CGFloat x)
+{
+   rect.size.width += x - CGRectGetMaxX( rect);
+   return( rect);
+}
+
+
+static inline CGRect   CGRectBySettingMaxY( CGRect rect, CGFloat y)
+{
+   rect.size.width += y - CGRectGetMaxY( rect);
+   return( rect);
+}
+
 
 /**
    CGRectMake( 2.0, 0.0, 2.0, 1.0) and CGRectMake( 0.0, 0.0, 2.0, 1.0)
