@@ -5,13 +5,14 @@
 
 int   main( int argc, char *argv[])
 {
-   CGFloat   angle;
-   CGFloat   deg;
-   CGFloat   hour;
-   CGFloat   rad2;
-   CGFloat   rad;
-   CGFloat   radhour;
-   CGFloat   rot;
+   CAAngle      angle;
+   CGFloat      deg;
+   CGFloat      hour;
+   CGFloat      rad2;
+   CGFloat      rad;
+   CGFloat      radhour;
+   CARotation   rotA;
+   CARotation   rotR;
 
    for( rad = -M_PI_f * 2.0; rad <= M_PI_f * 2.0 + 0.1; rad += M_PI_f * 0.25)
    {
@@ -21,16 +22,19 @@ int   main( int argc, char *argv[])
          rad = M_PI_f * 2.0;
 
       angle   = CARadiansToAngle( rad);
-      deg     = CARadiansToDegrees( angle);
-      rot     = CARadiansToRotation( rad);
+      rotR    = CARadiansAsRotationToRotation( rad);
+      rotA    = CARadiansAsAngleToRotation( rad);
+      deg     = CARadiansAsAngleToDegrees( rad);
+
       rad2    = CAAngleToRadians( angle);
       hour    = CAAngleToHour( rad2);
       radhour = CAHourToAngle( hour);
 
-      printf( "[%.1f rad] ang: %.3f rot: %.3f deg: %.3f hour: %.3f (%.3f)\n",
+      printf( "[%.1f rad] ang: %.3f rotA: %.3f rotR: %.3f deg: %.3f hour: %.3f (%.3f)\n",
                   rad,
                   angle, 
-                  rot,
+                  rotA,
+                  rotR,
                   deg,
                   hour,
                   radhour);

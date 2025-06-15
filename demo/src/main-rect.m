@@ -4,30 +4,36 @@
 
 
 //
-// just a visual test for CGRectGetTopLeftPoint and friends
+// just a visual test for CGRectGetTopLeft and friends
 //
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
-   CGRect              canvas;
-   CGRect              rect;
-
-   vg = CGContextGetNVGContext( context);
+   CGRect   canvas;
+   CGRect   rect;
 
    canvas = [layer canvas];
    rect   = CGSizeCenterInRect( CGSizeMake( 300, 200), canvas);
 
-   mvgStrokeRectWithColor( vg, rect, 1.5, CGColorMakeBlack());
+   CGContextStrokeRectWithColor( context, rect, 1.5, CGColorMakeBlack());
 
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopLeftPoint( rect),     4.0), CGColorMakeWithHSL( 0.0, 0.75, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopPoint( rect),         4.0), CGColorMakeWithHSL( 1 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetTopRightPoint( rect),    4.0), CGColorMakeWithHSL( 2 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetLeftPoint( rect),        4.0), CGColorMakeWithHSL( 3 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetCenterPoint( rect),      4.0), CGColorMakeWithHSL( 4 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetRightPoint( rect),       4.0), CGColorMakeWithHSL( 5 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomLeftPoint( rect),  4.0), CGColorMakeWithHSL( 6 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomPoint( rect),      4.0), CGColorMakeWithHSL( 7 / 8.0, 1.0, 0.75));
-   mvgFillCircleWithColor( vg, CACircleMake( CGRectGetBottomRightPoint( rect), 4.0), CGColorMakeWithHSL( 8 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetTopLeft( rect), 4.0), 
+                                          CGColorMakeWithHSL( 0.0, 0.75, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetTop( rect), 4.0), 
+                                          CGColorMakeWithHSL( 1 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetTopRight( rect), 4.0), 
+                                          CGColorMakeWithHSL( 2 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetLeft( rect), 4.0), 
+                                          CGColorMakeWithHSL( 3 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect), 4.0), 
+                                          CGColorMakeWithHSL( 4 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetRight( rect), 4.0), 
+                                          CGColorMakeWithHSL( 5 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetBottomLeft( rect), 4.0), 
+                                          CGColorMakeWithHSL( 6 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetBottom( rect), 4.0), 
+                                          CGColorMakeWithHSL( 7 / 8.0, 1.0, 0.75));
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetBottomRight( rect), 4.0), 
+                                          CGColorMakeWithHSL( 8 / 8.0, 1.0, 0.75));
 
    return( YES);
 }
@@ -37,7 +43,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 int   main( int argc, char *argv[])
 {
    return( UIApplicationRunDrawCallbackHz( (CGGraphicsLayerDrawCallback_t *) drawStuff,
-                                           CGSizeMake( 400, 300),
+                                           CGSizeMake( 640, 400),
                                            NULL,
                                            0.0f));
 }

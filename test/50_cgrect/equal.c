@@ -55,8 +55,8 @@ int   main( void)
                      for( i[ 1] = 0; i[ 1] < N_VALUES; i[ 1]++)
                         for( i[ 0] = 0; i[ 0] < N_VALUES; i[ 0]++)
                         {
-                           test( CGRectMake( values[ i[ 0]], values[ i[ 1]], values[ i[ 2]], values[ i[ 3]]),
-                                 CGRectMake( values[ i[ 4]], values[ i[ 5]], values[ i[ 6]], values[ i[ 7]]));
+                           test( CGRectData( values[ i[ 0]], values[ i[ 1]], values[ i[ 2]], values[ i[ 3]]),
+                                 CGRectData( values[ i[ 4]], values[ i[ 5]], values[ i[ 6]], values[ i[ 7]]));
                         }
 
    return( 0);

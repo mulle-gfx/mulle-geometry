@@ -45,34 +45,20 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
 
 
 
-CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians)
-{
-   return( CGAffineTransformMakeRotationInline( radians));
-}
-
-
 CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTransform t1)
 {
    return( CGAffineTransformConcatInline( t2, t1));
 }
 
-
-CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians)
+CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, CGPoint point)
 {
-   return( CGAffineTransformRotateRadiansInline( t, radians));
+   return( CGAffineTransformTranslateInline( t, point));
 }
 
 
-
-CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, float tx, float ty)
+CGAffineTransform CGAffineTransformScale( CGAffineTransform t, CGVector s)
 {
-   return( CGAffineTransformTranslateInline( t, tx, ty));
-}
-
-
-CGAffineTransform CGAffineTransformScale( CGAffineTransform t, float sx, float sy)
-{
-   return( CGAffineTransformScaleInline( t, sx, sy));
+   return( CGAffineTransformScaleInline( t, s));
 }
 
 
@@ -99,6 +85,18 @@ CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t)
    return( CGRectApplyAffineTransformInline( rect, t));
 }
 
+CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians)
+{
+   return( CGAffineTransformMakeRotationRadiansInline( radians));
+}
+
+
+CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians)
+{
+   return( CGAffineTransformRotateRadiansInline( t, radians));
+}
+
+
 
 // center as anchor point of rect is 0.5,0.5
 CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
@@ -114,12 +112,10 @@ CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
    transformCenter.x = CGRectGetMinX( rect) + CGRectGetWidth( rect) * anchorPoint.x;
    transformCenter.y = CGRectGetMinY( rect) + CGRectGetHeight( rect) * anchorPoint.y;
 
-   s = CGAffineTransformMakeTranslationInline( - transformCenter.x,
-                                               - transformCenter.y);
+   s = CGAffineTransformMakeTranslationInline( CGPointNegate( transformCenter));
    u = CGAffineTransformConcatInline( s, t);
 
-   v = CGAffineTransformMakeTranslationInline( + transformCenter.x,
-                                               + transformCenter.y);
+   v = CGAffineTransformMakeTranslationInline( transformCenter);
    w = CGAffineTransformConcatInline( u, v);
 
    return( CGRectApplyAffineTransformInline( rect, w));
@@ -133,24 +129,23 @@ CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
 CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds)
 {
    CGAffineTransform   t;
-   CGPoint             scale;
+   CGVector            scale;
 
-   t = CGAffineTransformMakeTranslationInline( -bounds.origin.x, -bounds.origin.y);
+   t = CGAffineTransformMakeTranslationInline( CGPointNegate( bounds.origin));
 
    //
    // now translate bounds for context
    //
    //if( ! CGSizeEqualToSize( frame.size, bounds.size))
    {
-      scale.x = frame.size.width  / bounds.size.width;
-      scale.y = frame.size.height / bounds.size.height;
-      t   = CGAffineTransformConcatInline( t, CGAffineTransformMakeScaleInline( scale.x, scale.y));
+      scale.dx = frame.size.width  / bounds.size.width;
+      scale.dy = frame.size.height / bounds.size.height;
+      t        = CGAffineTransformConcatInline( t, CGAffineTransformMakeScaleInline( scale));
    }
 
    //if( ! CGPointEqualToPoint( frame.origin, CGPointMake( 0, 0)))
       t = CGAffineTransformConcatInline( t,
-                                         CGAffineTransformMakeTranslationInline( frame.origin.x,
-                                                                                 frame.origin.y));
+                                         CGAffineTransformMakeTranslationInline( frame.origin));
    return( t);
 }
 
@@ -158,24 +153,55 @@ CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds
 // could also do
 CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds)
 {
-   CGPoint             scale;
+   CGVector            scale;
    CGAffineTransform   t;
+   CGPoint             point;
 
-   t = CGAffineTransformMakeTranslationInline( bounds.origin.x, bounds.origin.y);
+   t = CGAffineTransformMakeTranslationInline( bounds.origin);
    //if( ! CGSizeEqualToSize( frame.size, bounds.size))
    {
-      scale.x = bounds.size.width / frame.size.width;
-      scale.y = bounds.size.height / frame.size.height;
+      scale.dx = bounds.size.width / frame.size.width;
+      scale.dy = bounds.size.height / frame.size.height;
 
-      t   = CGAffineTransformConcat( CGAffineTransformMakeScaleInline( scale.x, scale.y),
-                                     t);
+      t   = CGAffineTransformConcatInline( CGAffineTransformMakeScaleInline( scale),
+                                           t);
    }
 
    //if( ! CGPointEqualToPoint( bounds.origin, CGPointMake( 0, 0)))
-      t = CGAffineTransformConcat( CGAffineTransformMakeTranslationInline( -frame.origin.x,
-                                                                           -frame.origin.y),
-                                   t);
+      point = CGPointNegate( frame.origin);
+      t     = CGAffineTransformConcatInline( CGAffineTransformMakeTranslationInline( point),
+                                             t);
    return( t);
+}
+
+
+CGRect   _CGRectRotate( CGRect rect, CARotation rotation)
+{
+   CGPoint             center;
+   CGAffineTransform   xform;
+
+   center = CGRectGetCenter( rect);
+   xform  = CGAffineTransformMakeTranslationInline( CGPointNegate( center));
+   xform  = CGAffineTransformConcatInline( CGAffineTransformMakeRotationInline( rotation), xform);
+   xform  = CGAffineTransformConcatInline( CGAffineTransformMakeTranslationInline( center), xform);
+   return( CGRectApplyAffineTransform( rect, xform));
+}
+
+
+
+CGAffineTransform   CGAffineTransformMakeRotationAroundPoint( CGPoint center,
+                                                              CARotation rotation)
+{
+   CGAffineTransform   translate;
+   CGAffineTransform   translateBack;
+   CGAffineTransform   rotate;
+   CGAffineTransform   combined;
+
+   translate     = CGAffineTransformMakeTranslationInline( CGPointNegate( center));
+   rotate        = CGAffineTransformMakeRotationInline( rotation);
+   combined      = CGAffineTransformConcatInline( translate, rotate);
+   translateBack = CGAffineTransformMakeTranslationInline( center);
+   return( CGAffineTransformConcatInline( combined, translateBack));
 }
 
 

@@ -18,9 +18,9 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    vg             = CGContextGetNVGContext( context);
    numberOfFrames = [context numberOfFrames];
 
-   nvgSave( vg);
+   CGContextSave( context);
    {
-      nvgTranslate( vg, canvas.size.width / 2.0, canvas.size.height / 2.0);
+      CGContextTranslate( context, CGPointMake( canvas.size.width / 2.0, canvas.size.height / 2.0));
       for( circles = 0; circles < 5; circles++)
       {
          for( deg = 0; deg < 360.0; deg += 2.0)
@@ -29,16 +29,16 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
                                                 CADegreesToAngle( deg));
             point  = CGPointMakeWithPolarPoint( pPoint);
 
-            nvgBeginPath( vg);
-            nvgCircle( vg, point.x, point.y, 3.0);
+            CGContextBeginPath( context);
+            CGContextCircle( context, CACircleMakeWithCenterAndRadius( point, 3.0));
             hue = CADegreesToRotation( (circles * 90.0) + deg + (numberOfFrames * (circles + 1) / 0.4));
             hue = fmodf( hue, 1.0f);
-            nvgFillColor( vg, CGColorMakeWithHSL( hue, 1.0, 0.5));
-            nvgFill( vg);
+            CGContextFillColor( context, CGColorMakeWithHSL( hue, 1.0, 0.5));
+            CGContextFill( context);
          }
       }
    }
-   nvgRestore( vg);
+   CGContextRestore( context);
 
    return( YES);
 }
@@ -46,17 +46,17 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
 void   setupScene( UIWindowPlane *contentPlane)
 {
-   UIView        *view;
-   CGRect         frame;
-   UIEdgeInsets   insets;
-   CALayer        *layer;
+   UIView            *view;
+   CGRect            frame;
+   UIEdgeInsets      insets;
+   CGGraphicsLayer   *layer;
 
    frame  = [contentPlane frame];
    insets = UIEdgeInsetsMake( 8, 8, 8, 8);
    frame  = UIEdgeInsetsInsetRect( frame, insets);
 
    view  = [UIView viewWithFrame:frame];
-   layer = [view layer];
+   layer = MULLE_OBJC_CLASS_CAST( CGGraphicsLayer, [view layer]);
    [layer setDrawCallback:(CGGraphicsLayerDrawCallback_t *) drawStuff];
    [contentPlane addSubview:view];
 }

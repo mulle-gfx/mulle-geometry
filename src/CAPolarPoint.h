@@ -54,7 +54,7 @@ typedef struct CAPolarPoint
 
 // apparently the iso norm for spherical is radius first, then angle
 // assume this is the way to go for 2D also
-static inline CAPolarPoint   CAPolarPointMakeWithRadians( CGFloat r, CGFloat a)
+static inline CAPolarPoint   CAPolarPointMake( CGFloat r, CGFloat a)
 {
    // infinite radius ? why not
    assert( ! isnan( r));
@@ -65,24 +65,33 @@ static inline CAPolarPoint   CAPolarPointMakeWithRadians( CGFloat r, CGFloat a)
 }
 
 
-static inline CAPolarPoint   CAPolarPointMakeWithAngle( CGFloat r, CAAngle a)
+static inline CAPolarPoint   CAPolarPointMakeWithRadiansAsAngle( CGFloat r, CGFloat a)
 {
-   assert( a >= 0.0 && a < CA_2xPI);
-
-   return( CAPolarPointMakeWithRadians( r, a));
+   return( CAPolarPointMake( r, a));
 }
 
+// MEMO: angle is normalized with a slight "epsilon" towards CA_2xPI
+//       so do not use this for multiple conversions over time as errors are
+//       bound to accumulate (even more). If you already have an angle
+//       this is fine.
+//       Otherwise prefer CAPolarPointMakeWithRotation.
+//
+static inline CAPolarPoint   CAPolarPointMakeWithAngle( CGFloat r, CAAngle a)
+{
+   return( CAPolarPointMakeWithRadiansAsAngle( r, a));
+}
 
 //
 // rotation here is "orientation" too as CAPolarPoint sees a rotation of 0
 // as "North"
 //
-static inline CAPolarPoint   CAPolarPointMakeWithRotation( CGFloat r, CARotation a)
+static inline CAPolarPoint   CAPolarPointMakeWithRotation( CGFloat radius, CARotation rotation)
 {
    CGFloat   radians;
 
-   radians = CARotationToRadians( a);
-   return( CAPolarPointMakeWithRadians( r, radians - M_PI_2f));
+   // we don't want to "angle" normalize here
+   radians = rotation * CA_2xPI - M_PI_2f;
+   return( CAPolarPointMakeWithRadiansAsAngle( radius, radians));
 }
 
 
@@ -94,7 +103,7 @@ static inline CGFloat   CAPolarPointGetRadius( CAPolarPoint v)
 
 static inline CARotation   CAPolarPointGetRotation( CAPolarPoint v)
 {
-   return( CARadiansToRotation( v.radians) + 0.25);
+   return( CARadiansAsAngleToRotation( v.radians));
 }
 
 
@@ -106,7 +115,7 @@ static inline CGFloat   CAPolarPointGetRadians( CAPolarPoint v)
 
 static inline CGFloat   CAPolarPointGetDegrees( CAPolarPoint v)
 {
-   return( CARadiansToDegrees( v.radians));
+   return( CARadiansAsAngleToDegrees( v.radians));
 }
 
 
@@ -143,17 +152,18 @@ static inline CGFloat   CGPointGetPolarRadius( CGPoint p)
 
 // mulle addition:
 // it's not an CAAngle, because it can be negative
-static inline CGFloat   CGPointGetPolarRadians( CGPoint p)
+static inline CGFloat   CGPointGetPolarRadiansAsAngle( CGPoint p)
 {
    if( CGPointEqualToPoint( p, CGPointZero))
       return( 0.0);
    return( atan2f( p.y, p.x));
 }
 
+
 static inline CAPolarPoint   CAPolarPointMakeWithPoint( CGPoint p)
 {
-   return( CAPolarPointMakeWithRadians( CGPointGetPolarRadius( p),
-                                        CGPointGetPolarRadians( p)));
+   return( CAPolarPointMakeWithRadiansAsAngle( CGPointGetPolarRadius( p),
+                                               CGPointGetPolarRadiansAsAngle( p)));
 }
 
 
@@ -174,7 +184,7 @@ static inline CGPoint   CGPointNormalize( CGPoint a, CGFloat radius)
 {
    CGFloat   radians;
 
-   radians = CGPointGetPolarRadians( a);
+   radians = CGPointGetPolarRadiansAsAngle( a);
    return( CGPointMake( cosf( radians) * radius, sinf( radians) * radius));
 }
 
@@ -234,7 +244,7 @@ static inline CAPolarPoint   CAPolarPointAddRadians( CAPolarPoint v, CGFloat rad
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians + radians);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians + radians);
    return( r);
 }
 
@@ -242,7 +252,7 @@ static inline CAPolarPoint   CAPolarPointSubtractRadians( CAPolarPoint v, CGFloa
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians - radians);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians - radians);
    return( r);
 }
 
@@ -251,7 +261,7 @@ static inline CAPolarPoint   CAPolarPointAddDegrees( CAPolarPoint v, CGFloat deg
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians + CADegreesToRadians( degrees));
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians + CADegreesToRadiansAsRotation( degrees));
    return( r);
 }
 
@@ -260,7 +270,7 @@ static inline CAPolarPoint   CAPolarPointSubtractDegrees( CAPolarPoint v, CGFloa
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians - CADegreesToRadians( degrees));
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians - CADegreesToRadiansAsRotation( degrees));
    return( r);
 }
 
@@ -269,7 +279,7 @@ static inline CAPolarPoint   CAPolarPointSubtractRotation( CAPolarPoint v, CARot
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians - a * CA_2xPI);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians - CARotationToRadiansAsRotation( a));
    return( r);
 }
 
@@ -278,7 +288,7 @@ static inline CAPolarPoint   CAPolarPointAddRadius( CAPolarPoint v, CGFloat d)
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius + d, v.radians);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius + d, v.radians);
    return( r);
 }
 
@@ -288,7 +298,7 @@ static inline CAPolarPoint   CAPolarPointSubtractRadius( CAPolarPoint v,
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius - d, v.radians);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius - d, v.radians);
    return( r);
 }
 
@@ -297,7 +307,7 @@ static inline CAPolarPoint   CAPolarPointRotate( CAPolarPoint v, CARotation a)
 {
    CAPolarPoint  r;
 
-   r = CAPolarPointMakeWithRadians( v.radius, v.radians + a * CA_2xPI);
+   r = CAPolarPointMakeWithRadiansAsAngle( v.radius, v.radians + a * CA_2xPI);
    return( r);
 }
 
@@ -317,4 +327,12 @@ static inline CGFloat2   CAPolarPointGetFloat2( CAPolarPoint a)
 }
 
 
+static inline CAPolarPoint   CAPolarPointMakeWithVectorAndRadius( CGVector vector, CGFloat radius)
+{
+   CAPolarPoint   point;
+
+   point.radius  = radius;
+   point.radians = atan2f( vector.dy, vector.dx);
+   return( point);
+}
 #endif

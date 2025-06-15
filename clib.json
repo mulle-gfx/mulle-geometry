@@ -6,6 +6,7 @@
    "license" : "UNLICENSED",
    "repo" : "MulleUI/mulle-geometry",
    "src" : [
+      "src/CAAngle.c",
       "src/CAAngle.h",
       "src/CACircle.c",
       "src/CACircle.h",
@@ -13,9 +14,9 @@
       "src/CADirection.h",
       "src/CAPolarPoint.c",
       "src/CAPolarPoint.h",
+      "src/CAPose.h",
       "src/CAQuadratic.c",
       "src/CAQuadratic.h",
-      "src/CARotation.h",
       "src/CGAffineTransform.c",
       "src/CGAffineTransform.h",
       "src/CGBase.h",

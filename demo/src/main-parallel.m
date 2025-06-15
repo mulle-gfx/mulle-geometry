@@ -4,16 +4,16 @@
 #define DEGREES   45
 
 
-static void   drawDot( struct NVGcontext *vg, CGPoint point, CGColor fillColor, CGColor strokeColor)
+static void   drawDot( CGContext *context, CGPoint point, CGColor fillColor, CGColor strokeColor)
 {
-   mvgFillCircleWithColor( vg, CACircleMake( point, 4.0), fillColor);
-   mvgStrokeCircleWithColor( vg, CACircleMake( point, 6.0), 4.0, strokeColor);
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 4.0), fillColor);
+   CGContextStrokeCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 6.0), 4.0, strokeColor);
 }
 
 
-static void   drawLine( struct NVGcontext *vg, CGPoint p1, CGPoint p2, CGColor strokeColor)
+static void   drawLine( CGContext *context, CGPoint p1, CGPoint p2, CGColor strokeColor)
 {
-   mvgStrokeLineWithColor( vg, p1, p2, 1.0, strokeColor);
+   CGContextStrokeLineWithColor( context, p1, p2, 1.0, strokeColor);
 }
 
 
@@ -68,12 +68,12 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 
-   center      = CGRectGetCenterPoint( rect);
+   center      = CGRectGetCenter( rect);
    outerCircle = CGRectGetInnerCircle( rect);
    innerCircle = CACircleInset( outerCircle, outerCircle.radius * (1.0 + 6.0 * factor) / 8.0);
 
-   mvgStrokeCircleWithColor( vg, innerCircle, 1.0, CGColorMakeGray());
-   mvgStrokeCircleWithColor( vg, outerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, innerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, outerCircle, 1.0, CGColorMakeGray());
 
    for( deg = 0; deg < 360.0; deg += 5 + (90.0 * factor))
    {
@@ -108,24 +108,24 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       p7 = CGPointTranslate( p2, slope, distance);
       p8 = CACircleNearestIntersectionPoint( outerCircle, p2, p7, p9);
 
-      drawLine( vg, p0, p4, CGColorMakeMagenta());
-      drawLine( vg, p1, p6, CGColorMakeIndigo());
-      drawLine( vg, p2, p8, CGColorMakeHotPink());
+      drawLine( context, p0, p4, CGColorMakeMagenta());
+      drawLine( context, p1, p6, CGColorMakeIndigo());
+      drawLine( context, p2, p8, CGColorMakeHotPink());
 
-      drawDot( vg, p0, color, CGColorMakeRed());
-      drawDot( vg, p1, color, CGColorMakeGreen());
-      drawDot( vg, p2, color, CGColorMakeBlue());
+      drawDot( context, p0, color, CGColorMakeRed());
+      drawDot( context, p1, color, CGColorMakeGreen());
+      drawDot( context, p2, color, CGColorMakeBlue());
 
-      drawDot( vg, p4, color, CGColorMakeDarkGray());
-      drawDot( vg, p6, color, CGColorMakeIndigo());
-      drawDot( vg, p8, color, CGColorMakeBrown());
+      drawDot( context, p4, color, CGColorMakeDarkGray());
+      drawDot( context, p6, color, CGColorMakeIndigo());
+      drawDot( context, p8, color, CGColorMakeBrown());
 
       [context useDefaultFont];
 
-      nvgFontSize( vg, 11.0);
-      nvgTextColor( vg, CGColorMakeBlack());
-      nvgTextBackgroundColor( vg, CGColorMakeWhite());
-      mvgFormatInRect( vg, CGRectMake( p0.x + 4.0, p0.y, 200, 16), 0, 0, "d: %g (%g)",
+      CGContextFontSize( context, 11.0);
+      CGContextTextColor( context, CGColorMakeBlack());
+      CGContextTextBackgroundColor( context, CGColorMakeWhite());
+      CGContextFormatInRect( context, CGRectMake( p0.x + 4.0, p0.y, 200, 16), 0, 0, "d: %g (%g)",
                            CGPointDistanceToPoint( p0, p4),
                            (q1.radians - q0.radians) * innerCircle.radius);
    }

@@ -116,7 +116,7 @@ CGPoint   CACirclePointAtDistance( CACircle circle,
    p0 = CGPointMakeWithPolarPoint( q0);
    p0 = CGPointAdd( p0, circle.center);
    if( ! CACircleIntersectionsWithCircle( circle, 
-                                          CACircleMake( p0, fabsf( distance)), 
+                                          CACircleMakeWithCenterAndRadius( p0, fabsf( distance)),
                                           intersection))
       return( CGPointNull);
 

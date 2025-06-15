@@ -12,38 +12,39 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CAAngle             endAngle;
    CGPoint             p1;
    CGPoint             p2;
-   int                 dir;
+   CGFloat             dir;
+   CGFloat             rotation;
 
    vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 
-   nvgTranslate( vg, canvas.origin.x + canvas.size.width / 2.0,
-                     canvas.origin.y + canvas.size.height / 2.0);
+   CGContextTranslate( context, CGPointMake( canvas.origin.x + canvas.size.width / 2.0,
+                     canvas.origin.y + canvas.size.height / 2.0));
 
    i      = [context numberOfFrames] % 360;
-   dir    = ([context numberOfFrames] % 720 < 360) ? NVG_CW : NVG_CCW;
+   dir    = ([context numberOfFrames] % 720 < 360) ? 1.0 : -1.0;
    radius = 1 + CGRectGetInnerRadius( rect) / 359 * i;
 
-   nvgBeginPath( vg);
+   CGContextBeginPath( context);
    startAngle = CARadiansToAngle( CAAngleNorth + (i / 359.0) * 2 * M_PI_f);
-   endAngle   = CAAngleAddRadians( startAngle, (i / 359.0) * 2 * M_PI_f);
+   rotation   = i / 359.0 * dir;
 
-   nvgMoveTo( vg, 0, 0);
+   CGContextMoveTo( context, CGPointMake( 0, 0));
    p1 = CGPointMake( cosf( CAAngleToRadians( startAngle)) * radius, sinf( CAAngleToRadians( startAngle)) * radius);
-   mvgLineTo( vg, p1);
+   CGContextLineTo( context, p1);
 
-   nvgArc( vg, 0, 0, radius, startAngle, endAngle, dir);
+   CGContextArc( context, CACircleMake( 0, 0, radius), startAngle, rotation);
 
-   nvgClosePath( vg);
+   CGContextClosePath( context);
 
    p2 = CGPointMake( cosf( CAAngleToRadians( endAngle)) * radius, sinf( CAAngleToRadians( endAngle)) * radius);
-   nvgFillColor( vg, CGColorMakeWithHSLA( 0.1 + 0.9 * i / 359.0, 1.0, 0.5, 1.0));
-   nvgFill( vg);
+   CGContextFillColor( context, CGColorMakeWithHSLA( 0.1 + 0.9 * i / 359.0, 1.0, 0.5, 1.0));
+   CGContextFill( context);
 
    // draw helper points
-   mvgFillCircleWithColor( vg, CACircleMake( p1, 2.0), CGColorMakeRed());
-   mvgFillCircleWithColor( vg, CACircleMake( p2, 2.0), CGColorMakeGreen());
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( p1, 2.0), CGColorMakeRed());
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( p2, 2.0), CGColorMakeGreen());
 
    return( YES);
 }

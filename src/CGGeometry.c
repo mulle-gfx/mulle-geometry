@@ -317,3 +317,142 @@ CGFloat   CGFloatMakeAbnormalDistributionMinMax( CGFloat min, CGFloat max)
 
 
 
+int   CGEdgeIntersect( CGPoint p1, CGPoint p2, CGPoint p3, CGPoint p4, CGPoint *intersection)
+{
+    float     denom;
+    float     t;
+    CGPoint   dummy;
+
+    if( ! intersection)
+      intersection = &dummy;
+
+    denom = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+    if( fabsf( denom) < 1e-10f)
+       return( 0); // parallel lines
+
+    t               = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / denom;
+    intersection->x = p1.x + t * (p2.x - p1.x);
+    intersection->y = p1.y + t * (p2.y - p1.y);
+    return( 1);
+}
+
+
+
+unsigned int   CGPolygonClipAgainstEdge( CGPoint *input,
+                                         size_t n,
+                                         CGPoint edgeStart,
+                                         CGPoint edgeEnd,
+                                         CGPoint *output)
+{
+    CGPoint        prevPoint;
+    CGPoint        currPoint;
+    CGPoint        intersection;
+    int            prevInside;
+    int            currInside;
+    unsigned int   m;
+    unsigned int   i;
+
+    if( n == 0)
+       return( 0);
+
+    m = 0;
+
+    prevPoint   = input[ n - 1];
+    prevInside  = CGEdgeContainsPoint( edgeStart, edgeEnd, prevPoint);;
+
+    for( i = 0; i < n; i++)
+    {
+       currPoint  = input[ i];
+       currInside = CGEdgeContainsPoint( edgeStart, edgeEnd, currPoint);
+
+       if( currInside)
+       {
+          if( ! prevInside)
+          {
+             // Entering - add intersection point
+             if( CGEdgeIntersect( prevPoint, currPoint, edgeStart, edgeEnd, &intersection))
+                output[ m++] = intersection;
+          }
+          // Add current point
+          output[ m++] = currPoint;
+       }
+       else
+          if( prevInside)
+          {
+             // Exiting - add intersection point
+             if( CGEdgeIntersect( prevPoint, currPoint, edgeStart, edgeEnd, &intersection))
+                output[ m++] = intersection;
+          }
+
+       prevPoint  = currPoint;
+       prevInside = currInside;
+    }
+
+    return( m);
+}
+
+
+CGRect   CGPolygonBoundingBox( CGPoint *points, size_t count)
+{
+   size_t     i;
+   CGFloat    minX;
+   CGFloat    maxX;
+   CGFloat    minY;
+   CGFloat    maxY;
+
+   if( count == 0)
+      return( CGRectZero);
+
+   minX = points[ 0].x;
+   maxX = points[ 0].x;
+   minY = points[ 0].y;
+   maxY = points[ 0].y;
+
+   for( i = 1; i < count; i++)
+   {
+      if( points[ i].x < minX) minX = points[i].x;
+      if( points[ i].x > maxX) maxX = points[i].x;
+      if( points[ i].y < minY) minY = points[i].y;
+      if( points[ i].y > maxY) maxY = points[i].y;
+   }
+
+   return( CGRectMake( minX, minY, maxX - minX, maxY - minY));
+}
+
+
+
+// Main clipping function
+unsigned int   CGPolygon4ClipAgainstPolygon4( CGPoint subject[ 4], CGPoint clipRect[ 4], CGPoint result[ 8])
+{
+    CGPoint        temp[ 8];
+    CGPoint        *input;
+    CGPoint        *output;
+    CGPoint        *swap;
+    uintptr_t      count;
+    unsigned int   edge;
+    unsigned int   nextEdge;
+
+    memcpy( result, subject, sizeof( CGPoint) * 4);
+
+    input  = result;
+    output = temp;
+    count  = 4;
+
+    // Clip against all 4 edges - ping-pong between result and temp
+    for( edge = 0; edge < 4; edge++)
+    {
+       nextEdge = (edge + 1) % 4;
+       count    = CGPolygonClipAgainstEdge( input, count, clipRect[ edge], clipRect[ nextEdge], output);
+       if( count == 0)
+          break;
+
+       // Swap input/output buffers
+       swap   = input;
+       input  = output;
+       output = swap;
+    }
+
+    // Final result is already in the result array - no copy needed!
+    return( count);
+}
+

@@ -4,16 +4,16 @@
 #define DEGREES   90
 
 
-static void   drawDot( struct NVGcontext *vg, CGPoint point, CGColor fillColor, CGColor strokeColor)
+static void   drawDot( CGContext *context, CGPoint point, CGColor fillColor, CGColor strokeColor)
 {
-   mvgFillCircleWithColor( vg, CACircleMake( point, 4.0), fillColor);
-   mvgStrokeCircleWithColor( vg, CACircleMake( point, 6.0), 4.0, strokeColor);
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 4.0), fillColor);
+   CGContextStrokeCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 6.0), 4.0, strokeColor);
 }
 
 
-static void   drawLine( struct NVGcontext *vg, CGPoint p1, CGPoint p2, CGColor strokeColor)
+static void   drawLine( CGContext *context, CGPoint p1, CGPoint p2, CGColor strokeColor)
 {
-   mvgStrokeLineWithColor( vg, p1, p2, 1.0, strokeColor);
+   CGContextStrokeLineWithColor( context, p1, p2, 1.0, strokeColor);
 }
 
 
@@ -66,12 +66,12 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 
-   center      = CGRectGetCenterPoint( rect);
+   center      = CGRectGetCenter( rect);
    outerCircle = CGRectGetInnerCircle( rect);
    innerCircle = CACircleInset( outerCircle, outerCircle.radius * (1.0 + 6.0 * factor) / 8.0);
 
-   mvgStrokeCircleWithColor( vg, innerCircle, 1.0, CGColorMakeGray());
-   mvgStrokeCircleWithColor( vg, outerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, innerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, outerCircle, 1.0, CGColorMakeGray());
 
    for( deg = 0; deg < 360.0; deg += 10 + (80.0 * factor))
    {
@@ -90,7 +90,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
       q4 = CAPolarPointMakeWithAngle( outerCircle.radius, midAngle);
 
-      d = CADegreesToRadians( DEGREES / 2.0) * innerCircle.radius;
+      d = CADegreesToRadiansAsRotation( DEGREES / 2.0) * innerCircle.radius;
       a = d / outerCircle.radius;
 
       q3 = CAPolarPointSubtractRadians( q4, a);
@@ -103,17 +103,17 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       p4 = CGPointAdd( CGPointMakeWithPolarPoint( q4), center);
       p5 = CGPointAdd( CGPointMakeWithPolarPoint( q5), center);
 
-      drawLine( vg, p0, p3, CGColorMakeMagenta());
-      drawLine( vg, p1, p4, CGColorMakeIndigo());
-      drawLine( vg, p2, p5, CGColorMakeHotPink());
+      drawLine( context, p0, p3, CGColorMakeMagenta());
+      drawLine( context, p1, p4, CGColorMakeIndigo());
+      drawLine( context, p2, p5, CGColorMakeHotPink());
 
-      drawDot( vg, p0, color, CGColorMakeRed());
-      drawDot( vg, p1, color, CGColorMakeGreen());
-      drawDot( vg, p2, color, CGColorMakeBlue());
+      drawDot( context, p0, color, CGColorMakeRed());
+      drawDot( context, p1, color, CGColorMakeGreen());
+      drawDot( context, p2, color, CGColorMakeBlue());
 
-      drawDot( vg, p3, color, CGColorMakeDarkGray());
-      drawDot( vg, p4, color, CGColorMakeIndigo());
-      drawDot( vg, p5, color, CGColorMakeBrown());
+      drawDot( context, p3, color, CGColorMakeDarkGray());
+      drawDot( context, p4, color, CGColorMakeIndigo());
+      drawDot( context, p5, color, CGColorMakeBrown());
    }
 
    return( YES);

@@ -51,69 +51,62 @@ static void   gradientFillRGBABytes( unsigned char * data, NSUInteger w, NSUInte
 
 
 
-void   drawGradientRectangle(NVGcontext* vg, CGRect rect, int image)
+void   drawGradientRectangle( CGContext* context, CGRect rect, CGPaint *paint)
 {
     float   x = rect.origin.x;
     float   y = rect.origin.y;
     float   width = rect.size.width;
     float   height = rect.size.height;
 
-    NVGpaint   paint;
-
-    nvgBeginPath( vg);
-    nvgRect( vg, x, y, width, height);
-
-    paint = nvgImagePattern( vg, x, y, width, height, 0, image, 1.0f);
-    nvgFillPaint( vg, paint);
-    nvgFill( vg);
+    CGContextBeginPath( context);
+    CGContextRect( context, rect);
+    CGContextFillPaintableOptions( context, paint, rect, NULL);
+    CGContextFill( context);
 
     // stroke an outline, because why not
-    nvgStrokeColor( vg, nvgRGBA( 255, 255, 255, 255));
-    nvgStrokeWidth( vg, 1.0);
-    nvgStroke( vg);
-
-    // if we delete now, the texture is gone
-    // nvgDeleteImage(vg, image);
+    CGContextStrokeColor( context, nvgRGBA( 255, 255, 255, 255));
+    CGContextStrokeWidth( context, 1.0);
+    CGContextStroke( context);
 }
 
 
-static void   drawFourCircleSegments( struct NVGcontext *vg,
+static void   drawFourCircleSegments( CGContext *context,
                                       CACircle circle,
                                       float strokeWidth,
                                       unsigned char *texture,
-                                      int image)
+                                      CGPaint *paint)
 {
    CGRect     rect;
-   NVGpaint   paint;
 
    rect  = CACircleGetOuterRect( circle);
-   paint = mvgImagePattern( vg, rect, 0, image, 1.0f);
-   mvgStrokePaint( vg, paint);
-   mvgStrokeWidth( vg, strokeWidth);
 
-   mvgBeginPath( vg);
-   mvgMoveTo( vg, CACircleGetCenterPoint( circle));
-   mvgArc( vg, circle, CAAngleNorthWest, CAAngleNorthEast, NVG_CW);
+   CGContextFillPaintableOptions( context, paint, rect, NULL);
+   CGContextStrokePaintableOptions( context, paint, rect, strokeWidth, NULL);
+   CGContextStrokeWidth( context, strokeWidth);
+
+   CGContextBeginPath( context);
+   CGContextMoveTo( context, CACircleGetCenter( circle));
+   CGContextArcRadians( context, circle, CAAngleNorthWest, CAAngleNorthEast, CARotationDirectionClockWise);
 //   mvgStrokeColor( vg, CGColorMakeRed());
-   mvgStroke( vg);
+   CGContextStroke( context);
 
-   mvgBeginPath( vg);
-   mvgMoveTo( vg, CACircleGetCenterPoint( circle));
-   mvgArc( vg, circle, CAAngleNorthEast, CAAngleSouthEast, NVG_CW);
+   CGContextBeginPath( context);
+   CGContextMoveTo( context, CACircleGetCenter( circle));
+   CGContextArcRadians( context, circle, CAAngleNorthEast, CAAngleSouthEast, CARotationDirectionClockWise);
 //   mvgStrokeColor( vg, CGColorMakeYellow());
-   mvgStroke( vg);
+   CGContextStroke( context);
 
-   mvgBeginPath( vg);
-   mvgMoveTo( vg, CACircleGetCenterPoint( circle));
-   mvgArc( vg, circle, CAAngleSouthEast, CAAngleSouthWest, NVG_CW);
+   CGContextBeginPath( context);
+   CGContextMoveTo( context, CACircleGetCenter( circle));
+   CGContextArcRadians( context, circle, CAAngleSouthEast, CAAngleSouthWest, CARotationDirectionClockWise);
 //   mvgStrokeColor( vg, CGColorMakeGreen());
-   mvgStroke( vg);
+   CGContextStroke( context);
 
-   mvgBeginPath( vg);
-   mvgMoveTo( vg, CACircleGetCenterPoint( circle));
-   mvgArc( vg, circle, CAAngleSouthWest, CAAngleNorthWest, NVG_CW);
+   CGContextBeginPath( context);
+   CGContextMoveTo( context, CACircleGetCenter( circle));
+   CGContextArcRadians( context, circle, CAAngleSouthWest, CAAngleNorthWest, CARotationDirectionClockWise);
 //   mvgStrokeColor( vg, CGColorMakeBlue());
-   mvgStroke( vg);
+   CGContextStroke( context);
 }
 
 
@@ -124,7 +117,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    CGRect              canvas;
    CGRect              rect;
    CACircle            circle;
-   static int          image;
+   CGImage             *image;
 
    vg     = CGContextGetNVGContext( context);
 
@@ -138,9 +131,10 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
 // 4x4 has very minor banding
 
       gradientFillRGBABytes( texture, TEX_W, TEX_H);
-       // Of course this code is terrible, should use CGContext properly for this
-       // to manage image as a resource
-      image = nvgCreateImageRGBA( vg, TEX_W, TEX_H, 0, texture);
+      image = [CGImage imageWithRGBABytes:texture
+                               bitmapSize:CGPixelSizeMake( TEX_W, TEX_H)
+                             textureFlags:0
+                                  context:context];
    }
 
 
@@ -148,14 +142,14 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    rect   = CGRectInset( canvas, 100, 100);
    circle = CGRectGetOuterCircle( rect);
 
-   drawFourCircleSegments( vg, circle, 3.0f, texture, image);
+   drawFourCircleSegments( context, circle, 3.0f, texture, image);
 
    // draws the square with "gouraud" shading, which is surprisingly
    // tricky in nanovg
-   drawGradientRectangle( vg, rect, image);
+   drawGradientRectangle( context, rect, image);
 
    // draw a small inner circle, because why not
-   mvgStrokeCircleWithColor( vg, CGRectGetInnerCircle( rect),
+   CGContextStrokeCircleWithColor( context, CGRectGetInnerCircle( rect),
                                  0.5f,
                                  CGColorMakeWhite());
 

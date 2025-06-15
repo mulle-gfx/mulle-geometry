@@ -11,16 +11,20 @@ endif()
 # contents selected with patternfile ??-source--sources
 #
 set( SOURCES
+src/main-cutter.m
 src/main-equidistant.m
 src/main-gaussian.m
 src/main-gouraud.m
 src/main-intersection.m
 src/main-parallel.m
 src/main-polarpoint.m
+src/main-projection.m
 src/main-radius.m
 src/main-rect.m
+src/main-rotate.m
 src/main-secant.m
 src/main-sector.m
+src/main-transform.m
 src/main-trigonometry.m
 src/main-wedge.m
 )

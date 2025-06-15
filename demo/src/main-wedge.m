@@ -67,12 +67,12 @@ static inline CAWedge   CAWedgeMakeWithDistanceRadians( CACircle   circle,
    distance = CARadiusDistanceBetweenAngles( innerRadius, spaceStartMidAngle, innerStartAngle);
    if( distance >= 0.5)
    {
-      p0 = CACirclePointAtDistance( CACircleMake( CGPointZero, circle.radius), spaceStartMidAngle, distance);
+      p0 = CACirclePointAtDistance( CACircleMakeWithCenterAndRadius( CGPointZero, circle.radius), spaceStartMidAngle, distance);
       q0 = CAPolarPointMakeWithPoint( p0);
 
       startAngle = CAPolarPointGetAngle( q0);
 
-      p1 = CACirclePointAtDistance( CACircleMake( CGPointZero, circle.radius), spaceEndMidAngle, -distance);
+      p1 = CACirclePointAtDistance( CACircleMakeWithCenterAndRadius( CGPointZero, circle.radius), spaceEndMidAngle, -distance);
       q1 = CAPolarPointMakeWithPoint( p1);
 
       endAngle = CAPolarPointGetAngle( q1);
@@ -83,22 +83,22 @@ static inline CAWedge   CAWedgeMakeWithDistanceRadians( CACircle   circle,
 
 
 
-static void   mvgWedgePath( struct NVGcontext *vg, CAWedge *wedge)
+static void   CGContextWedgePath( CGContext *context, CAWedge *wedge)
 {
    CGPoint        p0;
    CACircle       innerCircle;
    CGPoint        center;
 
-   center      = CACircleGetCenterPoint( wedge->circle);
-   innerCircle = CACircleMake( center, wedge->innerRadius);
+   center      = CACircleGetCenter( wedge->circle);
+   innerCircle = CACircleMakeWithCenterAndRadius( center, wedge->innerRadius);
 
    p0 = CACirclePointAtAngle( innerCircle, wedge->innerStartAngle);
 
    {
-      mvgMoveTo( vg, p0);
-      mvgArc( vg, innerCircle, wedge->innerStartAngle, wedge->innerEndAngle, NVG_CW);
-      mvgArc( vg, wedge->circle, wedge->endAngle, wedge->startAngle, NVG_CCW);
-      mvgClosePath( vg);
+      CGContextMoveTo( context, p0);
+      CGContextArcRadians( context, innerCircle, wedge->innerStartAngle, wedge->innerEndAngle, CARotationDirectionClockWise);
+      CGContextArcRadians( context, wedge->circle, wedge->endAngle, wedge->startAngle, CARotationDirectionCounterClockWise);
+      CGContextClosePath( context);
    }
 }
 
@@ -122,8 +122,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGRect              canvas;
    CGRect              rect;
    NSUInteger          numberOfFrames;
-   struct NVGcontext   *vg;
-   struct NVGpaint     paint;
    CGGradient          *gradient;
 
 #ifdef ANIMATION
@@ -138,7 +136,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       factor = numberOfFrames / ((float) (ANIM_SPEED / 2) - 1);
    factor = _CAQuadraticGetValue( ((struct CAQuadratic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 
@@ -151,37 +148,26 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 //   mvgStrokeCircleWithColor( vg, outerCircle.center, outerCircle.radius, 1.0, CGColorMakeGray());
 
    [context useDefaultFont];
-   mvgTextColor( vg, CGColorMakeBlack());
-   mvgTextBackgroundColor( vg, CGColorMakeWhite());
-   mvgTextInRect( vg, "VfL Bochum 1848",
-                       (size_t) -1,
-                       CACircleGetOuterRect( outerCircle),
-                       CGContentModeScaleAspectFit,
-                       MVGTextAlignVisually);
+   CGContextTextColor( context, CGColorMakeBlack());
+   CGContextTextBackgroundColor( context, CGColorMakeWhite());
+   CGContextTextInRect( context, "VfL Bochum 1848",
+                                 (size_t) -1,
+                                 CACircleGetOuterRect( outerCircle),
+                                 CGContentModeScaleAspectFit,
+                                 CGTextOptionAlignVisually);
 
    gradient = [CGGradient gradientWithStartColor:CGColorMultiplyAlpha( CGColorMakeWhite(), 0.5f)
                                         endColor:CGColorMultiplyAlpha( CGColorMakePersianBlue(), 0.5f)
                                         rotation:0.125];
-
-   paint    = [gradient linearGradientNVGpaintWithBounds:CACircleGetOuterRect( outerCircle)
-                                              smoothness:1.0
-                                              NVGcontext:vg];
-   mvgFillCircleWithNVGpaint( vg, circle, paint);
+   CGContextFillCircleWithPaintable( context, circle, gradient);
 
    gradient = [CGGradient gradientWithStartColor:CGColorMultiplyAlpha( CGColorMakeWhite(), 0.5f)
                                         endColor:CGColorMultiplyAlpha( CGColorMakePersianBlue(), 0.5f)
                                         rotation:0.75];
-   paint    = [gradient linearGradientNVGpaintWithBounds:CACircleGetOuterRect( outerCircle)
-                                              smoothness:1.0
-                                              NVGcontext:vg];
+   CGContextFillCircleWithPaintable( context, circle, gradient);
 
-//   paint    = [gradient radialGradientNVGpaintWithCircle:outerCircle
-//                                             innerRadius:innerCircle.radius
-//                                              NVGcontext:vg];
-   mvgFillCircleWithNVGpaint( vg, circle, paint);
-
-   mvgBeginPath( vg);
-   mvgCircle( vg, circle);
+   CGContextBeginPath( context);
+   CGContextCircle( context, circle);
 
    for( deg = 0; deg < 360.0 - WEDGE_DEGREES; deg += WEDGE_DEGREES + WEDGE_OFFSET_DEGREES)
    {
@@ -195,77 +181,22 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
                                               CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES),
                                               CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES),
                                               innerCircle.radius,
-                                              CADegreesToRadians( WEDGE_OFFSET_DEGREES / 2.0f));
-#if 0
-      spaceStartMidAngle = CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES / 2.0);
-      innerStartAngle    = CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES);
-      innerEndAngle      = CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES);
-      spaceEndMidAngle   = CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES + WEDGE_OFFSET_DEGREES / 2.0);
+                                              CADegreesToRadiansAsRotation( WEDGE_OFFSET_DEGREES / 2.0f));
 
-      // we want to keep this distance on outer, so need to adjust angles.
-      // we use equidistancy here, though we should use paralell really
-
-      // the offset is like a small rectangle, separating wedges
-
-      // find point on outercircle
-
-      outerStartAngle = innerStartAngle;
-      outerEndAngle   = innerEndAngle;
-
-      distance = CACircleDistanceBetweenAngles( innerCircle, spaceStartMidAngle, innerStartAngle);
-      if( distance >= 0.5)
-      {
-         p0 = CACirclePointAtDistance( CACircleMake( CGPointZero, outerCircle.radius), spaceStartMidAngle, distance);
-         q0 = CAPolarPointMakeWithPoint( p0);
-
-         outerStartAngle  = CAPolarPointGetAngle( q0);
-
-//      spaceMidAngle   = CADegreesToAngle( rotDeg + deg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES + WEDGE_OFFSET_DEGREES);
-
-         p1 = CACirclePointAtDistance( CACircleMake( CGPointZero, outerCircle.radius), spaceEndMidAngle, -distance);
-         q1 = CAPolarPointMakeWithPoint( p1);
-
-         outerEndAngle  = CAPolarPointGetAngle( q1);
-      }
-
-      wedge = CAWedgeMake( outerCircle, outerStartAngle, outerEndAngle, innerCircle.radius, innerStartAngle, innerEndAngle);
-#endif
-
-      mvgWedgePath( vg, &wedge);
-      mvgPathWinding( vg, NVG_HOLE);
-
-#if 0
-      drawDot( vg, CACirclePointAtAngle( innerCircle, innerStartAngle), CGColorMakeGray(), CGColorMakeRed());
-      drawDot( vg, CACirclePointAtAngle( innerCircle, innerEndAngle),   CGColorMakeGray(), CGColorMakeGreen());
-
-//      if( distance >= 0.5)
-//      {
-//         drawDot( vg, CACirclePointAtAngle( innerCircle, spaceStartMidAngle),   CGColorMakeGreen(), CGColorMakeGray());
-//         drawDot( vg, CACirclePointAtAngle( innerCircle, spaceEndMidAngle),   CGColorMakeGreen(), CGColorMakeGray());
-//
-//         drawDot( vg, CACirclePointAtAngle( outerCircle, spaceStartMidAngle),   CGColorMakeGreen(), CGColorMakeGray());
-//         drawDot( vg, CACirclePointAtAngle( outerCircle, spaceEndMidAngle),   CGColorMakeGreen(), CGColorMakeGray());
-//      }
-
-      drawDot( vg, CACirclePointAtAngle( outerCircle, outerEndAngle),   CGColorMakeWhite(), CGColorMakeGreen());
-      drawDot( vg, CACirclePointAtAngle( outerCircle, outerStartAngle), CGColorMakeWhite(), CGColorMakeRed());
-#endif
+      CGContextWedgePath( context, &wedge);
+      CGContextPathWinding( context, NVG_HOLE);
 
 //      drawLabel( context, CACirclePointAtAngle( outerCircle,
 //                                       CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES / 2.0)),
 //                                       distance);
    }
 
-   gradient = [CGGradient gradientWithStartColor:CGColorMakeWhite()
-                                        endColor:CGColorMakePersianBlue()
-                                        rotation:0.0];
-
-   paint    = [gradient radialGradientNVGpaintWithCircle:circle
-                                             innerRadius:0.0
-                                              NVGcontext:vg];
-
-   mvgFillPaint( vg, paint);
-   mvgFill( vg);
+   gradient = [CGGradient radialGradientWithCircle:circle
+                                             color:CGColorMakeWhite()
+                                       innerRadius:0.0
+                                        innerColor:CGColorMakePersianBlue()];
+   CGContextFillPaintable( context, gradient);
+   CGContextFill( context);
 
    return( YES);
 }

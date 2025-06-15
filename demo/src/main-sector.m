@@ -1,28 +1,28 @@
 #import "import.h"
 
 
-static void   mvgSectorPath( struct NVGcontext *vg,
-                             CACircle circle,
-                             CAAngle startAngle,
-                             CAAngle endAngle,
-                             CGFloat innerRadius)
+static void   CGContextSectorPath( CGContext *context,
+                                   CACircle circle,
+                                   CAAngle startAngle,
+                                   CAAngle endAngle,
+                                   CGFloat innerRadius)
 {
    CGPoint        p0;
    CACircle       innerCircle;
    CGPoint        center;
 
-   center      = CACircleGetCenterPoint( circle);
-   innerCircle = CACircleMake( center, innerRadius);
+   center      = CACircleGetCenter( circle);
+   innerCircle = CACircleMakeWithCenterAndRadius( center, innerRadius);
 
    p0 = CACirclePointAtAngle( innerCircle, startAngle);
 
    {
-      mvgBeginPath( vg);
-      mvgMoveTo( vg, p0);
-      mvgArc( vg, innerCircle, startAngle, endAngle, NVG_CW);
+      CGContextBeginPath( context);
+      CGContextMoveTo( context, p0);
+      CGContextArcRadians( context, innerCircle, startAngle, endAngle, CARotationDirectionClockWise);
       // amusingly mvgArc already draws a line up to p2
-      mvgArc( vg, circle, endAngle, startAngle, NVG_CCW);
-      mvgClosePath( vg);
+      CGContextArcRadians( context, circle, endAngle, startAngle, CARotationDirectionCounterClockWise);
+      CGContextClosePath( context);
    }
 }
 
@@ -32,25 +32,25 @@ static void   mvgSectorPath( struct NVGcontext *vg,
 #define WEDGE_DEGREES         15
 
 
-static void   drawDot( struct NVGcontext *vg, CGPoint point, CGColor fillColor, CGColor strokeColor)
+static void   drawDot( CGContext *context, CGPoint point, CGColor fillColor, CGColor strokeColor)
 {
-   mvgFillCircleWithColor( vg, CACircleMake( point, 4.0), fillColor);
-   mvgStrokeCircleWithColor( vg, CACircleMake( point, 6.0), 4.0, strokeColor);
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 4.0), fillColor);
+   CGContextStrokeCircleWithColor( context, CACircleMakeWithCenterAndRadius( point, 6.0), 4.0, strokeColor);
 }
 
 
-static void   drawDotInRect( struct NVGcontext *vg, CAPolarPoint q, CGRect rect, CGColor fillColor, CGColor strokeColor)
+static void   drawDotInRect( CGContext *context, CAPolarPoint q, CGRect rect, CGColor fillColor, CGColor strokeColor)
 {
    CGPoint   center;
 
-   center = CGPointAdd( CGPointMakeWithPolarPoint( q), CGRectGetCenterPoint( rect));
-   drawDot( vg, center, fillColor, strokeColor);
+   center = CGPointAdd( CGPointMakeWithPolarPoint( q), CGRectGetCenter( rect));
+   drawDot( context, center, fillColor, strokeColor);
 }
 
 
-static void   drawLine( struct NVGcontext *vg, CGPoint p1, CGPoint p2, CGColor strokeColor)
+static void   drawLine( CGContext *context, CGPoint p1, CGPoint p2, CGColor strokeColor)
 {
-   mvgStrokeLineWithColor( vg, p1, p2, 1.0, strokeColor);
+   CGContextStrokeLineWithColor( context, p1, p2, 1.0, strokeColor);
 }
 
 
@@ -85,8 +85,8 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    outerCircle = CGRectGetInnerCircle( rect);
    innerCircle = CACircleInset( outerCircle, outerCircle.radius * (1.0 + 15.0 * factor) / 16.0);
 
-   mvgStrokeCircleWithColor( vg, innerCircle, 1.0, CGColorMakeGray());
-   mvgStrokeCircleWithColor( vg, outerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, innerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, outerCircle, 1.0, CGColorMakeGray());
 
    for( deg = 0; deg < 360.0; deg += (WEDGE_DEGREES + WEDGE_OFFSET_DEGREES * 2))
    {
@@ -99,10 +99,10 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       startAngle = CADegreesToAngle( rotDeg + deg + WEDGE_OFFSET_DEGREES);
       endAngle   = CADegreesToAngle( rotDeg + deg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES);
 
-      mvgSectorPath( vg, outerCircle, startAngle, endAngle, innerCircle.radius);
+      CGContextSectorPath( context, outerCircle, startAngle, endAngle, innerCircle.radius);
 
-      mvgFillColor( vg, color);
-      mvgFill( vg);
+      CGContextFillColor( context, color);
+      CGContextFill( context);
    }
 
    return( YES);

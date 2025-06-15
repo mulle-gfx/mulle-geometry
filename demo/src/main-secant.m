@@ -9,15 +9,15 @@ static void  drawDotWithLabel( CGContext *context, CGPoint p, CGFloat radians, C
 
    vg = CGContextGetNVGContext( context);
 
-   mvgFontSize( vg, 10.0);
-   mvgTextColor( vg, CGColorMakeBlack());
-   mvgTextBackgroundColor( vg, CGColorMakeWhite());
-   mvgFormatInRect( vg, CGRectMake( p.x + 4.0, p.y, 100, 16), 0, 0, "%g", radians);
+   CGContextFontSize( context, 10.0);
+   CGContextTextColor( context, CGColorMakeBlack());
+   CGContextTextBackgroundColor( context, CGColorMakeWhite());
+   CGContextFormatInRect( context, CGRectMake( p.x + 4.0, p.y, 100, 16), 0, 0, "%g", radians);
 
-   nvgBeginPath( vg);
-   nvgCircle( vg, p.x, p.y, 3.0);
-   nvgFillColor( vg, color);
-   nvgFill( vg);
+   CGContextBeginPath( context);
+   CGContextCircle( context, CACircleMakeWithCenterAndRadius( p, 3.0));
+   CGContextFillColor( context, color);
+   CGContextFill( context);
 }
 
 
@@ -46,8 +46,8 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    outerCircle = CGRectGetInnerCircle( rect);
    innerCircle = CACircleInset( outerCircle, outerCircle.radius / 2.0);
 
-   mvgStrokeCircleWithColor( vg, innerCircle, 1.0, CGColorMakeGray());
-   mvgStrokeCircleWithColor( vg, outerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, innerCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, outerCircle, 1.0, CGColorMakeGray());
 
    numberOfFrames = [context numberOfFrames] % 480;
 
@@ -70,19 +70,19 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       // calculate nearest intersection point to p1
       p2 = CACircleNearestIntersectionPoint( outerCircle, p0, p1, p1);
 
-      nvgBeginPath( vg);
-      mvgMoveTo( vg, p0);
-      mvgLineTo( vg, p1);
-      nvgStrokeColor( vg, CGColorMakeGray());
-      nvgStrokeWidth( vg, 1.0);
-      nvgStroke( vg);
+      CGContextBeginPath( context);
+      CGContextMoveTo( context, p0);
+      CGContextLineTo( context, p1);
+      CGContextStrokeColor( context, CGColorMakeGray());
+      CGContextStrokeWidth( context, 1.0);
+      CGContextStroke( context);
 
-      nvgBeginPath( vg);
-      mvgMoveTo( vg, p0);
-      mvgLineTo( vg, p2);
-      nvgStrokeColor( vg, color);
-      nvgStrokeWidth( vg, 3.0);
-      nvgStroke( vg);
+      CGContextBeginPath( context);
+      CGContextMoveTo( context, p0);
+      CGContextLineTo( context, p2);
+      CGContextStrokeColor( context, color);
+      CGContextStrokeWidth( context, 3.0);
+      CGContextStroke( context);
 
       drawDotWithLabel( context, p0, q0.radians, color);
       drawDotWithLabel( context, p1, q1.radians, color);

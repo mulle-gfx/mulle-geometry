@@ -1,16 +1,17 @@
 #ifndef ca_angle_h__
 #define ca_angle_h__
 
-// want to get M_PI, but are we included before math?
+// want to get M_PI_f, but are we included before math?
 
 #include "include.h"
 
 #include "CGBase.h"
+#include "CADirection.h"
 
 #include <math.h>
 #include <assert.h>
 
-#include "CARotation.h"
+#define CA_EPSILON   0.0001f
 
 
 //
@@ -19,9 +20,9 @@
 // clockwise direction. (In mathematical CCW, but math uses a flipped
 // coordinate system)
 //
-//        M_PI + M_PI_2f
+//        M_PI_f + M_PI_2f
 //        .---------.
-//   M_PI | radians | 0.0
+//   M_PI_f | radians | 0.0
 //        '---------'
 //          M_PI_2f
 //
@@ -55,6 +56,7 @@ typedef CGFloat   CAAngle;
 
 
 
+
 static inline CGFloat   CAAngleToRadians( CAAngle a)
 {
    MULLE_C_ASSERT( M_PI_f >= 3.141 && M_PI_f <= 3.142);
@@ -66,22 +68,31 @@ static inline CGFloat   CAAngleToRadians( CAAngle a)
 }
 
 
-
-static inline CGFloat   CARadiansNormalize( CGFloat radians)
+static inline
+CGFloat   CARadiansNormalizeInline( CGFloat radians)
 {
    CAAngle   a;
+   CAAngle   b;
 
    a = fmodf( radians, CA_2xPI);
-   if( a <= 0.0f)
-   {
-     // avoid -0.0f  (and CA2xPI) for fmodf( -CA_2XPI, CA_2xPI)
-      if( a == 0.0f)
-         return( 0.0f);
-      a += CA_2xPI;
-   }
-   return( a);
+   if( a > 0.0f)
+      return( a);
+
+   // avoid -0.0f  (and CA_2XPI) for fmodf( -CA_2XPI, CA_2xPI)
+   if( a == 0.0f)
+      return( 0.0f);
+
+   // in degenerate cases the difference is so small, that we get
+   // CA_2xPI back, which is fatal for our asserts
+   b = a + CA_2xPI;
+   if( b > CA_2xPI - CA_EPSILON)
+      b = CA_2xPI - CA_EPSILON;
+   return( b);
 }
 
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGFloat   CARadiansNormalize( CGFloat radians);
 
 
 static inline CAAngle   CARadiansToAngle( CGFloat radians)
@@ -90,12 +101,315 @@ static inline CAAngle   CARadiansToAngle( CGFloat radians)
 }
 
 
+
+//
+// This is CARotation
+//
+// You can view it as a relative value, which gives no orientation, but just
+// an amount to turn (0.0 keep as is, 0.5 turn 180°, 2.0 turn twice) or as an
+// absolute angle value with origin 0.
+//
+// The origin at twelve o clock is different to radians and angle where '0'
+// is actually three o clock.
+//
+//            0.0 / 1.0 / -1.0 / 2.0 / -2.0 ...
+//        .---------.
+//   -0.25|         | 0.25
+//    0.75|         | -0.75
+//        '---------'
+//          0.5/-0.5
+//
+//
+// The trigonometric counterpart to CARotation is ("radians" - "radians") or
+// "radiansRotation". A "radiansRotation" has no origin, its a relative value
+// only.
+//
+typedef CGFloat      CARotation;
+typedef CARotation   CARotationAsAngle;
+
+
+
+//
+// This is rotation as a relative value. From the current position we rotate
+// how much ?
+//
+#define CARotationNone        ((CARotation) (0.0f / 8.0f))
+#define CARotation45          ((CARotation) (1.0f / 8.0f))
+#define CARotation90          ((CARotation) (2.0f / 8.0f))
+#define CARotation135         ((CARotation) (3.0f / 8.0f))
+#define CARotation180         ((CARotation) (4.0f / 8.0f))
+#define CARotation225         ((CARotation) (5.0f / 8.0f))
+#define CARotation270         ((CARotation) (6.0f / 8.0f))
+#define CARotation315         ((CARotation) (7.0f / 8.0f))
+#define CARotation360         ((CARotation) (8.0f / 8.0f))
+
+#define CARotation45Right     ((CARotation) (+1.0f / 8.0f))
+#define CARotation90Right     ((CARotation) (+2.0f / 8.0f))
+#define CARotation135Right    ((CARotation) (+3.0f / 8.0f))
+#define CARotation180Right    ((CARotation) (+4.0f / 8.0f))
+#define CARotation225Right    ((CARotation) (+5.0f / 8.0f))
+#define CARotation270Right    ((CARotation) (+6.0f / 8.0f))
+#define CARotation315Right    ((CARotation) (+7.0f / 8.0f))
+#define CARotation360Right    ((CARotation) (+8.0f / 8.0f))
+
+#define CARotation45Left      ((CARotation) (-1.0f / 8.0f))
+#define CARotation90Left      ((CARotation) (-2.0f / 8.0f))
+#define CARotation135Left     ((CARotation) (-3.0f / 8.0f))
+#define CARotation180Left     ((CARotation) (-4.0f / 8.0f))
+#define CARotation225Left     ((CARotation) (-5.0f / 8.0f))
+#define CARotation270Left     ((CARotation) (-6.0f / 8.0f))
+#define CARotation315Left     ((CARotation) (-7.0f / 8.0f))
+#define CARotation360Left     ((CARotation) (-8.0f / 8.0f))
+
+
+//
+// normalization destroys the "amounts" to turn information, which can be
+// useful in animations. It is used when converting to CGFloat mainly.
+//
+static inline CARotation   CARotationNormalize( CARotation v)
+{
+   CARotation   a;
+
+   assert( ! isnan( v));
+
+   a = fmodf( v, 1.0);
+   if( a <= 0.0)
+   {
+      if( v == 0.0f) // get rid of -0.0f
+         return( 0.0f);
+      a += 1.0;
+   }
+   return( a);
+}
+
+
+
+// make it -pi to +pi
+static inline CARotation   CARotationAdd( CARotation a, CARotation b)
+{
+   assert( ! isnan( a));
+   assert( ! isnan( b));
+
+   return( a + b);
+}
+
+
+static inline CARotation   CARotationSubtract( CARotation a, CARotation b)
+{
+   assert( ! isnan( a));
+   assert( ! isnan( b));
+
+   return( a - b);
+}
+
+
+static inline CARotation   CARotationTurn45ClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation + (1.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn45CounterClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation - (1.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn90ClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation + (2.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn90CounterClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation - (2.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn180( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation + (4.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn270ClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation + (6.0f / 8.0f));
+}
+
+
+static inline CARotation   CARotationTurn270CounterClockWise( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation - (6.0f / 8.0f));
+}
+
+
+// also compatible with nanovg,strict enum nor OR
+enum
+{
+   CARotationDirectionCounterClockWise = 1,
+   CARotationDirectionClockWise        = 2,
+};
+
+
+typedef uintptr_t    CARotationDirection;
+
+// CGContextType string conversion functions
+static inline char   *_CARotationDirectionUTF8String( CARotationDirection value)
+{
+   switch( value)
+   {
+   case CARotationDirectionCounterClockWise : return( "CounterClockWise");
+   case CARotationDirectionClockWise        : return( "ClockWise");
+   }
+   return( NULL);
+}
+
+
+static inline char   *CARotationDirectionUTF8String( CARotationDirection value)
+{
+   char   *s;
+
+   s = _CARotationDirectionUTF8String( value);
+   return( s ? s : "???");
+}
+
+
+static inline CAAngle   CARotationToAngle( CARotation rotation)
+{
+   CAAngle   angle;
+
+   angle = CARadiansToAngle( rotation * CA_2xPI - M_PI_2f);
+   return( angle);
+}
+
+
+static inline CARotation   CAAngleToRotation( CAAngle angle)
+{
+   CARotation   rotation;
+
+   assert( angle >= 0 && angle < CA_2xPI);
+
+   rotation = angle + M_PI_2f;
+   if( rotation > CA_2xPI)
+      rotation -= CA_2xPI;
+   return( rotation / CA_2xPI);
+}
+
+
+
+static inline CGFloat   CARotationToRadiansAsAngle( CARotation rotation)
+{
+   CGFloat   radians;
+   // Normalize rotation to [0, 1) range
+   CGFloat   normalized;
+
+   normalized = fmodf(rotation, 1.0f);
+   if (normalized < 0.0f)
+      normalized += 1.0f;
+
+   // Convert from [0, 1) to [0, 2π)
+   radians = normalized * CA_2xPI;
+
+   // Subtract the π/2 offset
+   radians -= M_PI_2f;
+
+   // Normalize to [0, 2π) range
+   if (radians < 0.0f)
+      radians += CA_2xPI;
+
+   return( radians);
+}
+
+
+static inline CARotation   CARadiansAsAngleToRotation( CGFloat radians)
+{
+   CARotation   rotation;
+   CGFloat      normalized;
+
+   // Normalize radians to [0, 2π) range
+   normalized = fmodf(radians, CA_2xPI);
+   if( normalized < 0.0f)
+      normalized += CA_2xPI;
+
+   // Add π/2 offset
+   rotation = normalized + M_PI_2f;
+   if( rotation >= CA_2xPI)
+      rotation -= CA_2xPI;
+
+   // Convert to [0, 1) range
+   return( rotation / CA_2xPI);
+}
+
+
+static inline CGFloat   CARotationToRadiansAsRotation( CARotation rotation)
+{
+   assert( ! isnan( rotation));
+
+   return( rotation * CA_2xPI);
+}
+
+
+//
+static inline CARotation   CARadiansAsRotationToRotation( CGFloat radiansRotation)
+{
+   assert( ! isnan( radiansRotation));
+
+   return( radiansRotation / CA_2xPI);
+}
+
+
+static inline CGFloat   CAAngleRotateToRadiansAsAngle( CAAngle a, CARotation b)
+{
+   return( CAAngleToRadians( a) + CARotationToRadiansAsRotation( b));
+}
+
+
 static inline CAAngle   CAAngleRotate( CAAngle a, CARotation b)
 {
-   assert( a >= 0 && a < CA_2xPI);
-
-   return( CARadiansToAngle( CAAngleToRadians( a) + CARotationToRadians( b)));
+   return( CARadiansToAngle( CAAngleRotateToRadiansAsAngle( a, b)));
 }
+
+
+static inline CARotationDirection   CARotationGetRotationDirection( CARotation a)
+{
+   return( (a < 0.0)
+           ? CARotationDirectionCounterClockWise
+           : CARotationDirectionClockWise);
+}
+
+
+//
+// considering a circle, rotation a is in a different hemisphere (0.25 / 0.5)
+// than b
+//
+static inline int   CARotationIsOpposingRotation( CARotation a, CARotation b)
+{
+   CARotation  d;
+
+   d = fmodf( a - b, 1.0f);
+   return( (d > 0.25 && d < 0.75) || (d < -0.25 && d > -0.75));
+}
+
+
+//*###############
+//* ANGLE
+//*###############
 
 
 // make it -pi to +pi
@@ -153,28 +467,6 @@ static inline CAAngle   CAAngleGetMidAngle( CAAngle a, CGFloat b)
 }
 
 
-static inline CAAngle   CARotationToAngle( CARotation rotation)
-{
-   CAAngle   angle;
-
-   rotation = CARotationTurn90CounterClockWise( rotation);
-   angle    = CARadiansToAngle( CARotationToRadians( rotation));
-   return( angle);
-}
-
-
-static inline CARotation   CAAngleToRotation( CAAngle angle)
-{
-   CARotation   rotation;
-
-   assert( angle >= 0 && angle < CA_2xPI);
-
-   rotation = angle + M_PI_2f;
-   if( rotation > CA_2xPI)
-      rotation -= CA_2xPI;
-   return( rotation / CA_2xPI);
-}
-
 
 static inline CGFloat   CAAngleToSlope( CAAngle angle)
 {
@@ -184,17 +476,9 @@ static inline CGFloat   CAAngleToSlope( CAAngle angle)
 
 static inline CAAngle   CASlopeToAngle( CGFloat slope)
 {
-   return( atanf( CAAngleToRadians( slope)));
+   return( CARadiansToAngle( atanf( CAAngleToRadians( slope))));
 }
 
-
-
-// not compatible with nanovg
-enum
-{
-   CAAngleDirectionCounterClockWise = 0,
-   CAAngleDirectionClockWise        = 1,
-};
 
 
 //
@@ -202,13 +486,38 @@ enum
 // returns -1 for counter clock wise
 // returns 1 for clockwise
 //
-static inline int   CAAngleRotationDirection( CAAngle a0, CAAngle a1)
+static inline CARotationDirection   CAAngleGetRotationDirection( CAAngle a0, CAAngle a1)
 {
    CGFloat   diff;
 
    diff = CAAngleSubtract( a0, a1);
-   return( diff < M_PI_f ? CAAngleDirectionCounterClockWise : CAAngleDirectionClockWise);
+   return( diff < M_PI_f ? CARotationDirectionCounterClockWise : CARotationDirectionClockWise);
 }
+
+
+//
+// find rotation to rotate angle a to angle b
+//
+static inline CARotation   CAAngleGetRotationTowardsAngle( CAAngle a, CAAngle b, CARotationDirection dir)
+{
+   CARotation   rotation;
+
+   assert( dir == CARotationDirectionCounterClockWise || dir == CARotationDirectionClockWise);
+
+   rotation = CARadiansAsRotationToRotation( CAAngleToRadians( b) - CAAngleToRadians( a));
+   if( rotation > 0.0)
+   {
+      if( dir == CARotationDirectionCounterClockWise)
+         rotation = -1.0f + rotation;
+   }
+   else
+      if( rotation < 0.0)
+         if( dir == CARotationDirectionClockWise)
+            rotation = 1.0f + rotation;
+
+   return( rotation);
+}
+
 
 
 //
@@ -245,6 +554,7 @@ static inline CGFloat   CARotationToDegrees( CARotation rotation)
 }
 
 
+
 static inline CAAngle   CADegreesToAngle( CGFloat deg)
 {
    return( CARotationToAngle( deg / 360.0f));
@@ -259,23 +569,36 @@ static inline CGFloat   CAAngleToDegrees( CAAngle angle)
 }
 
 
-static inline CGFloat   CADegreesToRadians( CGFloat deg)
+static inline CGFloat   CADegreesToRadiansAsRotation( CGFloat deg)
 {
-   return( CARotationToRadians( CADegreesToRotation( deg)));
+   return( CARotationToRadiansAsRotation( CADegreesToRotation( deg)));
 }
 
 
-static inline CGFloat   CARadiansToDegrees( CGFloat rad)
+static inline CGFloat   CADegreesToRadiansAsAngle( CGFloat deg)
 {
-   return( CARotationToDegrees( CARadiansToRotation( rad)));
+   return( CARotationToRadiansAsAngle( CADegreesToRotation( deg)));
 }
 
+
+static inline CGFloat   CARadiansAsAngleToDegrees( CGFloat rad)
+{
+   return( CARotationToDegrees( CARadiansAsAngleToRotation( rad)));
+}
+
+
+static inline CGFloat   CARadiansAsRotationToDegrees( CGFloat rad)
+{
+   return( CARotationToDegrees( CARadiansAsRotationToRotation( rad)));
+}
 
 
 static inline int   CAAngleIsOpposingAngle( CAAngle a, CAAngle b)
 {
    return( CARotationIsOpposingRotation( CAAngleToRotation( a), CAAngleToRotation( b)));
 }
+
+
 
 //
 // There are no negative values, there is no zero (as on a clock). There being
@@ -350,5 +673,83 @@ static inline CAAngle   CAHourToAngle( CGFloat hour)
 #define CAAngleLibeccio    CAAngleSW
 #define CAAnglePonente     CAAngleW
 #define CAAngleMaestro     CAAngleNW
+
+
+// This is the absolute orientation, the radiansAngle.
+// In a circle, the radius is pointing North. That's also what we would assume
+// the orientation of an non-rotated rect is.
+// The typedef is gratuitous
+
+#define CARotationN           ((CARotationAsAngle) ( 0.0f / 16.0f))
+#define CARotationNNE         ((CARotationAsAngle) ( 1.0f / 16.0f))
+#define CARotationNE          ((CARotationAsAngle) ( 2.0f / 16.0f))
+#define CARotationENE         ((CARotationAsAngle) ( 3.0f / 16.0f))
+#define CARotationE           ((CARotationAsAngle) ( 4.0f / 16.0f))
+#define CARotationESE         ((CARotationAsAngle) ( 5.0f / 16.0f))
+#define CARotationSE          ((CARotationAsAngle) ( 6.0f / 16.0f))
+#define CARotationSSE         ((CARotationAsAngle) ( 7.0f / 16.0f))
+#define CARotationS           ((CARotationAsAngle) ( 8.0f / 16.0f))
+#define CARotationSSW         ((CARotationAsAngle) ( 9.0f / 16.0f))
+#define CARotationSW          ((CARotationAsAngle) (10.0f / 16.0f))
+#define CARotationWSW         ((CARotationAsAngle) (11.0f / 16.0f))
+#define CARotationW           ((CARotationAsAngle) (12.0f / 16.0f))
+#define CARotationWNW         ((CARotationAsAngle) (13.0f / 16.0f))
+#define CARotationNW          ((CARotationAsAngle) (14.0f / 16.0f))
+#define CARotationNNW         ((CARotationAsAngle) (15.0f / 16.0f))
+
+
+#define CARotationNorth       CARotationN
+#define CARotationNorthEast   CARotationNE
+#define CARotationEast        CARotationE
+#define CARotationSouthEast   CARotationSE
+#define CARotationSouth       CARotationS
+#define CARotationSouthWest   CARotationSW
+#define CARotationWest        CARotationW
+#define CARotationNorthWest   CARotationNW
+
+
+
+static inline CARotation   CADirectionToRotation( CADirection direction)
+{
+   switch( direction)
+   {
+   case CADirectionTop|CADirectionLeft     : return( CARotationNW);
+   case CADirectionTop                     : return( CARotationN);
+   case CADirectionTop|CADirectionRight    : return( CARotationNE);
+   case CADirectionRight                   : return( CARotationE);
+   case CADirectionBottom|CADirectionRight : return( CARotationSE);
+   case CADirectionBottom                  : return( CARotationS);
+   case CADirectionBottom|CADirectionLeft  : return( CARotationSW);
+   case CADirectionLeft                    : return( CARotationW);
+   }
+   return( 0.0); // or what ?
+}
+
+
+
+static inline CAAngle   CADirectionToAngle( CADirection direction)
+{
+   switch( direction)
+   {
+   case CADirectionTop|CADirectionLeft     : return( CAAngleNW);
+   case CADirectionTop                     : return( CAAngleN);
+   case CADirectionTop|CADirectionRight    : return( CAAngleNE);
+   case CADirectionRight                   : return( CAAngleE);
+   case CADirectionBottom|CADirectionRight : return( CAAngleSE);
+   case CADirectionBottom                  : return( CAAngleS);
+   case CADirectionBottom|CADirectionLeft  : return( CAAngleSW);
+   case CADirectionLeft                    : return( CAAngleW);
+   }
+   return( 0.0); // or what ?
+}
+
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CADirection   CARotationToDirection( CARotation rotation);
+
+static inline CADirection   CAAngleToDirection( CAAngle angle)
+{
+   return( CARotationToDirection( CAAngleToRotation( angle)));
+}
 
 #endif

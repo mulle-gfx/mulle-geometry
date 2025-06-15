@@ -22,7 +22,7 @@
 #include <string.h>
 
 
-// CGAffineTransform is structurally identical to the nanoVG t
+// CGAffineTransform is structurally identical to the nanoVG transform
 typedef struct
 {
     CGFloat a;
@@ -67,27 +67,59 @@ static inline CGAffineTransform   CGAffineTransformMakeIdentityInline( void)
 
 
 
-static inline CGAffineTransform   CGAffineTransformMakeTranslationInline( CGFloat tx, CGFloat ty)
+static inline CGAffineTransform   CGAffineTransformMakeTranslationInline( CGPoint t)
 {
    return( (CGAffineTransform){ .a = 1.0,
                                 .b = 0.0,
                                 .c = 0.0,
                                 .d = 1.0,
-                                .tx = tx,
-                                .ty = ty });
+                                .tx = t.x,
+                                .ty = t.y });
 }
 
 
-static inline CGAffineTransform   CGAffineTransformMakeScaleInline(CGFloat sx, CGFloat sy)
+static inline CGAffineTransform   CGAffineTransformMakeScaleInline( CGVector s)
 {
-   return( (CGAffineTransform){ .a = sx,
+   return( (CGAffineTransform){ .a = s.dx,
                                 .b = 0.0,
                                 .c = 0.0,
-                                .d = sy,
+                                .d = s.dy,
                                 .tx = 0.0,
                                 .ty = 0.0 });
 }
 
+
+static inline CGAffineTransform   CGAffineTransformMakeSkewInline( CAAngle sx, CAAngle sy)
+{
+   return( (CGAffineTransform){ .a = 1.0,
+                                .b = tanf( CAAngleToRadians( sy)),
+                                .c = tanf( CAAngleToRadians( sx)),
+                                .d = 1.0,
+                                .tx = 0.0,
+                                .ty = 0.0 });
+}
+
+
+static inline CGAffineTransform   CGAffineTransformMakeSkewXInline( CAAngle sx)
+{
+   return( (CGAffineTransform){ .a  = 1.0,
+                                .b  = 0.0,
+                                .c  = tanf( CAAngleToRadians( sx)),
+                                .d  = 1.0,
+                                .tx = 0.0,
+                                .ty = 0.0 });
+}
+
+
+static inline CGAffineTransform   CGAffineTransformMakeSkewYInline( CAAngle sy)
+{
+   return( (CGAffineTransform){ .a  = 1.0,
+                                .b  = tanf( CAAngleToRadians( sy)),
+                                .c  = 0.0,
+                                .d  = 1.0,
+                                .tx = 0.0,
+                                .ty = 0.0 });
+}
 
 
 #define CG_ANGLE_IS_NEAR( val, comp, amt) (fabs((val) - (comp)) <= (amt))
@@ -98,11 +130,11 @@ static inline CGAffineTransform   CGAffineTransformMakeScaleInline(CGFloat sx, C
 // So its up to you, to choose either the inlining version or the
 // non-inlining version
 //
-static inline CGAffineTransform   CGAffineTransformMakeRotationRadiansInline( CGFloat radians)
+static inline CGAffineTransform   _CGAffineTransformMakeRotationRadiansInline( CGFloat radians, CGFloat tooSmall)
 {
    CGAffineTransform   ret;
 
-   if( CG_ANGLE_IS_NEAR( radians, ((CGFloat) 3.14159265358979323846f / 2.0f), 0.0001f))
+   if( CG_ANGLE_IS_NEAR( radians, ((CGFloat) 3.14159265358979323846f / 2.0f), tooSmall))
    {
       ret.a  = 0;
       ret.b  = 1.0f;
@@ -125,11 +157,17 @@ static inline CGAffineTransform   CGAffineTransformMakeRotationRadiansInline( CG
 }
 
 
-static inline CGAffineTransform   CGAffineTransformMakeRotationInline( CGFloat rotation)
+static inline CGAffineTransform   CGAffineTransformMakeRotationRadiansInline( CGFloat radians)
+{
+   return( _CGAffineTransformMakeRotationRadiansInline( radians, 1e-6));
+}
+
+
+static inline CGAffineTransform   CGAffineTransformMakeRotationInline( CARotation rotation)
 {
    CGFloat   radians;
 
-   radians = CARotationToRadians( rotation);
+   radians = CARotationToRadiansAsRotation( rotation);
    return( CGAffineTransformMakeRotationRadiansInline( radians));
 }
 
@@ -151,16 +189,21 @@ static inline CGAffineTransform
 
 
 static inline CGAffineTransform
-   CGAffineTransformRotateRadiansInline( CGAffineTransform t, CGFloat value)
+   _CGAffineTransformRotateRadiansInline( CGAffineTransform t, CGFloat value, CGFloat tooSmall)
 {
     CGAffineTransform   ret;
 
-    ret = CGAffineTransformMakeRotationRadiansInline( value);
+    ret = _CGAffineTransformMakeRotationRadiansInline( value, tooSmall);
     ret = CGAffineTransformConcatInline( ret, t);
 
     return ret;
 }
 
+static inline CGAffineTransform
+   CGAffineTransformRotateRadiansInline( CGAffineTransform t, CGFloat value)
+{
+    return( _CGAffineTransformRotateRadiansInline( t, value, 1e-6));
+}
 
 
 static inline CGAffineTransform
@@ -175,11 +218,11 @@ static inline CGAffineTransform
 }
 
 static inline CGAffineTransform
-   CGAffineTransformTranslateInline( CGAffineTransform t, float x, float y)
+   CGAffineTransformTranslateInline( CGAffineTransform t, CGPoint point)
 {
     CGAffineTransform   ret;
 
-    ret = CGAffineTransformMakeTranslationInline( x, y);
+    ret = CGAffineTransformMakeTranslationInline( point);
     ret = CGAffineTransformConcatInline( ret, t);
 
     return ret;
@@ -187,24 +230,26 @@ static inline CGAffineTransform
 
 
 static inline CGAffineTransform
-   CGAffineTransformScaleInline( CGAffineTransform t, float x, float y)
+   CGAffineTransformScaleInline( CGAffineTransform t, CGVector s)
 {
     CGAffineTransform   ret;
 
-    ret = CGAffineTransformMakeScaleInline( x, y);
+    ret = CGAffineTransformMakeScaleInline( s);
     return( CGAffineTransformConcatInline( ret, t));
 }
 
 
 static inline CGAffineTransform
-   CGAffineTransformInvertInline( CGAffineTransform t)
+   _CGAffineTransformInvertInline( CGAffineTransform t, CGFloat tooSmall)
 {
    CGAffineTransform   ret;
    float               determinant;
 
    determinant = (t.a * t.d - t.c * t.b);
-   if( CGFloatIsZero( determinant))
-     return t; // ?
+   if( determinant > tooSmall && determinant < tooSmall)
+   {
+      return( CGAffineTransformMakeIdentityInline());
+   }
 
    ret.a  = t.d / determinant;
    ret.b  = -t.b / determinant;
@@ -216,6 +261,12 @@ static inline CGAffineTransform
    return ret;
 }
 
+
+static inline CGAffineTransform
+   CGAffineTransformInvertInline( CGAffineTransform t)
+{
+   return( _CGAffineTransformInvertInline( t, 1e-6));
+}
 
 
 
@@ -305,15 +356,15 @@ int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform
 // actually still are inlining. But in code, we don't want to think 
 // about if the function does exist or not, so give them non-inlining
 // names...
-static inline CGAffineTransform   CGAffineTransformMakeTranslation( CGFloat tx, CGFloat ty)
+static inline CGAffineTransform   CGAffineTransformMakeTranslation( CGPoint t)
 {
-   return( CGAffineTransformMakeTranslationInline( tx, ty));
+   return( CGAffineTransformMakeTranslationInline( t));
 }
 
 
-static inline CGAffineTransform   CGAffineTransformMakeScale( CGFloat sx, CGFloat sy)
+static inline CGAffineTransform   CGAffineTransformMakeScale( CGVector s)
 {
-   return( CGAffineTransformMakeScaleInline( sx, sy));
+   return( CGAffineTransformMakeScaleInline( s));
 }
 
 
@@ -337,24 +388,26 @@ static inline CGAffineTransform   CGAffineTransformMake( CGFloat a,
 // now truely non-inlining functions, where it makes sense (IMO)
 
 CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTransform t1);
+
 // rotation is usally 0 to +1, but can be anything
 CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians);
-CGAffineTransform   CGAffineTransformInvert( CGAffineTransform t);
-
 CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians);
 
-CGAffineTransform   CGAffineTransformScale( CGAffineTransform t, CGFloat sx, CGFloat sy);
-CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, CGFloat tx, CGFloat ty);
+CGAffineTransform   CGAffineTransformInvert( CGAffineTransform t);
 
-CGPoint  CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t);
-CGSize   CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t);
-CGRect   CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
+CGAffineTransform   CGAffineTransformScale( CGAffineTransform t, CGVector s);
+CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, CGPoint point);
+
+CGPoint             CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t);
+CGSize              CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t);
+CGRect              CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
+
 
 static inline CGAffineTransform   CGAffineTransformMakeRotation( CARotation rotation)
 {
    CGFloat   radians;
 
-   radians = CARotationToRadians( rotation);
+   radians = CARotationToRadiansAsRotation( rotation);
    return( CGAffineTransformMakeRotationRadians( radians));
 }
 
@@ -362,11 +415,12 @@ static inline CGAffineTransform   CGAffineTransformRotate( CGAffineTransform t, 
 {
    CGFloat   radians;
 
-   radians = CARotationToRadians( rotation);
+   radians = CARotationToRadiansAsRotation( rotation);
    return( CGAffineTransformRotateRadians( t, radians));
 }
 
-// useful for scalings of UIViews may be
+
+// useful for scalings of UIViews maybe
 CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
                                                   CGAffineTransform t,
                                                   CGPoint anchorPoint);
@@ -374,6 +428,10 @@ CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
 // mulle additions
 CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds);
 CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds);
+
+// the standard rotation around a center point, translates rotates and then
+// translates back
+CGAffineTransform   CGAffineTransformMakeRotationAroundPoint( CGPoint center, CARotation rotation);
 
 #if 0
 CGAffineTransform
@@ -407,8 +465,8 @@ static inline CGPoint   CGPointProjectToFrame( CGPoint location,
 
 
 static inline CGPoint   CGPointProjectToBounds( CGPoint location,
-                                               CGRect frame,
-                                               CGRect bounds)
+                                                CGRect frame,
+                                                CGRect bounds)
 {
    CGPoint             point;
    CGAffineTransform   transform;
@@ -422,5 +480,15 @@ static inline CGPoint   CGPointProjectToBounds( CGPoint location,
 //   nvgTransformPoint( &translated.x, &translated.y, transform, point.x, point.y);
    return( point);
 }
+
+
+static inline CGRect  CGRectRotate( CGRect rect, CARotation rotation)
+{
+   extern CGRect   _CGRectRotate( CGRect rect, CARotation rotation);
+
+   return( rotation == 0.0f ? rect : _CGRectRotate( rect, rotation));
+}
+
+
 
 #endif

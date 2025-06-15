@@ -25,17 +25,45 @@ typedef struct
 } CACircle;
 
 
-static inline CACircle   CACircleMake( CGPoint p, CGFloat radius)
+static inline CACircle   CACircleMake( CGFloat x, CGFloat y, CGFloat radius)
 {
    assert( radius >= 0.0f);
 
-   return( (CACircle) { p, radius });
+   return( (CACircle) {
+                        .center = (CGPoint)
+                        {
+                           .x = x,
+                           .y = y
+                        },
+                        .radius = radius
+                      });
+}
+
+
+static inline CACircle   CACircleMakeWithCenterAndRadius( CGPoint p, CGFloat radius)
+{
+   assert( radius >= 0.0f);
+
+   return( (CACircle) { .center = p, .radius = radius });
+}
+
+
+
+static inline CACircle   CACircleMakeNull( void)
+{
+   return( (CACircle) { .center.x = NAN });
+}
+
+
+static inline int   CACircleIsNull( CACircle circle)
+{
+   return( isnan( circle.center.x));
 }
 
 
 static inline CACircle   CACircleOffset( CACircle circle, CGFloat x, CGFloat y)
 {
-   return( CACircleMake( CGPointOffset( circle.center, x, y), circle.radius));
+   return( CACircleMakeWithCenterAndRadius( CGPointOffset( circle.center, x, y), circle.radius));
 }
 
 
@@ -46,7 +74,7 @@ static inline CACircle   CACircleExtrude( CACircle circle, CGFloat amount)
    newRadius = circle.radius + amount;
    if( newRadius < 0.0f)
       newRadius = 0.0f;
-   return( CACircleMake( circle.center, newRadius));
+   return( CACircleMakeWithCenterAndRadius( circle.center, newRadius));
 }
 
 
@@ -127,7 +155,7 @@ CGPoint   CACirclePointAtDistance( CACircle circle,
                                    CGFloat distance);
 
 
-static inline CGPoint   CACircleGetCenterPoint( CACircle circle)
+static inline CGPoint   CACircleGetCenter( CACircle circle)
 {
    return( circle.center);
 }
@@ -186,14 +214,14 @@ static inline CGRect   CACircleGetInnerRect( CACircle circle)
 
 static inline CACircle   CGRectGetInnerCircle( CGRect rect)
 {
-   return( CACircleMake( CGRectGetCenterPoint( rect),
+   return( CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect),
                          CGRectGetInnerRadius( rect)));
 }
 
 
 static inline CACircle   CGRectGetOuterCircle( CGRect rect)
 {
-   return( CACircleMake( CGRectGetCenterPoint( rect),
+   return( CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect),
                          CGRectGetOuterRadius( rect)));
 }
 

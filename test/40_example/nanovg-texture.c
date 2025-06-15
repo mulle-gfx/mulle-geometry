@@ -36,7 +36,7 @@ static CGAffineTransform   bitmap_transform( CGSize imageSize)
    // this rotates and maps the vertex coordinate back to texture space
    //
    // texture coordinates in a 2D texture are between 0 and 1.
-   scale   = CGAffineTransformMakeScale( imageSize.width, imageSize.height);
+   scale   = CGAffineTransformMakeScale( CGVectorMakeWithSize( imageSize));
 
    return( scale);
 }
@@ -51,7 +51,7 @@ static CGAffineTransform   fragment_transform( CGAffineTransform paint, CGSize e
    // this rotates and maps the vertex coordinate back to texture space
    //
    // texture coordinates in a 2D texture are between 0 and 1.
-   scale   = CGAffineTransformMakeScale( 1.0 / extent.width, 1.0 / extent.height);
+   scale   = CGAffineTransformMakeScale( CGVectorMake( 1.0 / extent.width, 1.0 / extent.height));
    shader  = CGAffineTransformConcat( paint, scale);
 
    return( shader);
@@ -66,7 +66,7 @@ static CGAffineTransform   paint_transform( CGPoint point, CARotation rotation)
    CGAffineTransform   translate;
 
    rotate    = CGAffineTransformMakeRotation( rotation);
-   translate = CGAffineTransformMakeTranslation( point.x, point.y);
+   translate = CGAffineTransformMakeTranslation( point);
    xform     = CGAffineTransformConcat( rotate, translate);
 
    return( xform);

@@ -113,7 +113,7 @@ static inline int   CGFloat4EqualToFloat4( CGFloat4 a, CGFloat4 b)
 #endif
 
 // this doesn't exist usually (or name it M_2_PI_f ??)
-#define CA_2xPI  ((float) (3.141592653589793238462643383279502884L * 2.0))
+#define CA_2xPI     ((float) (3.141592653589793238462643383279502884L * 2.0))
 
 
 
@@ -270,6 +270,9 @@ typedef struct CGFloatRange
 
 static inline CGFloatRange   CGFloatRangeMake( CGFloat min, CGFloat max)
 {
+   assert( ! isnan( min));
+   assert( ! isnan( max));
+
    return( (CGFloatRange){ .min = min, .max = max });
 }
 
@@ -312,6 +315,9 @@ typedef struct CGPoint
 
 static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
 {
+   assert( ! isnan( x));
+   assert( ! isnan( y));
+
    return( (CGPoint){ .x = x, .y = y });
 }
 
@@ -339,6 +345,9 @@ typedef struct CGPointU
 
 static inline CGPointU   CGPointUMake(CGFloat x, CGFloat y)
 {
+   assert( ! isnan( x));
+   assert( ! isnan( y));
+
    return( (CGPointU){ .x = x, .y = y });
 }
 
@@ -366,6 +375,9 @@ typedef struct CGSize
 
 static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
 {
+   assert( ! isnan( w));
+   assert( ! isnan( h));
+
    return( (CGSize){ .width = w, .height = h });
 }
 
@@ -394,6 +406,9 @@ typedef struct CGSizeU
 
 static inline CGSizeU   CGSizeUMake( CGFloat w, CGFloat h)
 {
+   assert( ! isnan( w));
+   assert( ! isnan( h));
+
    return( (CGSizeU){ .width = w, .height = h });
 }
 
@@ -412,11 +427,16 @@ typedef struct CGVector
 
 static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
 {
+   assert( ! isnan( dx));
+   assert( ! isnan( dy));
+
    return( (CGVector){ .dx = dx, .dy = dy });
 }
 
 
 #define CGVectorData( xvalue, yvalue) ((CGSize){ .dx = (xvalue), .dy = (yvalue) })
+
+
 
 
 typedef struct CGVectorU
@@ -435,6 +455,9 @@ typedef struct CGVectorU
 
 static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
 {
+   assert( ! isnan( dx));
+   assert( ! isnan( dy));
+
    return( (CGVectorU){ .dx = dx, .dy = dy });
 }
 
@@ -463,6 +486,11 @@ typedef struct CGRect
 
 static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
+   assert( ! isnan( x));
+   assert( ! isnan( y));   
+   assert( ! isnan( w));
+   assert( ! isnan( h));
+
    return( (CGRect){
                      .origin = (CGPoint) { .x = x, .y = y },
                      .size   = (CGSize)  { .width = w, .height = h }
@@ -493,6 +521,17 @@ static inline CGRect   CGRectMakeWithOriginAndSize( CGPoint origin, CGSize size)
    return( (CGRect){
                      .origin = origin,
                      .size   = size
+                   });
+}
+
+
+static inline CGRect   CGRectMakeWithOriginAndOpposite( CGPoint a, CGPoint b)
+{
+   return( (CGRect){
+                     .origin = a,
+                     .size   = (CGSize) { .width = b.x - a.x,
+                                          .height = b.y - a.y
+                                        }
                    });
 }
 
@@ -533,8 +572,13 @@ typedef struct CGRectU
 } CGRectU;
 
 
-static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
+static inline CGRectU   CGRectUMake( CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
+   assert( ! isnan( x));
+   assert( ! isnan( y));
+   assert( ! isnan( w));
+   assert( ! isnan( h));
+
    return( (CGRectU){
                      .origin = (CGPointU) { .x = x, .y = y },
                      .size   = (CGSizeU)  { .width = w, .height = h }
@@ -548,6 +592,8 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
    .origin = (CGPointU) { .x = (xvalue), .y = (yvalue) },    \
    .size   = (CGSizeU)  { .width = (w), .height = (h) }      \
 })
+
+
 
 
 //
@@ -564,17 +610,20 @@ static inline CGRectU   CGRectUMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 
 #define CGPointZero       CGPointMake( 0, 0)
 #define CGPointUZero      CGPointUMake( 0, 0)
-#define CGPointNull       CGPointMake( NAN, NAN)
+#define CGPointNull       ((CGPoint){ .x = NAN, .y = NAN })
+#define CGPointUNull      ((CGPointU){ .x = NAN, .y = NAN })
 #define CGSizeZero        CGSizeMake( 0, 0)
 #define CGSizeUZero       CGSizeUMake( 0, 0)
 // there is no CGSizeNull
 #define CGVectorZero      CGVectorMake( 0, 0)
 #define CGVectorUZero     CGVectorUMake( 0, 0)
+#define CGVectorNull      ((CGVector){ .dx = NAN, .dy = NAN })
+#define CGVectorUNull     ((CGVector){ .dx = NAN, .dy = NAN })
 
 #define CGRectZero        CGRectMake( 0, 0, 0, 0)
 #define CGRectUZero       CGRectUMake( 0, 0, 0, 0)
-#define CGRectNull        CGRectMake( NAN, NAN, 0.0f, 0.0f)
-#define CGRectUNull       CGRectUMake( NAN, NAN, 0.0f, 0.0f)
+#define CGRectNull        ((CGRect){ .origin = CGPointNull })
+#define CGRectUNull       ((CGRect){ .origin = CGPointUNull })
 #define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 #define CGRectUInfinite   CGRectUMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 
@@ -828,10 +877,12 @@ static inline CGFloat2   CGPointGetFloat2( CGPoint p)
    return( *(CGFloat2 *) CGPointUMakeWithPoint( p).value);
 }
 
+
 static inline CGFloat2   CGVectorGetFloat2( CGVector p)
 {
    return( *(CGFloat2 *) CGVectorUMakeWithVector( p).value);
 }
+
 
 static inline CGFloat2   CGSizeGetFloat2( CGSize p)
 {
@@ -873,8 +924,6 @@ static inline CGFloat4   CGRectGetFloat4( CGRect p)
 {
    return( CGFloat4Make( p.origin.x, p.origin.y, p.size.width, p.size.height));
 }
-
-
 
 #ifdef __GNUC__
 # pragma GCC diagnostic pop

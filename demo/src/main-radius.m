@@ -11,11 +11,11 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 
-   mvgFillRectWithColor( vg, rect, CGColorMakeBlue());
-   mvgStrokeCircleWithColor( vg, CGRectGetInnerCircle( rect),
+   CGContextFillRectWithColor( context, rect, CGColorMakeBlue());
+   CGContextStrokeCircleWithColor( context, CGRectGetInnerCircle( rect),
                                  1.0f,
                                  CGColorMakeYellow());
-   mvgStrokeCircleWithColor( vg, CGRectGetOuterCircle( rect),
+   CGContextStrokeCircleWithColor( context, CGRectGetOuterCircle( rect),
                                  1.0f,
                                  CGColorMakeOrange());
 

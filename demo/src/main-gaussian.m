@@ -25,7 +25,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
    rect   = CGSizeCenterInRect( CGRectGetLargestSquareSize( rect), rect);;
-   mvgFillRectWithColor( vg, rect, CGColorMakeBlue());
+   CGContextFillRectWithColor( context, rect, CGColorMakeBlue());
 
    n = (NSUInteger) floor( rect.size.width) - 2;
    mulle_flexarray_do( buf, CGFloat, 0, n)
@@ -44,31 +44,31 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       }
 
 
-      nvgBeginPath( vg);
-      nvgMoveTo( vg, CGRectGetMinX( rect), CGRectGetMaxY( rect));
+      CGContextBeginPath( context);
+      CGContextMoveTo( context, CGPointMake( CGRectGetMinX( rect), CGRectGetMaxY( rect)));
       for( i = 0; i < n / 2; i +=2)
       {
-         nvgLineTo( vg, CGRectGetMinX( rect) + 1.0 + i,
-                        CGRectGetMaxY( rect) - buf[ i]);
+         CGContextLineTo( context, CGPointMake( CGRectGetMinX( rect) + 1.0 + i,
+                        CGRectGetMaxY( rect) - buf[ i]));
       }
-      nvgLineTo( vg, CGRectGetMidX( rect), CGRectGetMaxY( rect) - buf[ n / 2]);
-      nvgLineTo( vg, CGRectGetMidX( rect), CGRectGetMaxY( rect));
-      nvgClosePath( vg);
-      nvgFillColor( vg, CGColorMakeWhite());
-      nvgFill( vg);
+      CGContextLineTo( context, CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect) - buf[ n / 2]));
+      CGContextLineTo( context, CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect)));
+      CGContextClosePath( context);
+      CGContextFillColor( context, CGColorMakeWhite());
+      CGContextFill( context);
 
-      nvgBeginPath( vg);
-      nvgMoveTo( vg, CGRectGetMaxX( rect), CGRectGetMaxY( rect));
+      CGContextBeginPath( context);
+      CGContextMoveTo( context, CGPointMake( CGRectGetMaxX( rect), CGRectGetMaxY( rect)));
       for( i = 1; i < n / 2; i +=2)
       {
-         nvgLineTo( vg, CGRectGetMaxX( rect) - 1.0 - i,
-                        CGRectGetMaxY( rect) - buf[ i]);
+         CGContextLineTo( context, CGPointMake( CGRectGetMaxX( rect) - 1.0 - i,
+                        CGRectGetMaxY( rect) - buf[ i]));
       }
-      nvgLineTo( vg, CGRectGetMidX( rect), CGRectGetMaxY( rect) - buf[ n / 2]);
-      nvgLineTo( vg, CGRectGetMidX( rect), CGRectGetMaxY( rect));
-      nvgClosePath( vg);
-      nvgFillColor( vg, CGColorMakeWhiteSmoke());
-      nvgFill( vg);
+      CGContextLineTo( context, CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect) - buf[ n / 2]));
+      CGContextLineTo( context, CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect)));
+      CGContextClosePath( context);
+      CGContextFillColor( context, CGColorMakeWhiteSmoke());
+      CGContextFill( context);
    }
 
    return( YES);

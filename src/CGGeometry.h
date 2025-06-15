@@ -35,6 +35,29 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #endif
 
 
+static inline CGVector   CGVectorMakeWithAngle( CAAngle angle)
+{
+   CGFloat   radians;
+
+   assert( ! isnan( angle));
+
+   radians = CAAngleToRadians( angle);
+   return( CGVectorMake( sinf( radians), cosf( radians)));
+}
+
+
+static inline CGVector   CGVectorMakeWithRotation( CARotation rotation)
+{
+   CGFloat   radians;
+
+   assert( ! isnan( rotation));
+
+   radians = -rotation * 2.0f * M_PI_f;
+   return( CGVectorMake( sinf( radians), cosf( radians)));
+}
+
+
+
 static inline CGFloat  CGVectorLength( CGVector v)
 {
    CGFloat   length;
@@ -56,6 +79,32 @@ static inline CGFloat   CGVectorDotProduct( CGVector v1, CGVector v2)
 {
    return( v1.dx * v2.dx + v1.dy * v2.dy);
 }
+
+
+static inline CAAngle   CGVectorGetAngle( CGVector vector)
+{
+   return( CARadiansToAngle( atan2f( vector.dy, vector.dx)));
+}
+
+
+static inline CARotation   CGVectorGetRotation( CGVector vector)
+{
+   return( CARadiansAsAngleToRotation( atan2f( vector.dy, vector.dx)));
+}
+
+
+// now this is sometimes useful, though it sounds bad
+static inline CGFloat   CGVectorGetAspectRatio( CGVector a)
+{
+   return( CGFloatIsZero( a.dy) ? 0.0f : a.dx / a.dy);
+}
+
+
+static inline CGVector   CGVectorScale( CGVector p, CGFloat scale)
+{
+   return( CGVectorMake( p.dx * scale, p.dy * scale));
+}
+
 
 
 /**
@@ -135,24 +184,6 @@ static inline CGPoint   CGPointTranslate( CGPoint point,
 static inline CGPoint   CGPointScale( CGPoint p, CGFloat scale)
 {
    return( CGPointMake( p.x * scale, p.y * scale));
-}
-
-
-static inline CGVector   CGVectorScale( CGVector p, CGFloat scale)
-{
-   return( CGVectorMake( p.dx * scale, p.dy * scale));
-}
-
-
-static inline CGSize   CGSizeScale( CGSize p, CGFloat scale)
-{
-   return( CGSizeMake( p.width * scale, p.height * scale));
-}
-
-
-static inline CGPoint   CGSizeGetCenterPoint( CGSize size)
-{
-   return( CGPointMake( size.width / 2.0f, size.height / 2.0f));
 }
 
 
@@ -323,6 +354,15 @@ static inline CGPoint   CGPointIntegralFuzzy( CGPoint p, CGFloat fuzz)
 }
 
 
+// now this is sometimes useful, though it sounds bad
+static inline CGFloat   CGPointGetAspectRatio( CGPoint a)
+{
+   return( CGFloatIsZero( a.y) ? 0.0f : a.x / a.y);
+}
+
+
+
+
 
 /**
 */
@@ -361,43 +401,37 @@ static inline CGSize   CGSizeIntegralFuzzy( CGSize a, CGFloat fuzz)
                        ceilf( a.height - fuzz)));
 }
 
-
-
-/**
-*/
-static inline int   CGRectIsInfinite( CGRect rect)
+static inline CGSize   CGSizeScale( CGSize p, CGFloat scale)
 {
-   return( isinf( rect.origin.x) || isinf(rect.origin.y) ||
-           isinf( rect.size.width) || isinf(rect.size.height));
+   return( CGSizeMake( p.width * scale, p.height * scale));
 }
 
 
-static inline int   CGRectIsStandardized( CGRect rect)
+static inline CGPoint   CGSizeGetCenter( CGSize size)
 {
-   return( rect.size.width >= 0.0f && rect.size.height >= 0.0f);
+   return( CGPointMake( size.width / 2.0f, size.height / 2.0f));
 }
 
 
-/**
-*/
-// TODO: untested, coded by AI
-// TODO: untested, coded by AI
 
-
-// now this is sometimes useful, though it sounds bad
-static inline CGFloat   CGVectorGetAspectRatio( CGVector a)
+// get the radius for a circle that touches the inside of a rectangle
+static inline CGFloat   CGSizeGetInnerRadius( CGSize a)
 {
-   return( CGFloatIsZero( a.dy) ? 0.0f : a.dx / a.dy);
-}
-
-// now this is sometimes useful, though it sounds bad
-static inline CGFloat   CGPointGetAspectRatio( CGPoint a)
-{
-   return( CGFloatIsZero( a.y) ? 0.0f : a.x / a.y);
+   a.width  = a.width < 0.0f ? -a.width : a.width;
+   a.height = a.height < 0.0f ? -a.height : a.height;
+   return( (a.width < a.height ? a.width : a.height) / 2.0);
 }
 
 
-// if a has no size, use 0.0 instead of INFINITY for 
+// get the radius that "envelopes" a rectangle of given size
+static inline CGFloat   CGSizeGetOuterRadius( CGSize a)
+{
+   return( sqrtf( a.width * a.width + a.height * a.height) / 2.0);
+}
+
+
+
+// if a has no size, use 0.0 instead of INFINITY for
 // easier code (?)
 static inline CGFloat   CGSizeGetAspectRatio( CGSize a)
 {
@@ -419,6 +453,13 @@ static inline CGFloat   CGSizeGetMaximum( CGSize a)
 }
 
 
+
+/**
+*/
+// TODO: untested, coded by AI
+// TODO: untested, coded by AI
+
+
 static inline CGFloat   CGRectGetMaximumSize( CGRect a)
 {
    return( CGSizeGetMaximum( a.size));
@@ -438,22 +479,6 @@ static inline CGFloat   CGRectGetAspectRatio( CGRect a)
 
 
 // get the radius for a circle that touches the inside of a rectangle
-static inline CGFloat   CGSizeGetInnerRadius( CGSize a)
-{
-   a.width  = a.width < 0.0f ? -a.width : a.width;
-   a.height = a.height < 0.0f ? -a.height : a.height;
-   return( (a.width < a.height ? a.width : a.height) / 2.0);
-}
-
-
-// get the radius that "envelopes" a rectangle of given size
-static inline CGFloat   CGSizeGetOuterRadius( CGSize a)
-{
-   return( sqrtf( a.width * a.width + a.height * a.height) / 2.0);
-}
-
-
-// get the radius for a circle that touches the inside of a rectangle
 static inline CGFloat   CGRectGetInnerRadius( CGRect r)
 {
    return( CGSizeGetInnerRadius( r.size));
@@ -467,6 +492,21 @@ static inline CGFloat   CGRectGetOuterRadius( CGRect r)
 }
 
 
+
+
+/**
+*/
+static inline int   CGRectIsInfinite( CGRect rect)
+{
+   return( isinf( rect.origin.x) || isinf(rect.origin.y) ||
+           isinf( rect.size.width) || isinf(rect.size.height));
+}
+
+
+static inline int   CGRectIsStandardized( CGRect rect)
+{
+   return( rect.size.width >= 0.0f && rect.size.height >= 0.0f);
+}
 
 
 /**
@@ -521,7 +561,7 @@ static inline CGFloat CGRectGetMaxX( CGRect rect)
 */
 static inline CGFloat CGRectGetMidX( CGRect rect)
 {
-   return( rect.origin.x + rect.size.width / 2);
+   return( rect.origin.x + rect.size.width * 0.5);
 }
 
 /**
@@ -572,7 +612,7 @@ static inline CGFloat CGRectGetMaxY( CGRect rect)
 */
 static inline CGFloat CGRectGetMidY( CGRect rect)
 {
-   return( rect.origin.y + rect.size.height / 2);
+   return( rect.origin.y + rect.size.height * 0.5);
 }
 
 
@@ -601,12 +641,12 @@ static inline double CGRectGetArea( CGRect a)
 //  .-------------.
 //  |             |
 //  |             |
-//  |      *      | < CGRectGetCenterPoint().y
+//  |      *      | < CGRectGetCenter().y
 //  |             |
 //  |             |
 //  '-------------'
 //         ^
-//         CGRectGetCenterPoint().x
+//         CGRectGetCenter().x
 //
 
 static inline CGPoint   CGRectGetCornerPoint( CGRect rect, CADirection dir)
@@ -628,62 +668,208 @@ static inline CGPoint   CGRectGetCornerPoint( CGRect rect, CADirection dir)
    return( p);
 }
 
+//
+// When width or height are < 0 (maybe due to rotation), the origin and the
+// opposite point are reveresed. The TopLeft is still the one with the least
+// x and y though.
+//
+/**
+//  *-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//  ^
+//  CGRectGetOrigin
+*/
+static inline CGPoint   CGRectGetOrigin( CGRect rect)
+{
+   return( rect.origin);
+}
 
-
-static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |      * <----:--- center
+//  |             |
+//  |             |
+//  '-------------'
+//         ^
+//    CGRectGetCenter, like CGRectGetCenterWithAnchorPoint with 0.5, 0.5
+*/
+static inline CGPoint   CGRectGetCenter( CGRect rect)
 {
    return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
 }
 
 
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |         * <-:--- anchorPoint
+//  |             |
+//  '-------------'
+//
+//    CGRectGetCenterWithAnchorPoint
+*/
+static inline CGPoint   CGRectGetCenterWithAnchorPoint( CGRect rect, CGPoint anchorPoint)
+{
+   return( CGPointMake( rect.origin.x + rect.size.width * anchorPoint.x,
+                        rect.origin.y + rect.size.height * anchorPoint.y));
+}
 
-static inline CGPoint   CGRectGetTopPoint( CGRect rect)
+
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------*
+//                ^
+//          CGRectGetOpposite
+*/
+static inline CGPoint   CGRectGetOpposite( CGRect rect)
+{
+   return( CGPointMake( rect.origin.x + rect.size.width,
+                        rect.origin.y + rect.size.height));
+}
+
+/**
+//  .------*------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//         ^
+//     CGRectGetTop
+*/
+static inline CGPoint   CGRectGetTop( CGRect rect)
 {
    return( CGPointMake( CGRectGetMidX( rect), CGRectGetMinY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetBottomPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '------*------'
+//         ^
+//    CGRectGetBottom
+*/
+static inline CGPoint   CGRectGetBottom( CGRect rect)
 {
    return( CGPointMake( CGRectGetMidX( rect), CGRectGetMaxY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetRightPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             *
+//  |             |
+//  |             |
+//  '-------------'
+//                ^
+//           CGRectGetRight
+*/
+static inline CGPoint   CGRectGetRight( CGRect rect)
 {
    return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMidY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetLeftPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  *             |
+//  |             |
+//  |             |
+//  '-------------'
+//  ^
+//  CGRectGetLeft
+*/
+static inline CGPoint   CGRectGetLeft( CGRect rect)
 {
    return( CGPointMake( CGRectGetMinX( rect), CGRectGetMidY( rect)));
 }
 
-
-
-static inline CGPoint   CGRectGetTopLeftPoint( CGRect rect)
+/**
+//  *-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//  ^
+//  CGRectGetTopLeft
+*/
+static inline CGPoint   CGRectGetTopLeft( CGRect rect)
 {
    return( CGPointMake( CGRectGetMinX( rect), CGRectGetMinY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetTopRightPoint( CGRect rect)
+/**
+//  .-------------*
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------'
+//                ^
+//           CGRectGetTopRight
+*/
+static inline CGPoint   CGRectGetTopRight( CGRect rect)
 {
    return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMinY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetBottomLeftPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  *-------------'
+//  ^
+//  CGRectGetBottomLeft
+*/
+static inline CGPoint   CGRectGetBottomLeft( CGRect rect)
 {
    return( CGPointMake( CGRectGetMinX( rect), CGRectGetMaxY( rect)));
 }
 
-
-static inline CGPoint   CGRectGetBottomRightPoint( CGRect rect)
+/**
+//  .-------------.
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  |             |
+//  '-------------*
+//                ^
+//           CGRectGetBottomRight
+*/
+static inline CGPoint   CGRectGetBottomRight( CGRect rect)
 {
    return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMaxY( rect)));
 }
+
+
 
 
 /**
@@ -804,7 +990,24 @@ static inline CGRect   CGRectStandardize( CGRect r)
    return( r);
 }
 
-
+/*
+ * CGRectExpand: Expands a rectangle in specified directions
+ *
+ *   .---------------.
+ *   |               |
+ *   |               |
+ *   |               |   <- Expanded rectangle (CADirectionTop)
+ *   |  d            |      (includes rect area)
+ *   |  ↑            |
+ *   '...............'
+ *   :               |
+ *   |     rect      :  <- Original rectangle
+ *   :               |
+ *   '-.-.-.-.-.-.-.-'
+ *
+ * The 'd' parameter controls expansion amount.
+ * The CADirection parameter controls which sides are expanded.
+ */
 // returns a standardize CGRect
 static inline CGRect   CGRectExpand( CGRect rect, CGFloat d, CADirection direction)
 {
@@ -930,7 +1133,7 @@ MULLE__GEOMETRY_EXTERN_GLOBAL
 int   CGRectContainsRect( CGRect a, CGRect b);
 
 
-// CGRectIntegral rounds the rectangle’s origin downward and its size upward
+// CGRectIntegral rounds the rectangle's origin downward and its size upward
 // to the nearest whole integers, such that the result contains the original
 // rectangle
 MULLE__GEOMETRY_EXTERN_GLOBAL
@@ -977,14 +1180,14 @@ CGRect   CGRectEnclosePoint( CGRect r, CGPoint p);
 
 // mulle addition:
 // use circle routines for outer radius
-static inline CGRect   CGRectMakeWithCenterPointAndInnerRadius( CGPoint center, CGFloat radius)
+static inline CGRect   CGRectMakeWithCenterAndInnerRadius( CGPoint center, CGFloat radius)
 {
    return( CGRectMake( center.x - radius, center.y - radius, radius * 2, radius * 2));
 }
 
 
 // mulle addition:
-static inline CGRect   CGRectMakeWithCenterPointAndSize( CGPoint center, CGSize size)
+static inline CGRect   CGRectMakeWithCenterAndSize( CGPoint center, CGSize size)
 {
    return( CGRectMake( center.x - size.width / 2.0,
                        center.y - size.height / 2.0,
@@ -1027,6 +1230,125 @@ static inline CGRect   CGRectMakeRandomInRect( CGRect r, CGSize minSize, CGSize 
 }
 
 
+//
+// CGEdge
+//
+// CGEdge is just two CGPoints. It is not a proper type, i don't think it would
+// be useful...
+// Still both points have a common fate...
+//
+
+// Line intersection
+int   CGEdgeIntersect( CGPoint p1, CGPoint p2, CGPoint p3, CGPoint p4, CGPoint *intersection);
+
+// CGEdgeContainsPoint
+//
+//              point (outside, < 0)
+//                   *
+//  edgeStart ------------------> edgeEnd
+//            ^  FILL FILL FILL .
+//            .  FILL  * point (inside, >= 0)
+//            .  FILL FILL FILL .
+//            <.................v
+//
+//  For a clockwise polygon in Y-down coordinates:
+//
+//  Returns 1 if point is on right side of directed edge (inside)
+//  Returns 0 if point is on left side of directed edge (outside)
+//
+static inline int   CGEdgeContainsPoint( CGPoint edgeStart, CGPoint edgeEnd, CGPoint point)
+{
+    return( ((edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) -
+             (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x)) >= 0);
+}
+
+
+static inline int   CGEdgeContainsPointCounterClockWise( CGPoint edgeStart, CGPoint edgeEnd, CGPoint point)
+{
+    return( ((edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) -
+             (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x)) <= 0);
+}
+
+
+
+//
+// CGPolygon
+//
+// CGPolygon is an array of CGPoint with a count.
+//
+
+
+// CGPolygonClipAgainstEdge
+//
+//   Input:                                  Output:
+//
+// .....edgeEnd
+//        |                                       :
+//   +----:-----+ input[ n]                 +-----+ result[ m]
+//   |    :     |                           |     :
+//   |   rect   |   clipped by edge  -->    | keep:
+//   |    :     |                           |     :
+//   +----:-----+                           +-----+
+//        |                                       :
+//  ..... v                                       v
+//     edgeStart
+//
+//   Clips input polygon against single edge using Sutherland-Hodgman algorithm
+//   - Keeps vertices inside the edge
+//   - Adds intersection points where polygon crosses edge
+//   - Discards vertices outside the edge
+//   - Edge direction is clockwise!
+//   - Top Left is 0,0
+//
+//   Returns number of vertices in output polygon
+//   IMPORTANT: output array must be sized for at least (2 * n) vertices
+//              to handle worst case where every edge crosses the clipping edge
+//              (see main-cutter demo)
+unsigned int   CGPolygonClipAgainstEdge( CGPoint *input,
+                                         size_t n,
+                                         CGPoint edgeStart,
+                                         CGPoint edgeEnd,
+                                         CGPoint *output);
+
+
+// CGPolygonBoundingBox
+//
+//   Input points:        Output bounding rect:
+//
+//        P2                      P2
+//         *                    +--*---+
+//   P1 *      * P3          P1 *      * P3
+//                     -->      |      |
+//                              |      |
+//             * P4             +------* P4
+//
+//
+//
+//   Creates minimal axis-aligned rectangle containing all points
+//   Returns CGRectZero if count is 0
+//
+CGRect   CGPolygonBoundingBox( CGPoint *points, size_t count);
+
+
+
+
+//
+// CGPolygon4
+//
+// CGPolygon4 is an array of 4 CGPoints with an implicit count.
+//
+static inline CGRect   CGPolygon4BoundingBox( CGPoint points[ 4])
+{
+   return( CGPolygonBoundingBox( points, 4));
+}
+
+
+unsigned int   CGPolygon4ClipAgainstPolygon4( CGPoint subject[ 4],
+                                              CGPoint clipRect[ 4],
+                                              CGPoint result[ 8]);
+
+
+
 // Not enabled, because the interface is somewhat awkward. It usually needs
 // a lot of copying...
 //
@@ -1048,6 +1370,7 @@ static inline CGRect   CGRectMakeRandomInRect( CGRect r, CGSize minSize, CGSize 
 //
 // uintptr_t   CGRectIndexOfRectWithLargestIntersection( CGRect r1, uintptr_t n, CGRect *rects);
 //
+
 
 
 #endif

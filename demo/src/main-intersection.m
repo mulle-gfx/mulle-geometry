@@ -7,10 +7,10 @@ static void  drawDot( CGContext *context, CGPoint p, CGColor color)
 
    vg = CGContextGetNVGContext( context);
 
-   nvgBeginPath( vg);
-   nvgCircle( vg, p.x, p.y, 3.0);
-   nvgFillColor( vg, color);
-   nvgFill( vg);
+   CGContextBeginPath( context);
+   CGContextCircle( context, CACircleMakeWithCenterAndRadius( p, 3.0));
+   CGContextFillColor( context, color);
+   CGContextFill( context);
 }
 
 
@@ -37,7 +37,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
 
    bigCircle = CGRectGetInnerCircle( rect);
 
-   mvgStrokeCircleWithColor( vg, bigCircle, 1.0, CGColorMakeGray());
+   CGContextStrokeCircleWithColor( context, bigCircle, 1.0, CGColorMakeGray());
 
    numberOfFrames = [context numberOfFrames] % 480;
 
@@ -54,7 +54,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       smallCircle.center = CGPointAdd( CGPointMakeWithPolarPoint( q0), bigCircle.center);
       smallCircle.radius = 1.0 + factor * deg * (bigCircle.radius / 180.0);
 
-      mvgStrokeCircleWithColor( vg, smallCircle, 1.0, color);
+      CGContextStrokeCircleWithColor( context, smallCircle, 1.0, color);
 
 //      if( CACircleIntersectionsWithCircle( bigCircle, smallCircle, intersection))
 //      {
