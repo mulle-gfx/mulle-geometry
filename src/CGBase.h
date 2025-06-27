@@ -313,7 +313,7 @@ typedef struct CGPoint
 } CGPoint;
 
 
-static inline CGPoint   CGPointMake(CGFloat x, CGFloat y)
+static inline CGPoint   CGPointMake( CGFloat x, CGFloat y)
 {
    assert( ! isnan( x));
    assert( ! isnan( y));

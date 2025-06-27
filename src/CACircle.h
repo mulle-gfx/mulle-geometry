@@ -14,7 +14,6 @@
 #include <math.h>
 
 
-
 //
 // A CACircle is somewhat like a polar point, with a cartesian center.
 //
@@ -25,28 +24,41 @@ typedef struct
 } CACircle;
 
 
-static inline CACircle   CACircleMake( CGFloat x, CGFloat y, CGFloat radius)
+
+static inline CACircle CACircleMake( CGFloat x, CGFloat y, CGFloat radius)
 {
    assert( radius >= 0.0f);
-
-   return( (CACircle) {
-                        .center = (CGPoint)
-                        {
-                           .x = x,
-                           .y = y
-                        },
-                        .radius = radius
-                      });
+   return( (CACircle)
+   {
+      .center = (CGPoint)
+      {
+         .x = x,
+         .y = y
+      },
+      .radius = radius
+   });
 }
 
-
-static inline CACircle   CACircleMakeWithCenterAndRadius( CGPoint p, CGFloat radius)
+static inline CACircle CACircleMakeWithCenterAndRadius( CGPoint p, CGFloat radius)
 {
    assert( radius >= 0.0f);
-
    return( (CACircle) { .center = p, .radius = radius });
 }
 
+
+// specify center and a point on the circumference
+static inline CACircle  CACircleMakeWithCenterAndPerimeter( CGPoint center, CGPoint perimeterPoint)
+{
+   CGFloat  dx;
+   CGFloat  dy;
+   CGFloat  radius;
+
+   dx     = perimeterPoint.x - center.x;
+   dy     = perimeterPoint.y - center.y;
+   radius = sqrt( dx * dx + dy * dy);
+
+   return( CACircleMakeWithCenterAndRadius( center, radius));
+}
 
 
 static inline CACircle   CACircleMakeNull( void)
@@ -113,6 +125,7 @@ static inline CGPoint   CACirclePointAtAngle( CACircle circle, CAAngle a)
    CGFloat         radians;
    CAPolarPoint    polar;
    CGPoint         point;
+
    radians = CAAngleToRadians( a);
    polar   = CAPolarPointMakeWithAngle( circle.radius, radians);
    point   = CGPointMakeWithPolarPoint( polar);
@@ -125,29 +138,73 @@ static inline CGPoint   CACirclePointAtAngle( CACircle circle, CAAngle a)
 }
 
 
-static inline CGFloat   CARadiusDistanceBetweenAngles( CGFloat radius,
-                                                       CAAngle a,
-                                                       CAAngle b)
+static inline CAAngle   CACircleAngleAtPoint( CACircle circle, CGPoint point)
 {
-   CGFloat  radians;
-   CGFloat  distance;
+   CAPolarPoint polar;
+   CGPoint      relativePoint;
 
-   radians = CAAngleToRadians( b) - CAAngleToRadians( a);
-   if( radians < 0.0)
-      radians += CA_2xPI;
-   distance = radius * radians;
-   if( distance < CA_EPSILON)
-      return( 0.0f);
-   return( distance);
+   relativePoint = CGPointSubtract( point, circle.center);
+   polar         = CAPolarPointMakeWithPoint( relativePoint);
+
+   return( CAPolarPointGetAngle( polar));
 }
 
 
+// Updated function with direction parameter
+static inline CGFloat  CARadiusDistanceBetweenAngles( CGFloat radius,
+                                                      CAAngle a,
+                                                      CAAngle b,
+                                                      CARotationDirection direction)
+{
+    CGFloat   radians;
+    CGFloat   distance;
+
+    radians = CAAngleToRadians( b) - CAAngleToRadians( a);
+
+    if( direction == CARotationDirectionCounterClockWise)
+    {
+        if( radians < 0.0)
+          radians += CA_2xPI;
+    }
+    else
+    {
+        if( radians > 0.0)
+            radians -= CA_2xPI;
+        radians = -radians; // Make positive for distance calculation
+    }
+
+    distance = radius * radians;
+
+    if (distance < CA_EPSILON)
+        return (0.0f);
+
+    return (distance);
+}
+
+
+// Updated function with direction parameter
 static inline CGFloat   CACircleDistanceBetweenAngles( CACircle circle,
                                                        CAAngle a,
-                                                       CAAngle b)
+                                                       CAAngle b,
+                                                       CARotationDirection direction)
 {
-   return( CARadiusDistanceBetweenAngles( circle.radius, a, b));
+    return( CARadiusDistanceBetweenAngles( circle.radius, a, b, direction));
 }
+
+
+
+static inline CGFloat   CACircleDistanceToRotation( CACircle circle,
+                                                    CARotation rotation)
+{
+    CGFloat   distance;
+
+    distance = circle.radius * rotation;
+    if( fabsf( distance) < CA_EPSILON)
+        return( 0.0f);
+
+    return( distance);
+}
+
 
 
 CGPoint   CACirclePointAtDistance( CACircle circle,

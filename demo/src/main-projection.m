@@ -6,12 +6,12 @@
 # define COLUMNS   3
 # define SPACING_H 30.0
 # define SPACING_V 30.0
-# define ALL_SAME
 #else
 # define ROWS      1
 # define COLUMNS   1
 # define SPACING_H 300.0
 # define SPACING_V 100.0
+# define ALL_SAME
 #endif
 
 static void   drawRectBehindText( CGContext *context,
@@ -193,7 +193,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
          CGContextFillColor( context, CGColorBySettingAlpha( color, 0.2));
          CGContextFill( context);
 
-         factor     = _CAQuadraticGetValue( CAQuadraticLinear, ([context numberOfFrames] % 120) / 119.0);
+         factor     = _CACubicGetValue( CACubicLinear, ([context numberOfFrames] % 120) / 119.0);
          miniCanvas = CGRectMakeWithSize( rect.size);
 
          switch( x)

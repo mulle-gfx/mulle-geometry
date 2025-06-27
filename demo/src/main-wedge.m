@@ -134,7 +134,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       factor = 1.0 - (numberOfFrames - (ANIM_SPEED / 2)) / ((float) (ANIM_SPEED / 2 )- 1);
    else
       factor = numberOfFrames / ((float) (ANIM_SPEED / 2) - 1);
-   factor = _CAQuadraticGetValue( ((struct CAQuadratic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
+   factor = _CACubicGetValue( ((struct CACubic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
 
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);

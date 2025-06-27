@@ -86,7 +86,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
          CGContextFillColor( context, CGColorBySettingAlpha( color, 0.2));
          CGContextFill( context);
 
-         factor = _CAQuadraticGetValue( CAQuadraticLinear, ([context numberOfFrames] % 120) / 119.0);
+         factor = _CACubicGetValue( CACubicLinear, ([context numberOfFrames] % 120) / 119.0);
          switch( x)
          {
          case 0  : xform = CGAffineTransformMakeTranslation( CGPointMake( CGRectGetWidth( rect) * (1 / 3.0 * factor), 0)); 

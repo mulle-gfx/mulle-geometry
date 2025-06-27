@@ -15,6 +15,7 @@
 
 #include "CAAngle.h"
 #include "CACircle.h"
+#include "CACubic.h"
 #include "CADirection.h"
 #include "CAPolarPoint.h"
 #include "CAPose.h"

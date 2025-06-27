@@ -22,6 +22,51 @@
 #include <assert.h>
 
 
+// Helper function for snapping CGFloat values to multiples
+CGFloat   CGFloatSnap( CGFloat value, CGFloat multiple, CGFloat epsilon)
+{
+    CGFloat   ratio;
+    CGFloat   rounded_ratio;
+    CGFloat   snapped;
+
+    ratio         = value / multiple;
+    rounded_ratio = roundf( ratio);
+    snapped       = rounded_ratio * multiple;
+
+    return( fabs( value - snapped) <= epsilon) ? snapped : value;
+}
+
+
+// Snap CGRect with proper edge alignment
+CGRect   CGRectSnap( CGRect rect, CGFloat multiple, CGFloat epsilon)
+{
+   CGFloat bottom_edge;
+   CGFloat right_edge;
+   CGFloat snapped_bottom;
+   CGFloat snapped_height;
+   CGFloat snapped_right;
+   CGFloat snapped_width;
+   CGFloat snapped_x;
+   CGFloat snapped_y;
+
+   // Snap the origin
+   snapped_x      = CGFloatSnap( rect.origin.x, multiple, epsilon);
+   snapped_y      = CGFloatSnap( rect.origin.y, multiple, epsilon);
+
+   // Calculate and snap the opposite edges
+   right_edge     = rect.origin.x + rect.size.width;
+   bottom_edge    = rect.origin.y + rect.size.height;
+
+   snapped_right  = CGFloatSnap( right_edge, multiple, epsilon);
+   snapped_bottom = CGFloatSnap( bottom_edge, multiple, epsilon);
+
+   // Calculate size from snapped edges
+   snapped_width  = snapped_right - snapped_x;
+   snapped_height = snapped_bottom - snapped_y;
+
+   return( CGRectMake( snapped_x, snapped_y, snapped_width, snapped_height));
+}
+
 
 /*
  * A rectangle with the smallest integer values for its origin and size that

@@ -50,6 +50,7 @@ src/include.h
 set( PUBLIC_HEADERS
 src/CAAngle.h
 src/CACircle.h
+src/CACubic.h
 src/CADirection.h
 src/CAPolarPoint.h
 src/CAPose.h

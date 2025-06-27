@@ -13,6 +13,7 @@ endif()
 set( SOURCES
 src/CAAngle.c
 src/CACircle.c
+src/CACubic.c
 src/CADirection.c
 src/CAPolarPoint.c
 src/CAQuadratic.c

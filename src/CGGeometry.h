@@ -35,14 +35,28 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #endif
 
 
+
+// this creates a normal vector
+static inline CGVector   CGVectorMakeWithRadians( CGFloat radians)
+{
+   assert( ! isnan( radians));
+
+   return( CGVectorMake( sinf( radians), cosf( radians)));
+}
+
+
+static inline CGVector   CGVectorMakeNormal( CGFloat radians)
+{
+   return( CGVectorMakeWithRadians( radians));
+}
+
+
 static inline CGVector   CGVectorMakeWithAngle( CAAngle angle)
 {
    CGFloat   radians;
 
-   assert( ! isnan( angle));
-
    radians = CAAngleToRadians( angle);
-   return( CGVectorMake( sinf( radians), cosf( radians)));
+   return( CGVectorMakeWithRadians( radians));
 }
 
 
@@ -869,6 +883,49 @@ static inline CGPoint   CGRectGetBottomRight( CGRect rect)
    return( CGPointMake( CGRectGetMaxX( rect), CGRectGetMaxY( rect)));
 }
 
+
+// Snap: clean up ugliness (for conversion from and to polar points f.e.
+//       in certain tests)
+
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGFloat   CGFloatSnap( CGFloat value, CGFloat multiple, CGFloat epsilon);
+
+
+static inline CGPoint CGPointSnap( CGPoint point, CGFloat multiple, CGFloat epsilon)
+{
+    return CGPointMake(
+        CGFloatSnap( point.x, multiple, epsilon),
+        CGFloatSnap( point.y, multiple, epsilon)
+    );
+}
+
+// Snap CGSize components to nearest multiples if within epsilon
+static inline CGSize   CGSizeSnap( CGSize size, CGFloat multiple, CGFloat epsilon) {
+    return CGSizeMake(
+        CGFloatSnap( size.width, multiple, epsilon),
+        CGFloatSnap( size.height, multiple, epsilon)
+    );
+}
+
+// Snap CGRect components to nearest multiples if within epsilon
+MULLE__GEOMETRY_EXTERN_GLOBAL
+CGRect   CGRectSnap( CGRect rect, CGFloat multiple, CGFloat epsilon);
+
+// Convenience versions with default epsilon and integer snapping
+static inline CGPoint CGPointSnapDefault( CGPoint point)
+{
+    return CGPointSnap(point, 1.0, CA_EPSILON);
+}
+
+static inline CGSize   CGSizeSnapDefault( CGSize size)
+{
+    return CGSizeSnap( size, 1.0, CA_EPSILON);
+}
+
+static inline CGRect   CGRectSnapDefault( CGRect rect)
+{
+    return CGRectSnap( rect, 1.0, CA_EPSILON);
+}
 
 
 

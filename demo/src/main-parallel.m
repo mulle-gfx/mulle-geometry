@@ -61,7 +61,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
       factor = 1.0 - (numberOfFrames - 120) / 119.0;
    else
       factor = numberOfFrames / 119.0;
-   factor = _CAQuadraticGetValue( ((struct CAQuadratic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
+   factor = _CACubicGetValue( ((struct CACubic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
 
 
    vg     = CGContextGetNVGContext( context);

@@ -13,6 +13,14 @@
 
 #define CA_EPSILON   0.0001f
 
+// also compatible with nanovg,strict enum nor OR
+enum
+{
+   CARotationDirectionCounterClockWise = 1,
+   CARotationDirectionClockWise        = 2,
+};
+typedef uintptr_t    CARotationDirection;
+
 
 //
 // This is CAAngle. It's a typedef for float radians. The origin 0 is east.
@@ -165,21 +173,17 @@ typedef CARotation   CARotationAsAngle;
 //
 // normalization destroys the "amounts" to turn information, which can be
 // useful in animations. It is used when converting to CGFloat mainly.
-//
+// Turns: 2.5 -> 0.5,  -10.0 -> -1.0, 1.0 -> 1.0
 static inline CARotation   CARotationNormalize( CARotation v)
 {
-   CARotation   a;
+   CARotation a;
 
-   assert( ! isnan( v));
+   assert( ! isnan(v));
 
    a = fmodf( v, 1.0);
-   if( a <= 0.0)
-   {
-      if( v == 0.0f) // get rid of -0.0f
-         return( 0.0f);
-      a += 1.0;
-   }
-   return( a);
+   if( v - a == 0.0f)
+       return( a == 0.0f ? 0.0f : a); // get rid of sign
+   return( (a < 0.0f || (a == 0.0f && v < 0.0f)) ? -1.0f : 1.0f);
 }
 
 
@@ -259,15 +263,6 @@ static inline CARotation   CARotationTurn270CounterClockWise( CARotation rotatio
 }
 
 
-// also compatible with nanovg,strict enum nor OR
-enum
-{
-   CARotationDirectionCounterClockWise = 1,
-   CARotationDirectionClockWise        = 2,
-};
-
-
-typedef uintptr_t    CARotationDirection;
 
 // CGContextType string conversion functions
 static inline char   *_CARotationDirectionUTF8String( CARotationDirection value)
@@ -349,7 +344,7 @@ static inline CARotation   CARadiansAsAngleToRotation( CGFloat radians)
 
    // Add π/2 offset
    rotation = normalized + M_PI_2f;
-   if( rotation >= CA_2xPI)
+   if( rotation > CA_2xPI)
       rotation -= CA_2xPI;
 
    // Convert to [0, 1) range
@@ -405,6 +400,8 @@ static inline int   CARotationIsOpposingRotation( CARotation a, CARotation b)
    d = fmodf( a - b, 1.0f);
    return( (d > 0.25 && d < 0.75) || (d < -0.25 && d > -0.75));
 }
+
+
 
 
 //*###############

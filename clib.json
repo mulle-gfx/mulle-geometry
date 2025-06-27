@@ -10,6 +10,8 @@
       "src/CAAngle.h",
       "src/CACircle.c",
       "src/CACircle.h",
+      "src/CACubic.c",
+      "src/CACubic.h",
       "src/CADirection.c",
       "src/CADirection.h",
       "src/CAPolarPoint.c",
