@@ -16,7 +16,7 @@ int   main( int argc, char *argv[])
       hour  = CAAngleToHour( angle);
       back  = CAAngleToRotation( angle);
 
-      printf( "[%.2f rot] ang: %.3f (%.2f) hour: %.3f\n",
+      mulle_printf( "[%.2f rot] ang: %.3f (%.2f) hour: %.3f\n",
                   rot,
                   angle, 
                   back,

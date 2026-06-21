@@ -16,14 +16,14 @@
 
 void   CGPointPrint( CGPoint point)
 {
-   printf( "%.2f %.2f", point.x, point.y);
+   mulle_printf( "%.2f %.2f", point.x, point.y);
 }
 
 
 
 void   CGSizePrint( CGSize size)
 {
-   printf( "%.2f %.2f", size.width, size.height);
+   mulle_printf( "%.2f %.2f", size.width, size.height);
 }
 
 
@@ -136,15 +136,15 @@ static void   test( CGPoint vertex,
    CGPoint             vertexPoint;
    CGPoint             bitmapPoint;
 
-   printf( "{ v=");
+   mulle_printf( "{ v=");
    CGPointPrint( vertex);
-   printf( ", p=");
+   mulle_printf( ", p=");
    CGPointPrint( point);
-   printf( ", e=");
+   mulle_printf( ", e=");
    CGSizePrint( extent);
-   printf( ", s=");
+   mulle_printf( ", s=");
    CGSizePrint( bitmapSize);
-   printf( " } ");
+   mulle_printf( " } ");
 
    // stand in for current transformation
    current       = CGAffineTransformMakeIdentity();
@@ -172,21 +172,21 @@ static void   test( CGPoint vertex,
    // (0..1 / 0..1)
    texturePoint  = CGPointApplyAffineTransform( vertex, fragment);
 
-   printf( " -> t=");
+   mulle_printf( " -> t=");
    CGPointPrint( texturePoint);
 
    // map this to our bitmap size
    bitmap        = bitmap_transform( bitmapSize);
    bitmapPoint   = CGPointApplyAffineTransform( texturePoint, bitmap);
 
-   printf( " -> b=");
+   mulle_printf( " -> b=");
    CGPointPrint( bitmapPoint);
 
    // the reverse transforms a texture point between 0.0 1.0 back to vertex
    reverse       = CGAffineTransformInvert( fragment);
 
    vertexPoint = CGPointApplyAffineTransform( texturePoint, reverse);
-   printf( " -> rt=");
+   mulle_printf( " -> rt=");
    CGPointPrint( vertexPoint);
 
    // the reverse transforms a image point between 0..bitmapSize.width
@@ -195,10 +195,10 @@ static void   test( CGPoint vertex,
    reverse       = CGAffineTransformInvert( combined);
 
    vertexPoint   = CGPointApplyAffineTransform( bitmapPoint, reverse);
-   printf( " -> ri=");
+   mulle_printf( " -> ri=");
    CGPointPrint( vertexPoint);
 
-   printf( "\n");
+   mulle_printf( "\n");
 }
 
 
@@ -222,9 +222,9 @@ int   main( void)
                CGSizeMake( IMAGE_WIDTH, IMAGE_HEIGHT));
       }
 
-   printf( "\n");
-   printf( "\n");
-   printf( "\n");
+   mulle_printf( "\n");
+   mulle_printf( "\n");
+   mulle_printf( "\n");
 
    // we use the reverse_texture_mapper to figure out
    // what we want to use for X, Y, W, H so that we only get a
@@ -241,16 +241,16 @@ int   main( void)
             imagePoint1 = CGPointMake( x, y);
             point1      = CGPointApplyAffineTransform( imagePoint1, xform);
 
-            printf( "i[ %.1f][ %.1f]=", y, x);
+            mulle_printf( "i[ %.1f][ %.1f]=", y, x);
             CGPointPrint( imagePoint1);
-            printf( " -> p=");
+            mulle_printf( " -> p=");
             CGPointPrint( point1);
-            printf( "\n");
+            mulle_printf( "\n");
          }
 
-   printf( "\n");
-   printf( "\n");
-   printf( "\n");
+   mulle_printf( "\n");
+   mulle_printf( "\n");
+   mulle_printf( "\n");
 
 
    xform = reverse_texture_mapper( CGPointMake( X, Y),
@@ -267,16 +267,16 @@ int   main( void)
    point2 = CGPointApplyAffineTransform( imagePoint2, xform);
 
    // two points in our texture, translated to X/Y
-   printf( "b1=");
+   mulle_printf( "b1=");
    CGPointPrint( imagePoint1);
-   printf( " -> p1=");
+   mulle_printf( " -> p1=");
    CGPointPrint( point1);
 
-   printf( "\nb2=");
+   mulle_printf( "\nb2=");
    CGPointPrint( imagePoint2);
-   printf( " -> p2=");
+   mulle_printf( " -> p2=");
    CGPointPrint( point2);
-   printf( "\n\n");
+   mulle_printf( "\n\n");
 
 
    for( y = Y; y <= Y + H; y += H / 4.0)

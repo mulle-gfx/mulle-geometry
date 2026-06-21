@@ -37,7 +37,8 @@ typedef struct
 typedef CGAffineTransform   *CGAffineTransformRef;
 
 
-extern const CGAffineTransform   CGAffineTransformIdentity;
+MULLE__GEOMETRY_GLOBAL
+const CGAffineTransform   CGAffineTransformIdentity;
 
 static inline CGAffineTransform   CGAffineTransformMakeInline( CGFloat a,
                                                                CGFloat b,
@@ -339,7 +340,10 @@ static inline int   CGAffineTransformEqualToTransformInline( CGAffineTransform t
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 int   CGAffineTransformIsIdentity( CGAffineTransform t);
+
+MULLE__GEOMETRY_GLOBAL
 int   CGAffineTransformEqualToTransform( CGAffineTransform t1, CGAffineTransform t2);
 
 
@@ -387,19 +391,32 @@ static inline CGAffineTransform   CGAffineTransformMake( CGFloat a,
 
 // now truely non-inlining functions, where it makes sense (IMO)
 
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformConcat( CGAffineTransform t2, CGAffineTransform t1);
 
 // rotation is usally 0 to +1, but can be anything
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformMakeRotationRadians( CGFloat radians);
+
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformRotateRadians( CGAffineTransform t, CGFloat radians);
 
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformInvert( CGAffineTransform t);
 
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformScale( CGAffineTransform t, CGVector s);
+
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformTranslate( CGAffineTransform t, CGPoint point);
 
+MULLE__GEOMETRY_GLOBAL
 CGPoint             CGPointApplyAffineTransform( CGPoint point, CGAffineTransform t);
+
+MULLE__GEOMETRY_GLOBAL
 CGSize              CGSizeApplyAffineTransform( CGSize size, CGAffineTransform t);
+
+MULLE__GEOMETRY_GLOBAL
 CGRect              CGRectApplyAffineTransform( CGRect rect, CGAffineTransform t);
 
 
@@ -421,16 +438,21 @@ static inline CGAffineTransform   CGAffineTransformRotate( CGAffineTransform t, 
 
 
 // useful for scalings of UIViews maybe
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectApplyAffineTransformAtAnchorPoint( CGRect rect,
                                                   CGAffineTransform t,
                                                   CGPoint anchorPoint);
 
 // mulle additions
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformMakeProjection( CGRect frame, CGRect bounds);
+
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformMakeInverseProjection( CGRect frame, CGRect bounds);
 
 // the standard rotation around a center point, translates rotates and then
 // translates back
+MULLE__GEOMETRY_GLOBAL
 CGAffineTransform   CGAffineTransformMakeRotationAroundPoint( CGPoint center, CARotation rotation);
 
 #if 0
@@ -482,10 +504,12 @@ static inline CGPoint   CGPointProjectToBounds( CGPoint location,
 }
 
 
+MULLE__GEOMETRY_GLOBAL
+CGRect   _CGRectRotate( CGRect rect, CARotation rotation);
+
+
 static inline CGRect  CGRectRotate( CGRect rect, CARotation rotation)
 {
-   extern CGRect   _CGRectRotate( CGRect rect, CARotation rotation);
-
    return( rotation == 0.0f ? rect : _CGRectRotate( rect, rotation));
 }
 

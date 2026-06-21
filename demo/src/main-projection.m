@@ -125,7 +125,7 @@ static void drawDotInCenter( CGContext *context,
 {
    CGPoint   center;
 
-   center = CGRectGetCenter( canvas),
+   center = CGRectGetCenterPoint( canvas),
 
    CGContextBeginPath( context);
    CGContextCircle( context, CACircleMakeWithCenterAndRadius( center, radius));
@@ -260,7 +260,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
          // undergoes another translation for its origin.
          //
 
-         rotationTransform = CGAffineTransformMakeRotationAroundPoint( CGRectGetCenter( miniCanvas), factor);
+         rotationTransform = CGAffineTransformMakeRotationAroundPoint( CGRectGetCenterPoint( miniCanvas), factor);
 
          CGContextSave( context);
          {
@@ -293,7 +293,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
                CGContextStroke( context);
             }
 
-            drawTriangleWithCenter( context, CGRectGetCenter( miniCanvas), 20.0, color);
+            drawTriangleWithCenter( context, CGRectGetCenterPoint( miniCanvas), 20.0, color);
 
          }
          CGContextRestore( context);

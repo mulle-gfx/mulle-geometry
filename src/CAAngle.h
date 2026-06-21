@@ -13,14 +13,6 @@
 
 #define CA_EPSILON   0.0001f
 
-// also compatible with nanovg,strict enum nor OR
-enum
-{
-   CARotationDirectionCounterClockWise = 1,
-   CARotationDirectionClockWise        = 2,
-};
-typedef uintptr_t    CARotationDirection;
-
 
 //
 // This is CAAngle. It's a typedef for float radians. The origin 0 is east.
@@ -99,7 +91,7 @@ CGFloat   CARadiansNormalizeInline( CGFloat radians)
 }
 
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGFloat   CARadiansNormalize( CGFloat radians);
 
 
@@ -741,7 +733,7 @@ static inline CAAngle   CADirectionToAngle( CADirection direction)
 }
 
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CADirection   CARotationToDirection( CARotation rotation);
 
 static inline CADirection   CAAngleToDirection( CAAngle angle)

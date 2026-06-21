@@ -7,25 +7,45 @@
 #include "include.h"
 
 
+// also compatible with nanovg,strict enum nor OR
+enum
+{
+   CARotationDirectionCounterClockWise = 1,
+   CARotationDirectionClockWise        = 2,
+};
+typedef uintptr_t    CARotationDirection;
+
+
+
 /* options to be ORed */
 enum
 {
-   CADirectionTop    = 1,
-   CADirectionBottom = 2,
+   CADirectionNone   = 0,  // AI likes it
+   CADirectionUp     = 1,
+   CADirectionDown   = 2,
    CADirectionLeft   = 4,
    CADirectionRight  = 8
 };
 
-#define CADirectionUp    CADirectionTop
-#define CADirectionDown  CADirectionBottom
+#define CADirectionTop        CADirectionUp
+#define CADirectionBottom     CADirectionDown
 
 typedef uintptr_t    CADirection;
 
 
+MULLE__GEOMETRY_GLOBAL
 CADirection   CADirectionTurn45ClockWise( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 CADirection   CADirectionTurn45CounterClockWise( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 CADirection   CADirectionTurn90ClockWise( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 CADirection   CADirectionTurn90CounterClockWise( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 CADirection   CADirectionTurn180( CADirection direction);
 
 static inline CADirection   CADirectionTurn270ClockWise( CADirection direction)
@@ -40,8 +60,13 @@ static inline CADirection   CADirectionTurn270CounterClockWise( CADirection dire
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 char       *CADirectionUTF8String( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 uint32_t   CADirectionBoxCharacter( CADirection direction);
+
+MULLE__GEOMETRY_GLOBAL
 uint32_t   CADirectionArrowCharacter( CADirection direction);
 
 

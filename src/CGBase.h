@@ -24,6 +24,25 @@
 #include <stdint.h>
 #include <math.h>
 
+
+#ifndef M_PI_f
+# define M_PI_f     ((float) 3.141592653589793238462643383279502884L)
+#endif
+
+#ifndef M_PI_2f
+# define M_PI_2f    ((float) (3.141592653589793238462643383279502884L / 2.0))
+#endif
+
+// M_PI is not part of the ISO C standard (C99, C11, C17, etc.).
+// It is a POSIX extension (marked [XSI] in the POSIX spec).
+#ifndef M_PI
+# define M_PI       ((double) 3.141592653589793238462643383279502884L)
+#endif
+
+// this doesn't exist usually (or name it M_2_PI_f ??)
+#define CA_2xPI     ((float) (3.141592653589793238462643383279502884L * 2.0))
+
+
 typedef float CGFloat;
 
 #define CGFLOAT_MIN         FLT_MIN
@@ -104,18 +123,6 @@ static inline int   CGFloat4EqualToFloat4( CGFloat4 a, CGFloat4 b)
 }
 
 
-#ifndef M_PI_f
-# define M_PI_f     ((float) 3.141592653589793238462643383279502884L)
-#endif
-
-#ifndef M_PI_2f
-# define M_PI_2f    ((float) (3.141592653589793238462643383279502884L / 2.0))
-#endif
-
-// this doesn't exist usually (or name it M_2_PI_f ??)
-#define CA_2xPI     ((float) (3.141592653589793238462643383279502884L * 2.0))
-
-
 
 // mulle addition: returns a value between 0.0 and +1.0
 static inline CGFloat   CGFloatMakeRandom( void)
@@ -130,7 +137,7 @@ static inline CGFloat   CGFloatMakeRandomMinMax( CGFloat min, CGFloat max)
 }
 
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGFloat   CGFloatMakeNormalDistributionMinMax( CGFloat min, CGFloat max);
 
 static inline double   CGFloatMakeNormalDistribution( void)
@@ -139,7 +146,7 @@ static inline double   CGFloatMakeNormalDistribution( void)
 }
 
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGFloat   CGFloatMakeAbnormalDistributionMinMax( CGFloat min, CGFloat max);
 
 static inline double   CGFloatMakeAbnormalDistribution( void)

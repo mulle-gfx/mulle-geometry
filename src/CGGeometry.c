@@ -330,7 +330,7 @@ static CGFloat   _CGFloatNormalDistribution( void)
 #endif
 #define SIGMA     (1 / 3.0)
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+
 CGFloat   CGFloatMakeNormalDistributionMinMax( CGFloat min, CGFloat max)
 {
    CGFloat   r;
@@ -342,7 +342,6 @@ CGFloat   CGFloatMakeNormalDistributionMinMax( CGFloat min, CGFloat max)
 }
 
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
 CGFloat   CGFloatMakeAbnormalDistributionMinMax( CGFloat min, CGFloat max)
 {
    CGFloat   r;

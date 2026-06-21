@@ -41,7 +41,7 @@ static void drawDotInCenter( CGContext *context,
 {
    CGPoint   center;
 
-   center = CGRectGetCenter( canvas),
+   center = CGRectGetCenterPoint( canvas),
 
    CGContextBeginPath( context);
    CGContextCircle( context, CACircleMakeWithCenterAndRadius( center, radius));

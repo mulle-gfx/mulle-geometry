@@ -58,7 +58,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    CGContextFill( context);
 
    // Calculate animation factor and setup
-   rect = CGSizePlaceInRect( CGSizeMake( 1, 1), canvas, CGContentModeScaleAspectFit|CGContentModeCenter);
+   rect = CGSizePlaceInRect( CGSizeMake( 1, 1), canvas, CGContentModeScaleAspectFit|CGRectGetCenterPoint);
    rect = CGRectInset( rect, 75, 75);
 
    // Draw original rectangle with yellow stroke
@@ -72,7 +72,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
 #else
       factor = ([context numberOfFrames] % 120) / 119.0;
 #endif
-      rotationTransform = CGAffineTransformMakeRotationAroundPoint( CGRectGetCenter( rect), factor);
+      rotationTransform = CGAffineTransformMakeRotationAroundPoint( CGRectGetCenterPoint( rect), factor);
       // Apply rotation transform
       CGContextTransform( context, &rotationTransform);
 
@@ -108,7 +108,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    CGContextStrokeRectWithColor( context, rect, 0.75, CGColorMakeRed());
 
    label = MulleObjC_asprintf( "Intersection points: %d", count);
-   drawRectBehindText( context, rect, label, CGContentModeCenter);
+   drawRectBehindText( context, rect, label, CGRectGetCenterPoint);
 
    return( YES);
 }

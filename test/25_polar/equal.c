@@ -10,7 +10,7 @@ int   main( int argc, char *argv[])
    a = CAPolarPointMakeWithRadiansAsAngle( -10, CADegreesToRadiansAsAngle( 45.0));
    b = CAPolarPointMakeWithRadiansAsAngle( +10, CADegreesToRadiansAsAngle( 45.0 + 180.0));
 
-   printf( "%s\n", CAPolarPointEqualToPolarPoint( a, b) ? "YES" : "NO");
+   mulle_printf( "%s\n", CAPolarPointEqualToPolarPoint( a, b) ? "YES" : "NO");
 
    return( 0);
 }

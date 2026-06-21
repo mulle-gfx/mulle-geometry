@@ -19,8 +19,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 
 #include "CGBase.h"
-#include "CAAngle.h"
 #include "CADirection.h"
+#include "CAAngle.h"
 
 #include <stdint.h>
 #include <math.h>
@@ -147,6 +147,12 @@ static inline CGPoint   CGPointAddVector( CGPoint p, CGVector q)
 static inline CGPoint   CGPointSubtract( CGPoint p, CGPoint q)
 {
    return( CGPointMake( p.x - q.x, p.y - q.y));
+}
+
+
+static inline CGVector   CGVectorBySubtractingPoints( CGPoint p, CGPoint q)
+{
+   return( CGVectorMake( p.x - q.x, p.y - q.y));
 }
 
 
@@ -655,12 +661,12 @@ static inline double CGRectGetArea( CGRect a)
 //  .-------------.
 //  |             |
 //  |             |
-//  |      *      | < CGRectGetCenter().y
+//  |      *      | < CGRectGetCenterPoint().y
 //  |             |
 //  |             |
 //  '-------------'
 //         ^
-//         CGRectGetCenter().x
+//         CGRectGetCenterPoint().x
 //
 
 static inline CGPoint   CGRectGetCornerPoint( CGRect rect, CADirection dir)
@@ -712,20 +718,27 @@ static inline CGPoint   CGRectGetOrigin( CGRect rect)
 //  |             |
 //  '-------------'
 //         ^
-//    CGRectGetCenter, like CGRectGetCenterWithAnchorPoint with 0.5, 0.5
+//    CGRectGetCenterPoint, like CGRectGetCenterWithAnchorPoint with 0.5, 0.5
 */
-static inline CGPoint   CGRectGetCenter( CGRect rect)
+static inline CGPoint   CGRectGetCenterPoint( CGRect rect)
 {
    return( CGPointMake( CGRectGetMidX( rect), CGRectGetMidY( rect)));
 }
 
+//
+// backwards compatibility
+//
+static inline CGPoint   CGRectGetCenter( CGRect rect)
+{
+   return( CGRectGetCenterPoint( rect));
+}
 
 /**
 //  .-------------.
 //  |             |
 //  |             |
 //  |             |
-//  |         * <-:--- anchorPoint
+//  |         * <-:--- anchorPoint (0..1, 0..1)
 //  |             |
 //  '-------------'
 //
@@ -887,7 +900,7 @@ static inline CGPoint   CGRectGetBottomRight( CGRect rect)
 // Snap: clean up ugliness (for conversion from and to polar points f.e.
 //       in certain tests)
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGFloat   CGFloatSnap( CGFloat value, CGFloat multiple, CGFloat epsilon);
 
 
@@ -908,7 +921,7 @@ static inline CGSize   CGSizeSnap( CGSize size, CGFloat multiple, CGFloat epsilo
 }
 
 // Snap CGRect components to nearest multiples if within epsilon
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectSnap( CGRect rect, CGFloat multiple, CGFloat epsilon);
 
 // Convenience versions with default epsilon and integer snapping
@@ -931,7 +944,7 @@ static inline CGRect   CGRectSnapDefault( CGRect rect)
 
 /**
 */
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 int CGRectContainsPoint( CGRect rect, CGPoint point);
 
 
@@ -1180,30 +1193,30 @@ static inline CGRect   CGRectBySettingMaxY( CGRect rect, CGFloat y)
    This is so that "adjacent" rectangles are not considered intersecting.
    CGRectIntersection will return an intersection of 0 width or height though!
 */
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 int   CGRectIntersectsRect( CGRect a, CGRect b);
 
 
 /**
 */
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 int   CGRectContainsRect( CGRect a, CGRect b);
 
 
 // CGRectIntegral rounds the rectangle's origin downward and its size upward
 // to the nearest whole integers, such that the result contains the original
 // rectangle
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectIntegral( CGRect rect);
 
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectIntegralFuzzy( CGRect r, CGFloat fuzz);
 
 //
 // Returns a rect that represents the intersection of r1 and r2.
 // Returns CGRectNull if r1 and r2 do not intersect
 //
-MULLE__GEOMETRY_EXTERN_GLOBAL
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectIntersection( CGRect r1, CGRect r2);
 
 
@@ -1225,6 +1238,7 @@ CGRect   CGRectIntersection( CGRect r1, CGRect r2);
 //      #   b  #      |      |
 //      '======'      '------'
 
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectUnion( CGRect a, CGRect b);
 
 
@@ -1232,6 +1246,7 @@ CGRect   CGRectUnion( CGRect a, CGRect b);
 // Extend CGRect to enclose point into area, the returned rectangle
 // is standardized
 //
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGRectEnclosePoint( CGRect r, CGPoint p);
 
 
@@ -1296,7 +1311,12 @@ static inline CGRect   CGRectMakeRandomInRect( CGRect r, CGSize minSize, CGSize 
 //
 
 // Line intersection
-int   CGEdgeIntersect( CGPoint p1, CGPoint p2, CGPoint p3, CGPoint p4, CGPoint *intersection);
+MULLE__GEOMETRY_GLOBAL
+int   CGEdgeIntersect( CGPoint p1,
+                       CGPoint p2,
+                       CGPoint p3,
+                       CGPoint p4,
+                       CGPoint *intersection);
 
 // CGEdgeContainsPoint
 //
@@ -1313,19 +1333,59 @@ int   CGEdgeIntersect( CGPoint p1, CGPoint p2, CGPoint p3, CGPoint p4, CGPoint *
 //  Returns 1 if point is on right side of directed edge (inside)
 //  Returns 0 if point is on left side of directed edge (outside)
 //
-static inline int   CGEdgeContainsPoint( CGPoint edgeStart, CGPoint edgeEnd, CGPoint point)
+static inline int   CGEdgeContainsPoint( CGPoint edgeStart,
+                                         CGPoint edgeEnd,
+                                         CGPoint point)
 {
     return( ((edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) -
              (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x)) >= 0);
 }
 
 
-static inline int   CGEdgeContainsPointCounterClockWise( CGPoint edgeStart, CGPoint edgeEnd, CGPoint point)
+static inline int   CGEdgeContainsPointCounterClockWise( CGPoint edgeStart,
+                                                         CGPoint edgeEnd,
+                                                         CGPoint point)
 {
     return( ((edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) -
              (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x)) <= 0);
 }
 
+
+//
+// direction is kinda funny, i would prefer to have both edges be seen as
+// points on concentric circles, but on the same line emanating from the
+// circle center. but its really not clear where the center
+// is (two solutions i guess). So this more like winding
+//
+static inline CGPoint
+   CGEdgeMidpointAtDistance( CGPoint edgeStart,
+                             CGPoint edgeEnd,
+                             CGFloat distance,
+                             CARotationDirection direction)
+{
+   CGPoint   mid;
+   CGPoint   result;
+   CGFloat   len;
+   CGFloat   scale;
+   CGVector  v;
+   CGVector  perp;
+
+   mid = CGPointMake( (edgeStart.x + edgeEnd.x) * 0.5f,
+                      (edgeStart.y + edgeEnd.y) * 0.5f);
+   v   = CGVectorMake( edgeEnd.x - edgeStart.x,
+                       edgeEnd.y - edgeStart.y);
+   len = sqrtf( v.dx * v.dx + v.dy * v.dy);
+   if( len == 0.0f)
+     return( mid);
+
+   perp = (direction == CARotationDirectionClockWise)
+          ? CGVectorMake( v.dy, -v.dx)
+          : CGVectorMake( -v.dy, v.dx);
+
+   scale  = distance / len;
+   result = CGPointMake( mid.x + perp.dx * scale, mid.y + perp.dy * scale);
+   return( result);
+}
 
 
 //
@@ -1361,6 +1421,7 @@ static inline int   CGEdgeContainsPointCounterClockWise( CGPoint edgeStart, CGPo
 //   IMPORTANT: output array must be sized for at least (2 * n) vertices
 //              to handle worst case where every edge crosses the clipping edge
 //              (see main-cutter demo)
+MULLE__GEOMETRY_GLOBAL
 unsigned int   CGPolygonClipAgainstEdge( CGPoint *input,
                                          size_t n,
                                          CGPoint edgeStart,
@@ -1384,6 +1445,7 @@ unsigned int   CGPolygonClipAgainstEdge( CGPoint *input,
 //   Creates minimal axis-aligned rectangle containing all points
 //   Returns CGRectZero if count is 0
 //
+MULLE__GEOMETRY_GLOBAL
 CGRect   CGPolygonBoundingBox( CGPoint *points, size_t count);
 
 
@@ -1400,6 +1462,7 @@ static inline CGRect   CGPolygon4BoundingBox( CGPoint points[ 4])
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 unsigned int   CGPolygon4ClipAgainstPolygon4( CGPoint subject[ 4],
                                               CGPoint clipRect[ 4],
                                               CGPoint result[ 8]);

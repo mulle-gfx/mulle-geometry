@@ -6,7 +6,7 @@
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.3f %.3f %.3f %.3f",
+   mulle_printf( "%.3f %.3f %.3f %.3f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -20,12 +20,12 @@ static void   test( CGRect rect)
 
    rect2 = CGRectIntegralFuzzy( rect, 0.01);
 
-   printf( "[r=");
+   mulle_printf( "[r=");
    CGRectPrint( rect);
-   printf( " i=");
+   mulle_printf( " i=");
    CGRectPrint( rect2);
-   printf( "]");
-   printf( "\n");
+   mulle_printf( "]");
+   mulle_printf( "\n");
 }
 
 
@@ -88,11 +88,11 @@ int   main( void)
             {
                test( CGRectMake( plus_values[ x_i], minus_values[ y_i], values[ w_i], values[ h_i]));
             }
-            printf( "\n");
+            mulle_printf( "\n");
          }
-         printf( "\n");
+         mulle_printf( "\n");
       }
-      printf( "\n");
+      mulle_printf( "\n");
    }
    return( 0);
 }

@@ -19,7 +19,7 @@ static float   values[ N_VALUES] =
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%g %g %g %g",
+   mulle_printf( "%g %g %g %g",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -35,9 +35,9 @@ static void   test( CGRect rect1, CGRect rect2)
    if( flag)
    {
       CGRectPrint( rect1);
-      printf( " == ");
+      mulle_printf( " == ");
       CGRectPrint( rect2);
-      printf( " = %s\n", flag ? "YES" : "NO");
+      mulle_printf( " = %s\n", flag ? "YES" : "NO");
    }
 }
 

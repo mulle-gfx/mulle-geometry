@@ -43,7 +43,7 @@ static void   drawDotInRect( CGContext *context, CAPolarPoint q, CGRect rect, CG
 {
    CGPoint   center;
 
-   center = CGPointAdd( CGPointMakeWithPolarPoint( q), CGRectGetCenter( rect));
+   center = CGPointAdd( CGPointMakeWithPolarPoint( q), CGRectGetCenterPoint( rect));
    drawDot( context, center, fillColor, strokeColor);
 }
 

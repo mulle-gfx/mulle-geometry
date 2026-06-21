@@ -18,7 +18,7 @@ int   main( int argc, char *argv[])
       revhour = CAAngleToHour( ang);
       deg     = CAAngleToDegrees( ang);
 
-      printf( "val: %.3f ang: %.3f deg: %.3f (%.3f)\n",
+      mulle_printf( "val: %.3f ang: %.3f deg: %.3f (%.3f)\n",
                      val,
                      ang,
                      deg,

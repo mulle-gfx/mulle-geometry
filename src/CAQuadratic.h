@@ -98,6 +98,7 @@ static inline void   CAQuadraticBezierInit( CAQuadraticBezier *b,
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 CGPoint   CAQuadraticBezierGetPoint( CAQuadraticBezier *b, CGFloat t);
 
 #endif

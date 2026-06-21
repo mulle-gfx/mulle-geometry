@@ -6,7 +6,7 @@
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.2f %.2f %.2f %.2f",
+   mulle_printf( "%.2f %.2f %.2f %.2f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -20,12 +20,12 @@ static void   test( CGRect rect)
 
    rect2 = CGRectStandardize( rect);
 
-   printf( "[r=");
+   mulle_printf( "[r=");
    CGRectPrint( rect);
-   printf( " i=");
+   mulle_printf( " i=");
    CGRectPrint( rect2);
-   printf( "]");
-   printf( "\n");
+   mulle_printf( "]");
+   mulle_printf( "\n");
 }
 
 

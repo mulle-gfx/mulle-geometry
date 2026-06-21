@@ -2,7 +2,7 @@ CAAngleNNE : rad: 5.105 (0.750) direction: CADirectionTop|CADirectionRight
 CAAngleNE  : rad: 5.498 (1.500) direction: CADirectionTop|CADirectionRight
 CAAngleENE : rad: 5.890 (2.250) direction: CADirectionTop|CADirectionRight
 CAAngleE   : rad: 0.000 (3.000) direction: CADirectionRight
-CAAngleESE : rad: 0.393 (3.750) direction: CADirectionBottom|CADirectionRight
+CAAngleESE : rad: 0.392 (3.750) direction: CADirectionBottom|CADirectionRight
 CAAngleSE  : rad: 0.785 (4.500) direction: CADirectionBottom|CADirectionRight
 CAAngleSSE : rad: 1.178 (5.250) direction: CADirectionBottom|CADirectionRight
 CAAngleS   : rad: 1.571 (6.000) direction: CADirectionBottom

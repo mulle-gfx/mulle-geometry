@@ -38,7 +38,7 @@ else()
          # intentionally left blank
       else()
          # Disable with: `mulle-sourcetree mark m no-require-link`
-         message( SEND_ERROR "M_LIBRARY was not found")
+         message( SEND_ERROR "M_LIBRARY was not found in m")
       endif()
    endif()
 endif()
@@ -72,7 +72,7 @@ if( NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             # intentionally left blank
          else()
             # Disable with: `mulle-sourcetree mark math no-require-link`
-            message( SEND_ERROR "MATH_LIBRARY was not found")
+            message( SEND_ERROR "MATH_LIBRARY was not found in m")
          endif()
       endif()
    endif()

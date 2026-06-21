@@ -2,8 +2,8 @@
 
 
 unsigned int   CACircleIntersectionsWithLine( CACircle circle,
-                                              CGPoint start,
-                                              CGPoint end,
+                                              CGPoint startPoint,
+                                              CGPoint endPoint,
                                               CGPoint intersection[ 2])
 {
    CGFloat t1;
@@ -15,12 +15,12 @@ unsigned int   CACircleIntersectionsWithLine( CACircle circle,
    CGFloat c;
    CGFloat discriminant;
 
-   dx = end.x - start.x;
-   dy = end.y - start.y;
+   dx = endPoint.x - startPoint.x;
+   dy = endPoint.y - startPoint.y;
    a  = dx * dx + dy * dy;
-   b  = 2 * (dx * (start.x - circle.center.x) + dy * (start.y - circle.center.y));
-   c  = powf( start.x - circle.center.x, 2)
-        + powf( start.y - circle.center.y, 2)
+   b  = 2 * (dx * (startPoint.x - circle.center.x) + dy * (startPoint.y - circle.center.y));
+   c  = powf( startPoint.x - circle.center.x, 2)
+        + powf( startPoint.y - circle.center.y, 2)
         - powf( circle.radius, 2);
 
    discriminant = b * b - 4 * a * c;
@@ -31,37 +31,37 @@ unsigned int   CACircleIntersectionsWithLine( CACircle circle,
          return( 0);
 
       t1 = -b / (2 * a);
-      intersection[ 0] = CGPointMake( start.x + t1 * dx, start.y + t1 * dy);
+      intersection[ 0] = CGPointMake( startPoint.x + t1 * dx, startPoint.y + t1 * dy);
       return( 1);
    }
 
    t1               = (-b + sqrtf( discriminant)) / (2 * a);
    t2               = (-b - sqrtf( discriminant)) / (2 * a);
-   intersection[ 0] = CGPointMake( start.x + t1 * dx, start.y + t1 * dy);
-   intersection[ 1] = CGPointMake( start.x + t2 * dx, start.y + t2 * dy);
+   intersection[ 0] = CGPointMake( startPoint.x + t1 * dx, startPoint.y + t1 * dy);
+   intersection[ 1] = CGPointMake( startPoint.x + t2 * dx, startPoint.y + t2 * dy);
    return( 2);
 }
 
 
 CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
-                                           CGPoint start,
-                                           CGPoint end,
-                                           CGPoint near)
+                                           CGPoint startPoint,
+                                           CGPoint endPoint,
+                                           CGPoint nearPoint)
 {
    CGPoint        intersection[ 2];
    CGFloat        d0;
    CGFloat        d1;
    unsigned int   n;
 
-   assert( CGPointIsInsideCircle( start, circle));
-   assert( CGPointIsInsideCircle( end, circle));
+   assert( CGPointIsInsideCircle( startPoint, circle));
+   assert( CGPointIsInsideCircle( endPoint, circle));
 
-   n = CACircleIntersectionsWithLine( circle, start, end, intersection);
+   n = CACircleIntersectionsWithLine( circle, startPoint, endPoint, intersection);
    assert( n == 2);
    MULLE_C_UNUSED( n);
    
-   d0 = CGPointSquaredDistanceToPoint( near, intersection[ 0]);
-   d1 = CGPointSquaredDistanceToPoint( near, intersection[ 1]);
+   d0 = CGPointSquaredDistanceToPoint( nearPoint, intersection[ 0]);
+   d1 = CGPointSquaredDistanceToPoint( nearPoint, intersection[ 1]);
    return( d0 < d1 ? intersection[ 0] : intersection[ 1]);
 }
 
@@ -129,18 +129,13 @@ CGPoint   CACirclePointAtDistance( CACircle circle,
 
 
 // MEMO: AI generated and untested
-CGRect   CACircleOuterRectOfSector( CACircle circle, 
-                                    CAAngle startAngle, 
-                                    CAAngle endAngle) 
+CGRect   CACircleOuterRectOfSector( CACircle circle,
+                                    CAAngle startAngle,
+                                    CAAngle endAngle)
 {
-   CGPoint   p1;
-   CGPoint   p2;
-   CGPoint   p3;
-   CGPoint   p4;   
-   CGFloat   minX;
-   CGFloat   maxX;
-   CGFloat   minY;
-   CGFloat   maxY;
+   CGRect    box;
+   CGPoint   ps;
+   CGPoint   pe;
    CGFloat   startRadians;
    CGFloat   endRadians;
 
@@ -150,21 +145,32 @@ CGRect   CACircleOuterRectOfSector( CACircle circle,
    startRadians = CAAngleToRadians( startAngle);
    endRadians   = CAAngleToRadians( endAngle);
 
-   // Compute the four points that define the bounding box of the circle sector
-   p1 = CGPointMake( circle.center.x + circle.radius * cosf( startRadians), 
-                     circle.center.y + circle.radius * sinf( startRadians));
-   p2 = CGPointMake( circle.center.x + circle.radius * cosf( endRadians), 
-                     circle.center.y + circle.radius * sinf( endRadians));
-   p3 = CGPointMake( circle.center.x + circle.radius * cosf( startRadians + M_PI_f), 
-                     circle.center.y + circle.radius * sinf( startRadians + M_PI_f));
-   p4 = CGPointMake( circle.center.x + circle.radius * cosf( endRadians + M_PI_f), 
-                     circle.center.y + circle.radius * sinf( endRadians + M_PI_f));
-   
-    // Find the minimum and maximum x and y coordinates of these four points
-   minX = fminf( fminf( p1.x, p2.x), fminf( p3.x, p4.x));
-   maxX = fmaxf( fmaxf( p1.x, p2.x), fmaxf( p3.x, p4.x));
-   minY = fminf( fminf( p1.y, p2.y), fminf( p3.y, p4.y));
-   maxY = fmaxf( fmaxf( p1.y, p2.y), fmaxf( p3.y, p4.y));
-    
-   return( CGRectMake( minX, minY, maxX - minX, maxY - minY));
+   ps = CACirclePointAtAngle( circle, startAngle);
+   pe = CACirclePointAtAngle( circle, endAngle);
+
+   box = CGRectMakeWithPoints( ps, pe);
+
+   // If the sector wraps around, the bounding box is the whole circle
+   if (endRadians < startRadians)
+   {
+      CGFloat temp = startRadians;
+      startRadians = endRadians;
+      endRadians = temp;
+   }
+
+   if (endRadians - startRadians >= CA_2xPI)
+      return CACircleGetOuterRect(circle);
+
+
+   // Check if the cardinal directions are within the arc
+   if (startRadians < CAAngleE && endRadians > CAAngleE)
+      box = CGRectEnclosePoint( box, CGPointMake( circle.center.x + circle.radius, circle.center.y));
+   if (startRadians < CAAngleS && endRadians > CAAngleS)
+      box = CGRectEnclosePoint( box, CGPointMake( circle.center.x, circle.center.y + circle.radius));
+   if (startRadians < CAAngleW && endRadians > CAAngleW)
+      box = CGRectEnclosePoint( box, CGPointMake( circle.center.x - circle.radius, circle.center.y));
+   if (startRadians < CAAngleN && endRadians > CAAngleN)
+      box = CGRectEnclosePoint( box, CGPointMake( circle.center.x, circle.center.y - circle.radius));
+
+   return( box);
 }

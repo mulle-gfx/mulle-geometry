@@ -18,7 +18,7 @@ int   main( int argc, char *argv[])
       rad  = CAAngleToRadians( ang);
       rad2 = CARadiansToAngle( rad);
 
-      printf( "a:%d dn:%.1f r:%.3f (%.1f) rn:%.1f (%.1f)\n",
+      mulle_printf( "a:%d dn:%.1f r:%.3f (%.1f) rn:%.1f (%.1f)\n",
                      angle, deg,
                      rad, CAAngleToDegrees( rad),
                      rad2, CAAngleToDegrees( rad2));

@@ -20,7 +20,7 @@ int   main( int argc, char *argv[])
                a = CGPointMake( x1, y1);
                b = CGPointMake( x2, y2);
                r = CGPointDistanceToPoint( a, b);
-               printf( "[%.1f %.1f] to [%.1f %.1f] = %.1f\n",
+               mulle_printf( "[%.1f %.1f] to [%.1f %.1f] = %.1f\n",
                         a.x, a.y,
                         b.x, b.y,
                         r);

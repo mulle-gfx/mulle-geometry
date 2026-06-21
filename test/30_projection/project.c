@@ -6,13 +6,13 @@
 
 void   CGPointPrint( CGPoint point)
 {
-   printf( "%.2f %.2f", point.x, point.y);
+   mulle_printf( "%.2f %.2f", point.x, point.y);
 }
 
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.2f %.2f %.2f %.2f",
+   mulle_printf( "%.2f %.2f %.2f %.2f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -30,17 +30,17 @@ static void   test( CGRect frame, CGRect bounds, CGPoint location)
    contentLocation = CGPointProjectToBounds( location, frame, bounds);
    reverse         = CGPointProjectToFrame( contentLocation, frame, bounds);
 
-   printf( "[f=");
+   mulle_printf( "[f=");
    CGRectPrint( frame);
-   printf( " b=");
+   mulle_printf( " b=");
    CGRectPrint( bounds);
-   printf( "] ");
+   mulle_printf( "] ");
    CGPointPrint( location);
-   printf( " -> ");
+   mulle_printf( " -> ");
    CGPointPrint( contentLocation);
-   printf( " ( ");
+   mulle_printf( " ( ");
    CGPointPrint( reverse);
-   printf( ")\n");
+   mulle_printf( ")\n");
 }
 
 
@@ -50,23 +50,23 @@ int   main( void)
    test( CGRectMake( 0, 0, 4, 4), CGRectMake( 0, 0, 2, 2), CGPointMake( 2, 2));
    test( CGRectMake( 0, 0, 4, 4), CGRectMake( 0, 0, 8, 8), CGPointMake( 2, 2));
 
-   printf("\n");
+   mulle_printf("\n");
 
    // -1 bounds.x means rect is shifted to left, getting hit with a 0,
    // it will actually be a 1. Add frame.x, make it 2
    test( CGRectMake( 1, 0, 4, 4), CGRectMake( -1, 0, 4, 4), CGPointMake( 0, 0));
 
-   printf("\n");
+   mulle_printf("\n");
 
    // this is scaling up so expect 2
    test( CGRectMake( 0, 0, 4, 4), CGRectMake( 0, 0, 2, 2), CGPointMake( 1, 1));
 
-   printf("\n");
+   mulle_printf("\n");
 
    // we hit -1 which is scaled up, so -2, therefore we hit 2 (as two above)
    test( CGRectMake( 0, 0, 4, 4), CGRectMake( -1, 0, 2, 2), CGPointMake( 0, 0));
 
-   printf("\n");
+   mulle_printf("\n");
 
    // we hit -1 which is scaled up, so -2, therefore we hit 2 (as two above)
    // subtract frame from it though -> 1

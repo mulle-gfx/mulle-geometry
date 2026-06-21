@@ -66,7 +66,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 
-   center      = CGRectGetCenter( rect);
+   center      = CGRectGetCenterPoint( rect);
    outerCircle = CGRectGetInnerCircle( rect);
    innerCircle = CACircleInset( outerCircle, outerCircle.radius * (1.0 + 6.0 * factor) / 8.0);
 

@@ -199,7 +199,10 @@ static inline int   CAPolarPointEqualToPolarPoint( CAPolarPoint p, CAPolarPoint 
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 CAPolarPoint   CAPolarPointAdd1( CAPolarPoint p, CAPolarPoint q);
+
+MULLE__GEOMETRY_GLOBAL
 CAPolarPoint   CAPolarPointAdd2( CAPolarPoint p, CAPolarPoint q);
 
 static inline CAPolarPoint   CAPolarPointAdd( CAPolarPoint p, CAPolarPoint q)
@@ -208,7 +211,10 @@ static inline CAPolarPoint   CAPolarPointAdd( CAPolarPoint p, CAPolarPoint q)
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 CAPolarPoint   CAPolarPointSubtract1( CAPolarPoint p, CAPolarPoint q);
+
+MULLE__GEOMETRY_GLOBAL
 CAPolarPoint   CAPolarPointSubtract2( CAPolarPoint p, CAPolarPoint q);
 
 static inline CAPolarPoint   CAPolarPointSubtract( CAPolarPoint p, CAPolarPoint q)
@@ -312,6 +318,7 @@ static inline CAPolarPoint   CAPolarPointRotate( CAPolarPoint v, CARotation a)
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 CGFloat   CAPolarPointDistanceToPolarPoint( CAPolarPoint a, CAPolarPoint b);
 
 

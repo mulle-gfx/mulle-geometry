@@ -21,6 +21,7 @@
 
 
 
+MULLE__GEOMETRY_GLOBAL_VAR
 const CGAffineTransform   CGAffineTransformIdentity =
 {
    .a  = 1.0f,
@@ -180,7 +181,7 @@ CGRect   _CGRectRotate( CGRect rect, CARotation rotation)
    CGPoint             center;
    CGAffineTransform   xform;
 
-   center = CGRectGetCenter( rect);
+   center = CGRectGetCenterPoint( rect);
    xform  = CGAffineTransformMakeTranslationInline( CGPointNegate( center));
    xform  = CGAffineTransformConcatInline( CGAffineTransformMakeRotationInline( rotation), xform);
    xform  = CGAffineTransformConcatInline( CGAffineTransformMakeTranslationInline( center), xform);

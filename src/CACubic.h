@@ -106,10 +106,55 @@ static inline void   CACubicBezierInit( CACubicBezier *b,
    CACubicInit( &b->y, p0.y, p1.y, p2.y, p3.y);
 }
 
+MULLE__GEOMETRY_GLOBAL
 CGPoint   CACubicBezierGetPoint( CACubicBezier *b, CGFloat t);
 
 
 typedef CGFloat   CATweenFunction( struct CACubic *q, CGFloat t);
+
+//
+// Robert Penner style easing functions using CATweenFunction signature.
+// The CACubic parameter is currently unused by these fixed-parameter variants.
+//
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInQuadratic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutQuadratic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutQuadratic( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInCubic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutCubic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutCubic( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInQuartic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutQuartic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutQuartic( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInQuintic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutQuintic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutQuintic( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInSine( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutSine( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutSine( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInExponential( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutExponential( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutExponential( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInCircular( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutCircular( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutCircular( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInBack( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutBack( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutBack( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInBounce( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutBounce( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutBounce( struct CACubic *q, CGFloat t);
+
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInElastic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseOutElastic( struct CACubic *q, CGFloat t);
+MULLE__GEOMETRY_GLOBAL CGFloat   CATweenEaseInOutElastic( struct CACubic *q, CGFloat t);
 
 
 #endif

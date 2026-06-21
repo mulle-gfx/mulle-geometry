@@ -16,6 +16,7 @@
 
 //
 // A CACircle is somewhat like a polar point, with a cartesian center.
+// the radius is always positive or zero.
 //
 typedef struct
 {
@@ -35,14 +36,14 @@ static inline CACircle CACircleMake( CGFloat x, CGFloat y, CGFloat radius)
          .x = x,
          .y = y
       },
-      .radius = radius
+      .radius = fabsf( radius)
    });
 }
 
+
 static inline CACircle CACircleMakeWithCenterAndRadius( CGPoint p, CGFloat radius)
 {
-   assert( radius >= 0.0f);
-   return( (CACircle) { .center = p, .radius = radius });
+   return( (CACircle) { .center = p, .radius = fabsf( radius) });
 }
 
 
@@ -156,29 +157,29 @@ static inline CGFloat  CARadiusDistanceBetweenAngles( CGFloat radius,
                                                       CAAngle b,
                                                       CARotationDirection direction)
 {
-    CGFloat   radians;
-    CGFloat   distance;
+   CGFloat   radians;
+   CGFloat   distance;
 
-    radians = CAAngleToRadians( b) - CAAngleToRadians( a);
+   radians = CAAngleToRadians( b) - CAAngleToRadians( a);
 
-    if( direction == CARotationDirectionCounterClockWise)
-    {
-        if( radians < 0.0)
-          radians += CA_2xPI;
-    }
-    else
-    {
-        if( radians > 0.0)
-            radians -= CA_2xPI;
-        radians = -radians; // Make positive for distance calculation
-    }
+   if( direction == CARotationDirectionCounterClockWise)
+   {
+       if( radians < 0.0)
+         radians += CA_2xPI;
+   }
+   else
+   {
+       if( radians > 0.0)
+           radians -= CA_2xPI;
+       radians = -radians; // Make positive for distance calculation
+   }
 
-    distance = radius * radians;
+   distance = radius * radians;
 
-    if (distance < CA_EPSILON)
-        return (0.0f);
+   if( distance < CA_EPSILON)
+       return( 0.0f);
 
-    return (distance);
+   return( distance);
 }
 
 
@@ -188,9 +189,55 @@ static inline CGFloat   CACircleDistanceBetweenAngles( CACircle circle,
                                                        CAAngle b,
                                                        CARotationDirection direction)
 {
-    return( CARadiusDistanceBetweenAngles( circle.radius, a, b, direction));
+   return( CARadiusDistanceBetweenAngles( circle.radius, a, b, direction));
 }
 
+
+
+static inline CAAngle   CARadiusAngleByAddingDistance( CGFloat radius,
+                                                       CAAngle startAngle,
+                                                       CGFloat distance,
+                                                       CARotationDirection direction)
+{
+   CGFloat deltaRadians;
+   CGFloat startRadians;
+   CGFloat endRadians;
+   CGFloat resultingDistance;
+
+   if( radius <= 0.0f)
+       return( startAngle);
+
+   deltaRadians = distance / radius;
+
+   if( direction == CARotationDirectionCounterClockWise)
+       deltaRadians = -deltaRadians;
+
+   startRadians = CAAngleToRadians( startAngle);
+   endRadians   = startRadians + deltaRadians;
+
+   // Normalize to [0, 2π)
+   endRadians = fmodf( endRadians, CA_2xPI );
+   if( endRadians < 0.0f )
+       endRadians += CA_2xPI;
+
+   resultingDistance = radius * fabsf( deltaRadians);
+   if( resultingDistance < CA_EPSILON)
+       return( startAngle);
+
+   return( CARadiansToAngle( endRadians));
+}
+
+
+static inline CAAngle   CACircleAngleByAddingDistance( CACircle circle,
+                                                       CAAngle startAngle,
+                                                       CGFloat distance,
+                                                       CARotationDirection direction)
+{
+   return( CARadiusAngleByAddingDistance( circle.radius,
+                                          startAngle,
+                                          distance,
+                                          direction));
+}
 
 
 static inline CGFloat   CACircleDistanceToRotation( CACircle circle,
@@ -207,6 +254,7 @@ static inline CGFloat   CACircleDistanceToRotation( CACircle circle,
 
 
 
+MULLE__GEOMETRY_GLOBAL
 CGPoint   CACirclePointAtDistance( CACircle circle,
                                    CAAngle startAngle,
                                    CGFloat distance);
@@ -271,14 +319,14 @@ static inline CGRect   CACircleGetInnerRect( CACircle circle)
 
 static inline CACircle   CGRectGetInnerCircle( CGRect rect)
 {
-   return( CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect),
+   return( CACircleMakeWithCenterAndRadius( CGRectGetCenterPoint( rect),
                          CGRectGetInnerRadius( rect)));
 }
 
 
 static inline CACircle   CGRectGetOuterCircle( CGRect rect)
 {
-   return( CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect),
+   return( CACircleMakeWithCenterAndRadius( CGRectGetCenterPoint( rect),
                          CGRectGetOuterRadius( rect)));
 }
 
@@ -289,6 +337,7 @@ static inline CGRect   CGRectEncloseCircle( CGRect r, CACircle c)
 }
 
 
+MULLE__GEOMETRY_GLOBAL
 CGRect   CACircleOuterRectOfSector( CACircle circle, 
                                     CAAngle startAngle, 
                                     CAAngle endAngle); 
@@ -302,10 +351,12 @@ CGRect   CACircleOuterRectOfSector( CACircle circle,
 // 1: the tangent point
 // 2: two intersection points
 //
+MULLE__GEOMETRY_GLOBAL
 unsigned int  CACircleIntersectionsWithCircle( CACircle c0,
                                                CACircle c1,
                                                CGPoint intersection[ 2]);
 
+MULLE__GEOMETRY_GLOBAL
 unsigned int   CACircleIntersectionsWithLine( CACircle circle,
                                               CGPoint start,
                                               CGPoint end,
@@ -314,6 +365,7 @@ unsigned int   CACircleIntersectionsWithLine( CACircle circle,
 // "start" and "end" points must be inside the circle for this function to work
 // The intersection point that is closest to "near" will be returned
 //
+MULLE__GEOMETRY_GLOBAL
 CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
                                            CGPoint start,
                                            CGPoint end,
@@ -323,6 +375,7 @@ CGPoint  CACircleNearestIntersectionPoint( CACircle circle,
 // look for a point that is at straight line distance, from the circle point
 // defined by angle.
 // if distance is negative, get counter clockwise point
+MULLE__GEOMETRY_GLOBAL
 CGPoint   CACirclePointAtDistance( CACircle circle,
                                    CAAngle startAngle,
                                    CGFloat distance);
@@ -332,6 +385,46 @@ CGPoint   CACirclePointAtDistance( CACircle circle,
 static inline CGFloat3   CACircleGetFloat3( CACircle c)
 {
    return( CGFloat3Make( c.center.x, c.center.y, c.radius));;
+}
+
+
+static inline CGFloat   CACircleDistanceToCircle( CACircle a, CACircle b)
+{
+   return( CGPointDistanceToPoint( a.center, b.center));
+}
+
+
+static inline int   CACircleIntersectsCircle( CACircle a, CACircle b)
+{
+   return( CACircleDistanceToCircle( a, b) < a.radius + b.radius);
+}
+
+
+static inline CGFloat   CACircleOverlapWithCircle( CACircle a, CACircle b)
+{
+   CGFloat   dist;
+
+   dist = CACircleDistanceToCircle( a, b);
+   if( dist >= a.radius + b.radius)
+      return( 0.0);
+   return( a.radius + b.radius - dist);
+}
+
+
+//
+// Returns the normal vector (unit length) pointing from a's center to b's.
+// If centers coincide, returns (1,0).
+//
+static inline CGVector   CACircleCollisionNormal( CACircle a, CACircle b)
+{
+   CGPoint   diff;
+   CGFloat   dist;
+
+   diff = CGPointSubtract( b.center, a.center);
+   dist = CGPointGetPolarRadius( diff);
+   if( dist < 0.001)
+      return( CGVectorMake( 1.0, 0.0));
+   return( CGVectorMake( diff.x / dist, diff.y / dist));
 }
 
 #endif

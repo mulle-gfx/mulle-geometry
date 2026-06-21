@@ -4,13 +4,13 @@
 
 void   CGPointPrint( CGPoint point)
 {
-   printf( "%.2f %.2f", point.x, point.y);
+   mulle_printf( "%.2f %.2f", point.x, point.y);
 }
 
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.2f %.2f %.2f %.2f",
+   mulle_printf( "%.2f %.2f %.2f %.2f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -39,22 +39,22 @@ static void   test( CGRect frame1, CGRect bounds1,
    xform           = CGAffineTransformConcat( xform1, xform2);
    reverse         = CGRectApplyAffineTransformInline( converted, xform);
 
-   printf( "[f=");
+   mulle_printf( "[f=");
    CGRectPrint( frame1);
-   printf( " b=");
+   mulle_printf( " b=");
    CGRectPrint( bounds1);
-   printf( "] ");
-   printf( "[f=");
+   mulle_printf( "] ");
+   mulle_printf( "[f=");
    CGRectPrint( frame2);
-   printf( " b=");
+   mulle_printf( " b=");
    CGRectPrint( bounds2);
-   printf( "] ");
+   mulle_printf( "] ");
    CGRectPrint( rect);
-   printf( " -> ");
+   mulle_printf( " -> ");
    CGRectPrint( converted);
-   printf( " -> ");
+   mulle_printf( " -> ");
    CGRectPrint( reverse);
-   printf( "\n");
+   mulle_printf( "\n");
 }
 
 

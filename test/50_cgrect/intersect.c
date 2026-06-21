@@ -6,7 +6,7 @@
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.2f %.2f %.2f %.2f",
+   mulle_printf( "%.2f %.2f %.2f %.2f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -20,14 +20,14 @@ static void   test( CGRect rect1, CGRect rect2)
 
    rect3 = CGRectIntersection( rect1, rect2);
 
-   printf( "[a=");
+   mulle_printf( "[a=");
    CGRectPrint( rect1);
-   printf( " b=");
+   mulle_printf( " b=");
    CGRectPrint( rect2);
-   printf( " u=");
+   mulle_printf( " u=");
    CGRectPrint( rect3);
-   printf( "]");
-   printf( "\n");
+   mulle_printf( "]");
+   mulle_printf( "\n");
 }
 
 

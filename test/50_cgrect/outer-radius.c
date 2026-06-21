@@ -6,13 +6,13 @@
 
 void   CGFloatPrint( CGFloat value)
 {
-   printf( "%.2f", value);
+   mulle_printf( "%.2f", value);
 }
 
 
 void   CGPointPrint( CGPoint origin)
 {
-   printf( "%.2f %.2f",
+   mulle_printf( "%.2f %.2f",
             origin.x,
             origin.y);
 }
@@ -20,7 +20,7 @@ void   CGPointPrint( CGPoint origin)
 
 void   CGRectPrint( CGRect rect)
 {
-   printf( "%.2f %.2f %.2f %.2f",
+   mulle_printf( "%.2f %.2f %.2f %.2f",
             rect.origin.x,
             rect.origin.y,
             rect.size.width,
@@ -34,14 +34,14 @@ static void   test( CGPoint center, CGFloat radius)
 
    rect = CACircleGetOuterRect( CACircleMakeWithCenterAndRadius( center, radius));
 
-   printf( "[c=");
+   mulle_printf( "[c=");
    CGPointPrint( center);
-   printf( " r=");
+   mulle_printf( " r=");
    CGFloatPrint( radius);
-   printf( " rect=");
+   mulle_printf( " rect=");
    CGRectPrint( rect);
-   printf( "]");
-   printf( "\n");
+   mulle_printf( "]");
+   mulle_printf( "\n");
 }
 
 

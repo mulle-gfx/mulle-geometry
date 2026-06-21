@@ -6,6 +6,7 @@
    "license" : "UNLICENSED",
    "repo" : "MulleUI/mulle-geometry",
    "src" : [
+      "asset/dox/TOC.md",
       "src/CAAngle.c",
       "src/CAAngle.h",
       "src/CACircle.c",
@@ -24,8 +25,8 @@
       "src/CGBase.h",
       "src/CGGeometry.c",
       "src/CGGeometry.h",
-      "src/include-private.h",
-      "src/include.h",
+      "src/generic/include-private.h",
+      "src/generic/include.h",
       "src/mulle-geometry.c",
       "src/mulle-geometry.h",
       "src/reflect/_mulle-geometry-include-private.h",

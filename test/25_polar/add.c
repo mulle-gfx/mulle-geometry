@@ -24,32 +24,32 @@ int   main( int argc, char *argv[])
                a = CGPointMake( x1, y1);
                b = CGPointMake( x2, y2);
                r1 = CGPointAdd( a, b);
-               printf( "[%.1f %.1f] + [%.1f %.1f] = [%.1f %.1f]",
-                        a.x, a.y,
-                        b.x, b.y,
-                        r1.x, r1.y);
+               mulle_printf( "[%.1f %.1f] + [%.1f %.1f] = [%.1f %.1f]",
+                             a.x, a.y,
+                             b.x, b.y,
+                             r1.x, r1.y);
 
                p = CAPolarPointAdd1( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
                r2 = CGPointMakeWithPolarPoint( p);
-               printf( ", [%.1f %.1f]", r2.x, r2.y);
+               mulle_printf( ", [%.1f %.1f]", r2.x, r2.y);
 
                p = CAPolarPointAdd2( CAPolarPointMakeWithPoint( a), CAPolarPointMakeWithPoint( b));
                r3 = CGPointMakeWithPolarPoint( p);
-               printf( ", [%.1f %.1f]", r3.x, r3.y);
+               mulle_printf( ", [%.1f %.1f]", r3.x, r3.y);
 
                if( roundf( r1.x) != roundf(r2.x))
-                  printf( "!");
+                  mulle_printf( "!");
                if( roundf(r1.y) != roundf(r2.y))
-                  printf( "!");
+                  mulle_printf( "!");
                if( roundf(r2.x) != roundf(r3.x))
-                  printf( "!");
+                  mulle_printf( "!");
                if( roundf(r2.y) != roundf(r3.y))
-                  printf( "!");
+                  mulle_printf( "!");
                if( roundf(r1.x) != roundf(r3.x))
-                  printf( "!");
+                  mulle_printf( "!");
                if( roundf(r1.y) != roundf(r3.y))
-                  printf( "!");
-               printf( "\n");
+                  mulle_printf( "!");
+               mulle_printf( "\n");
             }
 
    return( 0);

@@ -30,7 +30,7 @@ int   main( int argc, char *argv[])
       hour    = CAAngleToHour( rad2);
       radhour = CAHourToAngle( hour);
 
-      printf( "[%.1f rad] ang: %.3f rotA: %.3f rotR: %.3f deg: %.3f hour: %.3f (%.3f)\n",
+      mulle_printf( "[%.1f rad] ang: %.3f rotA: %.3f rotR: %.3f deg: %.3f hour: %.3f (%.3f)\n",
                   rad,
                   angle, 
                   rotA,

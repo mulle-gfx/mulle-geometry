@@ -24,7 +24,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
                                           CGColorMakeWithHSL( 2 / 8.0, 1.0, 0.75));
    CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetLeft( rect), 4.0), 
                                           CGColorMakeWithHSL( 3 / 8.0, 1.0, 0.75));
-   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetCenter( rect), 4.0), 
+   CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetCenterPoint( rect), 4.0),
                                           CGColorMakeWithHSL( 4 / 8.0, 1.0, 0.75));
    CGContextFillCircleWithColor( context, CACircleMakeWithCenterAndRadius( CGRectGetRight( rect), 4.0), 
                                           CGColorMakeWithHSL( 5 / 8.0, 1.0, 0.75));

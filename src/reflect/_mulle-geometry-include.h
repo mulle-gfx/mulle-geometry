@@ -22,7 +22,7 @@
 //    remove #include: `mulle-sde dependency mark m no-header`
 //    rename              : `mulle-sde dependency|library set m include whatever.h`
 //    reorder             : `mulle-sde dependency move m <up|down>`
-//    toggle #include: `mulle-sde dependency mark m [no-]import`
+//    toggle objc         : `mulle-sde dependency mark m [no-]import`
 //    toggle public       : `mulle-sde dependency mark m [no-]public`
 //    toggle optional     : `mulle-sde dependency mark m [no-]require`
 //    remove for platform : `mulle-sde dependency mark m no-platform-<uname>`
@@ -37,7 +37,7 @@
 //    remove #include: `mulle-sde dependency mark mulle-core no-header`
 //    rename              : `mulle-sde dependency|library set mulle-core include whatever.h`
 //    reorder             : `mulle-sde dependency move mulle-core <up|down>`
-//    toggle #include: `mulle-sde dependency mark mulle-core [no-]import`
+//    toggle objc         : `mulle-sde dependency mark mulle-core [no-]import`
 //    toggle public       : `mulle-sde dependency mark mulle-core [no-]public`
 //    toggle optional     : `mulle-sde dependency mark mulle-core [no-]require`
 //    remove for platform : `mulle-sde dependency mark mulle-core no-platform-<uname>`
@@ -52,7 +52,7 @@
 //    remove #include: `mulle-sde dependency mark math no-header`
 //    rename              : `mulle-sde dependency|library set math include whatever.h`
 //    reorder             : `mulle-sde dependency move math <up|down>`
-//    toggle #include: `mulle-sde dependency mark math [no-]import`
+//    toggle objc         : `mulle-sde dependency mark math [no-]import`
 //    toggle public       : `mulle-sde dependency mark math [no-]public`
 //    toggle optional     : `mulle-sde dependency mark math [no-]require`
 //    remove for platform : `mulle-sde dependency mark math no-platform-<uname>`

@@ -8,7 +8,7 @@ static void   test( CAAngle a, CAAngle b)
 
    c = CAAngleGetMidAngle( a, b);
 
-   printf( "%g mid %g = %g\n",
+   mulle_printf( "%g mid %g = %g\n",
             CAAngleToDegrees( a),
             CAAngleToDegrees( b),
             CAAngleToDegrees( c));

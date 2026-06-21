@@ -51,7 +51,7 @@ int   main( int argc, char *argv[])
    {
       ang       = directions[ i];
       direction = CAAngleToDirection( ang);
-      printf( "%s : rad: %.3f (%.3f) direction: %s\n",
+      mulle_printf( "%s : rad: %.3f (%.3f) direction: %s\n",
                      names[ i],
                      ang,
                      CAAngleToHour( ang),

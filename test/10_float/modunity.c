@@ -13,7 +13,7 @@ int   main()
    {
       x = i / 10.0f;
       y = CGFloatModToUnity( x);
-      printf( "CGFloatModToUnity( %g) = %g\n", x, y);
+      mulle_printf( "CGFloatModToUnity( %g) = %g\n", x, y);
    }
    return( 0);
 }

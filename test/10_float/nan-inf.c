@@ -19,12 +19,12 @@ static float   values[ N_VALUES] =
 
 static void    test( float a, float b)
 {
-   printf( "%g + %g = %g\n",  a, b, a + b);
-   printf( "%g - %g = %g\n",  a, b, a - b);
-   printf( "%g * %g = %g\n",  a, b, a * b);
-   printf( "%g == %g = %s\n", a, b, a == b ? "YES" : "NO");
-   printf( "%g > %g = %s\n",  a, b, a > b ? "YES" : "NO");
-   printf( "%g < %g = %s\n",  a, b, a < b ? "YES" : "NO");
+   mulle_printf( "%g + %g = %g\n",  a, b, a + b);
+   mulle_printf( "%g - %g = %g\n",  a, b, a - b);
+   mulle_printf( "%g * %g = %g\n",  a, b, a * b);
+   mulle_printf( "%g == %g = %s\n", a, b, a == b ? "YES" : "NO");
+   mulle_printf( "%g > %g = %s\n",  a, b, a > b ? "YES" : "NO");
+   mulle_printf( "%g < %g = %s\n",  a, b, a < b ? "YES" : "NO");
 }
 
 int   main()
@@ -35,7 +35,7 @@ int   main()
    {
       for( i = 0; i < N_VALUES; i++)
          test( values[ j], values[ i]);
-      printf( "\n");
+      mulle_printf( "\n");
    }
    return( 0);
 }
