@@ -2,11 +2,6 @@
 
 #### 🔭 Basic geometric types
 
-
-# 🔭 mulle-geometry
-
-#### 🔭 Basic geometric types
-
 This library contains definitions and functions for (macOS/iOS) familiar
 data types like **CGRect** and custom data types like **CACircle** or
 **CAPolarPoint**. `CG` prefixed datatypes are legacy names, which may already
@@ -57,9 +52,9 @@ Polar points are invaluable for animations of circular motions.
 
 
 
-| Release Version                                       | Release Notes
-|-------------------------------------------------------|--------------
-| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-gfx/mulle-geometry.svg?branch=release) [![Build Status](https://github.com/mulle-gfx/mulle-geometry/workflows/CI/badge.svg?branch=release)](//github.com/mulle-gfx/mulle-geometry/actions) | [RELEASENOTES](RELEASENOTES.md) |
+| Release Version                                       | Release Notes  | AI Documentation
+|-------------------------------------------------------|----------------|---------------
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-gfx/mulle-geometry.svg) [![Build Status](https://github.com/mulle-gfx/mulle-geometry/workflows/CI/badge.svg)](//github.com/mulle-gfx/mulle-geometry/actions) | [RELEASENOTES](RELEASENOTES.md) | [DeepWiki for mulle-geometry](https://deepwiki.com/mulle-gfx/mulle-geometry)
 
 
 
@@ -76,9 +71,9 @@ Polar points are invaluable for animations of circular motions.
 
 ## Add
 
-**This project is a component of the [mulle-core](//github.com/mulle-core/mulle-core) library. As such you usually will *not* add or install it
-individually, unless you specifically do not want to link against
-`mulle-core`.**
+**This project is a component of the [mulle-gfx](//github.com/mulle-gfx/mulle-gfx) library.
+As such you usually will *not* add or install it individually, unless you
+specifically do not want to link against `mulle-gfx`.**
 
 
 ### Add as an individual component
@@ -117,7 +112,7 @@ Install the requirements:
 
 | Requirements                                 | Description
 |----------------------------------------------|-----------------------
-| [mulle-core](https://github.com/mulle-core/mulle-core)             | 🌋 Almagamated library of mulle-core and mulle-c
+| [mulle-core](https://github.com/mulle-core/mulle-core)             | 🌋 Almagamated library of mulle-core + mulle-concurrent + mulle-c
 
 Install **mulle-geometry** into `/usr/local` with [cmake](https://cmake.org):
 

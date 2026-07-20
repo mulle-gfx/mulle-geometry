@@ -4,7 +4,7 @@
    "description" : "🔭 Basic geometric types",
    "keywords" : [],
    "license" : "UNLICENSED",
-   "repo" : "MulleUI/mulle-geometry",
+   "repo" : "mulle-gfx/mulle-geometry",
    "src" : [
       "asset/dox/TOC.md",
       "src/CAAngle.c",

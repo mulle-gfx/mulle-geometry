@@ -1,0 +1,12 @@
+distance: 60.0
+intersects: 1
+overlap: 40.0
+normal: 1.0,0.0
+intersects far: 0
+overlap far: 0.0
+intersects touch: 0
+overlap touch: 0.0
+normal coincident: 1.0,0.0
+distance diagonal: 50.0
+intersects diagonal: 1
+normal diagonal: 0.8,0.6

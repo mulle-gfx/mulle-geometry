@@ -3,16 +3,18 @@
    {
       description="🔭 Basic geometric types";
       domain="github";
+      language="c";
+      dialect="c";
       name="mulle-geometry";
       user="mulle-gfx";
       repo="mulle-geometry";
-      homepage="https://github.com/MulleUI/mulle-geometry/tree/mulle-geometry.git";
-      license="UNLICENSED"
+      homepage="https://github.com/mulle-gfx/mulle-geometry";
+      license="UNLICENSED";
    };
    dependencies =
    (
       {
-         description="🌋 Almagamated library of mulle-core and mulle-c";
+         description="🌋 Almagamated library of mulle-core + mulle-concurrent + mulle-c";
          domain="github";
          name="mulle-core";
          repo="mulle-core";

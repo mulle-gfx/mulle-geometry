@@ -1,18 +1,18 @@
 #
+# mulle-core nodetype: ${MULLE__CORE_NODETYPE:-tar}
 #
-#
-export MULLE_DATA_NODETYPE="git"
+export MULLE__CORE_NODETYPE="git"
 
 
 #
+# mulle-core url: ${MULLE__CORE_URL:-https://github.com/mulle-core/mulle-core/archive/${MULLE_TAG}.tar.gz}
 #
-#
-export MULLE_DATA_BRANCH="prerelease"
+export MULLE__CORE_URL="https://github.com/mulle-core/mulle-core.git"
 
 
 #
+# mulle-core branch: ${MULLE__CORE_BRANCH}
 #
-#
-export MULLE_DATA_URL="https://github.com/mulle-c/mulle-data.git"
+export MULLE__CORE_BRANCH="prerelease"
 
 
