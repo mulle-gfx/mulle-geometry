@@ -57,11 +57,15 @@ All types are stack-allocated structures. No dynamic memory allocation occurs wi
   - `CGPointNull` - Sentinel value (NaN, NaN)
 - **Core Operations:**
   - `CGPointAdd(p, q)` - Vector addition
+  - `CGPointAddVector(p, q)` - Add vector to point
   - `CGPointSubtract(p, q)` - Vector subtraction
+  - `CGPointSubtractVector(p, q)` - Subtract vector from point
+  - `CGPointMultiply(p, q)` - Component-wise multiplication
+  - `CGPointMultiplyVector(p, q)` - Multiply by vector
   - `CGPointScale(p, scale)` - Scalar multiplication
   - `CGPointOffset(p, dx, dy)` - Translation
+  - `CGPointTranslate(point, slope, distance)` - Translate along slope
   - `CGPointNegate(p)` - Negation
-  - `CGPointMultiply(p, q)` - Component-wise multiplication
 - **Distance/Geometry:**
   - `CGPointDistanceToPoint(a, b)` - Euclidean distance
   - `CGPointSquaredDistanceToPoint(a, b)` - Squared distance (faster)
@@ -75,6 +79,9 @@ All types are stack-allocated structures. No dynamic memory allocation occurs wi
   - `CAAngleBetweenPoints(p0, p1, p2)` - Angle at p0 formed by p1 and p2
   - `CGPointTriangleArea(p0, p1, p2)` - Area of triangle
   - `CGPointTriangleGetCentroid(p0, p1, p2)` - Center of mass
+  - `CGPointTriangleGetCenterOfMass(p0, p1, p2)` - Alias for centroid
+  - `CGPointTriangleHasMinimumAngle(p0, p1, p2, minDegrees)` - Quality check
+  - `CGPointTriangleHasMinimumArea(p0, p1, p2, minArea)` - Quality check
 - **Utility:**
   - `CGPointEqualToPoint(a, b)` - Equality test (handles NaN)
   - `CGPointIsNull(p)` - Check for null/sentinel
@@ -115,8 +122,11 @@ All types are stack-allocated structures. No dynamic memory allocation occurs wi
   - `CGVectorDotProduct(v1, v2)` - Dot product
   - `CGVectorGetAngle(v)` - Get CAAngle from vector
   - `CGVectorGetRotation(v)` - Get CARotation from vector
+  - `CGVectorGetAspectRatio(v)` - dx/dy
+  - `CGVectorBySubtractingPoints(p, q)` - Create vector from two points
 - **Creation from Angles:**
   - `CGVectorMakeWithRadians(radians)` - Create normal vector from radians
+  - `CGVectorMakeNormal(radians)` - Alias for MakeWithRadians
   - `CGVectorMakeWithAngle(angle)` - Create from CAAngle
   - `CGVectorMakeWithRotation(rotation)` - Create from CARotation
 
@@ -136,14 +146,20 @@ All types are stack-allocated structures. No dynamic memory allocation occurs wi
   - `CGRectGetMinY(rect)`, `CGRectGetMaxY(rect)`, `CGRectGetMidY(rect)` - Y-axis positions
   - `CGRectGetWidth(rect)`, `CGRectGetHeight(rect)` - Absolute dimensions
   - `CGRectGetArea(rect)` - Area
-  - `CGRectGetCenterPoint(rect)` - Center point
+  - `CGRectGetCenterPoint(rect)` - Center point (midpoint)
+  - `CGRectGetCenter(rect)` - Alias for center point
+  - `CGRectGetCenterWithAnchorPoint(rect, anchorPoint)` - Center with anchor (0..1, 0..1)
   - `CGRectGetCornerPoint(rect, direction)` - Corner by CADirection
   - `CGRectGetOrigin(rect)`, `CGRectGetOpposite(rect)` - Diagonal corners
   - `CGRectGetTop/Bottom/Left/Right(rect)` - Edge midpoints
   - `CGRectGetTopLeft/TopRight/BottomLeft/BottomRight(rect)` - Corner points
+  - `CGRectGetMaximumSize(rect)`, `CGRectGetMinimumSize(rect)` - Larger/smaller dimension
+  - `CGRectGetAspectRatio(rect)` - width/height
+  - `CGRectGetInnerRadius(rect)`, `CGRectGetOuterRadius(rect)` - Inscribed/circumscribed circle radii
 - **Transformations:**
   - `CGRectOffset(rect, dx, dy)` - Translate
   - `CGRectInset(rect, dx, dy)` - Shrink by dx, dy from all sides
+  - `CGRectInsetOrZero(rect, dx, dy)` - Inset (returns CGRectZero if too large)
   - `CGRectExtrude(rect, dx, dy)` - Expand by dx, dy on all sides
   - `CGRectExpand(rect, d, direction)` - Expand in specific direction(s)
   - `CGRectContract(rect, d, direction)` - Contract in specific direction(s)
@@ -173,13 +189,19 @@ All types are stack-allocated structures. No dynamic memory allocation occurs wi
   - `CGFloatMakeAbnormalDistribution()` - Inverted normal distribution
 - **Math:**
   - `CGFloatIsZero(x)`, `CGFloatIsOne(x)` - Exact comparisons
+  - `CGFloatIsNegativeZero(x)` - Detect -0.0f
   - `CGFloatMaximum(x, y)`, `CGFloatMinimum(x, y)` - Min/max
   - `CGFloatAbsolute(x)`, `CGFloatSign(x)` - Absolute value and sign
   - `CGFloatClamp(x, min, max)` - Clamp to range
   - `CGFloatClampToUnity(x)` - Clamp to [0, 1]
   - `CGFloatModToUnity(x)` - Modulo to [0, 1)
   - `CGFloatProject(value, start1, stop1, start2, stop2)` - Map from one range to another
+  - `CGFloatProjectClamped(value, start1, stop1, start2, stop2)` - Project with clamp to output range
   - `CGFloatSnap(value, multiple, epsilon)` - Snap to nearest multiple within epsilon
+- **Utility Types:**
+  - `CGFloatRange` - struct with `CGFloat min, max`
+  - `CGFloatRangeMake(min, max)` - Create range
+  - `CGFloatRangeContains(range, value)` - Is value in range?
 
 #### Type Conversion Functions
 - **Between Compatible Types:**
@@ -204,6 +226,12 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CGPolygonClipAgainstEdge(input, n, edgeStart, edgeEnd, output)` - Sutherland-Hodgman clipping
   - `CGPolygonBoundingBox(points, count)` - Axis-aligned bounding box
   - `CGPolygon4ClipAgainstPolygon4(subject[4], clip[4], result[8])` - Quad clipping
+  - `CGPolygon4BoundingBox(points[4])` - Bounding box of 4-point polygon
+
+#### Rect Construction Helpers
+- `CGRectMakeWithCenterAndInnerRadius(center, radius)` - Square rect from center and radius
+- `CGRectMakeWithCenterAndSize(center, size)` - Rect centered at point
+- `CGRectMakeWithOriginAndOpposite(a, b)` - Create from origin and opposite corner
 
 #### Random Generation
 - **Random Helpers:**
@@ -305,6 +333,7 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CACircleMakeWithCenterAndRadius(center, radius)` - Explicit construction
   - `CACircleMakeWithCenterAndPerimeter(center, perimeterPoint)` - From center and point
   - `CACircleMakeNull()` - Sentinel circle (center.x = NAN)
+  - `CACircleIsNull(circle)` - Is sentinel?
 - **Transformations:**
   - `CACircleOffset(circle, dx, dy)` - Translate center
   - `CACircleExtrude(circle, amount)` - Increase radius
@@ -316,7 +345,7 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CACircleAngleAtPoint(circle, point)` - Angle to point from center
   - `CACircleGetOuterRect(circle)` - Bounding box
   - `CACircleGetInnerRect(circle)` - Inscribed square
-  - `CACircleIsNull(circle)` - Is sentinel?
+  - `CACircleGetFloat3(circle)` - Convert to CGFloat3 (x, y, radius)
 - **Distance/Arc Calculations:**
   - `CARadiusDistanceBetweenAngles(radius, a, b, direction)` - Arc length
   - `CACircleDistanceBetweenAngles(circle, a, b, direction)` - Circle arc length
@@ -324,7 +353,12 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CACircleAngleByAddingDistance(circle, startAngle, distance, direction)` - Angle after arc on circle
   - `CACircleDistanceToRotation(circle, rotation)` - Arc length for rotation amount
   - `CACirclePointAtDistance(circle, startAngle, distance)` - Point after traveling arc
-- **Tests:**
+- **Collision/Distance:**
+  - `CACircleDistanceToCircle(a, b)` - Center-to-center distance
+  - `CACircleIntersectsCircle(a, b)` - Do circles overlap? (distance < r1 + r2)
+  - `CACircleOverlapWithCircle(a, b)` - Overlap depth (0 if no overlap)
+  - `CACircleCollisionNormal(a, b)` - Unit normal vector from a's center to b's center (returns (1,0) if centers coincide)
+- **Containment:**
   - `CACircleContainsPoint(circle, point)` - Is point inside or on circle?
   - `CGPointIsInsideCircle(point, circle)` - Is point strictly inside?
 - **Intersections:**
@@ -364,6 +398,7 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CAPolarPointSubtractRadians(polar, radians)` - Rotate by -radians
   - `CAPolarPointAddDegrees(polar, degrees)` - Rotate by degrees
   - `CAPolarPointSubtractDegrees(polar, degrees)` - Rotate by -degrees
+  - `CAPolarPointSubtractRotation(polar, rotation)` - Rotate by -CARotation
   - `CAPolarPointAddRadius(polar, delta)` - Change radius
   - `CAPolarPointSubtractRadius(polar, delta)` - Decrease radius
   - `CAPolarPointRotate(polar, rotation)` - Apply rotation
@@ -372,6 +407,7 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CAPolarPointEqualToPolarPoint(p, q)` - Exact equality (unreliable due to FP)
   - `CAPolarPointDistanceToPolarPoint(a, b)` - Euclidean distance in Cartesian space
   - `CGPointAddPolarPoint(point, polar)` - Add polar to Cartesian
+  - `CAPolarPointGetFloat2(polar)` - Convert to CGFloat2 (radius, radians)
 
 ### 3.6. `CADirection.h` - Direction Enum
 
@@ -448,6 +484,19 @@ This header extends `CGBase.h` with additional geometric operations:
 - **Purpose:** Function pointer type for custom tween functions
 - **Signature:** `CGFloat (*CATweenFunction)(struct CACubic *q, CGFloat t);`
 
+#### Built-in Tween Functions
+Pre-built Penner-style easing functions using the `CATweenFunction` signature (the CACubic parameter is unused by these). Available in quadratic, cubic, quartic, quintic, sine, exponential, circular, back, bounce, and elastic variants, each with `EaseIn`, `EaseOut`, and `EaseInOut`:
+- `CATweenEaseInQuadratic(q, t)` / `CATweenEaseOutQuadratic(q, t)` / `CATweenEaseInOutQuadratic(q, t)`
+- `CATweenEaseInCubic(q, t)` / `CATweenEaseOutCubic(q, t)` / `CATweenEaseInOutCubic(q, t)`
+- `CATweenEaseInQuartic(q, t)` / `CATweenEaseOutQuartic(q, t)` / `CATweenEaseInOutQuartic(q, t)`
+- `CATweenEaseInQuintic(q, t)` / `CATweenEaseOutQuintic(q, t)` / `CATweenEaseInOutQuintic(q, t)`
+- `CATweenEaseInSine(q, t)` / `CATweenEaseOutSine(q, t)` / `CATweenEaseInOutSine(q, t)`
+- `CATweenEaseInExponential(q, t)` / `CATweenEaseOutExponential(q, t)` / `CATweenEaseInOutExponential(q, t)`
+- `CATweenEaseInCircular(q, t)` / `CATweenEaseOutCircular(q, t)` / `CATweenEaseInOutCircular(q, t)`
+- `CATweenEaseInBack(q, t)` / `CATweenEaseOutBack(q, t)` / `CATweenEaseInOutBack(q, t)`
+- `CATweenEaseInBounce(q, t)` / `CATweenEaseOutBounce(q, t)` / `CATweenEaseInOutBounce(q, t)`
+- `CATweenEaseInElastic(q, t)` / `CATweenEaseOutElastic(q, t)` / `CATweenEaseInOutElastic(q, t)`
+
 ### 3.9. `CAPose.h` - Position and Orientation
 
 #### `CAPose`
@@ -465,6 +514,7 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CAPoseGetNormal(pose)` - Get normal vector
   - `CAPoseGetRotation(pose)` - Get rotation from normal
   - `CAPoseGetAngle(pose)` - Get angle from normal
+  - `CAPoseGetFloat4(pose)` - Convert to CGFloat4 (x, y, dx, dy)
 
 ### 3.10. `CGAffineTransform.h` - 2D Affine Transformations
 
@@ -479,24 +529,30 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CGAffineTransformMakeIdentityInline()` - Identity
   - `CGAffineTransformMakeTranslationInline(point)` - Translation only
   - `CGAffineTransformMakeScaleInline(vector)` - Scale only
-  - `CGAffineTransformMakeSkewInline(sx, sy)` - Skew by angles
-  - `CGAffineTransformMakeSkewXInline(angle)` - X-skew only
-  - `CGAffineTransformMakeSkewYInline(angle)` - Y-skew only
-  - `CGAffineTransformMakeRotationRadiansInline(radians, tooSmall)` - Rotation
-  - Similar non-inline versions: `CGAffineTransformMake*()` functions
+  - `CGAffineTransformMakeSkewInline(sx, sy)` / `MakeSkewXInline(angle)` / `MakeSkewYInline(angle)` - Skew matrices (inline only)
+  - `CGAffineTransformMakeRotationRadiansInline(radians)` - Rotation from radians
+  - `CGAffineTransformMakeRotationInline(rotation)` - Rotation from CARotation
+  - Similar non-inline versions: `CGAffineTransformMake()` family, plus `CGAffineTransformMakeScale(CGVector)`, `CGAffineTransformMakeTranslation(CGPoint)`, `CGAffineTransformMakeRotationRadians(CGFloat)`, `CGAffineTransformMakeRotation(CARotation)`
 - **Operations:**
   - `CGAffineTransformConcat(t1, t2)` - Compose transforms (t1 then t2)
   - `CGAffineTransformInvert(t)` - Inverse transform
-  - `CGAffineTransformTranslate(t, tx, ty)` - Apply translation
-  - `CGAffineTransformScale(t, sx, sy)` - Apply scale
+  - `CGAffineTransformTranslate(t, point)` - Apply translation
+  - `CGAffineTransformScale(t, s)` - Apply scale (takes CGVector)
   - `CGAffineTransformRotate(t, radians)` - Apply rotation
-  - `CGAffineTransformSkew(t, angleX, angleY)` - Apply skew
-  - `CGAffineTransformSkewX(t, angle)`, `CGAffineTransformSkewY(t, angle)` - Single-axis skew
 - **Applying Transforms:**
   - `CGPointApplyAffineTransform(point, t)` - Transform point
   - `CGSizeApplyAffineTransform(size, t)` - Transform size (no translation)
   - `CGVectorApplyAffineTransform(vector, t)` - Transform vector
   - `CGRectApplyAffineTransform(rect, t)` - Transform rectangle
+  - `CGRectApplyAffineTransformAtAnchorPoint(rect, t, anchorPoint)` - Transform around anchor (0..1, 0..1)
+- **Projection Functions:**
+  - `CGAffineTransformMakeProjection(frame, bounds)` - Matrix for frame-to-bounds projection
+  - `CGAffineTransformMakeInverseProjection(frame, bounds)` - Inverse projection matrix
+  - `CGPointProjectToFrame(location, frame, bounds)` - Project point from bounds to frame
+  - `CGPointProjectToBounds(location, frame, bounds)` - Project point from frame to bounds
+  - `CGAffineTransformMakeRotationAroundPoint(center, rotation)` - Rotation matrix around arbitrary point
+- **Rectangle Rotation:**
+  - `CGRectRotate(rect, rotation)` - Rotate rectangle around its center
 - **Tests:**
   - `CGAffineTransformIsIdentity(t)` - Is identity?
   - `CGAffineTransformIsIdentityEpsilon(t, epsilon)` - Near identity?

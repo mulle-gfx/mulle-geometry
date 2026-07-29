@@ -5,23 +5,23 @@
 
 int   main( int argc, char *argv[])
 {
-   int              angle;
-   CGFloat   deg;
-   CGFloat          ang;
-   CGFloat          rad;
-   CGFloat          rad2;
+   int       v_angle;
+   CGFloat   v_deg;
+   CGFloat   v_ang;
+   CGFloat   v_rad;
+   CGFloat   v_rad2;
 
-   for( angle = -720; angle <= 720; angle += 45)
+   for( v_angle = -720; v_angle <= 720; v_angle += 45)
    {
-      deg  = CADegreesNormalize( (CGFloat) angle);
-      ang  = CADegreesToAngle( deg);
-      rad  = CAAngleToRadians( ang);
-      rad2 = CARadiansToAngle( rad);
+      v_deg  = CADegreesNormalize( (CGFloat) v_angle);
+      v_ang  = CADegreesToAngle( v_deg);
+      v_rad  = CAAngleToRadians( v_ang);
+      v_rad2 = CARadiansToAngle( v_rad);
 
       mulle_printf( "a:%d dn:%.1f r:%.3f (%.1f) rn:%.1f (%.1f)\n",
-                     angle, deg,
-                     rad, CAAngleToDegrees( rad),
-                     rad2, CAAngleToDegrees( rad2));
+                     v_angle, v_deg,
+                     v_rad, CAAngleToDegrees( v_rad),
+                     v_rad2, CAAngleToDegrees( v_rad2));
    }
    return( 0);
 }
