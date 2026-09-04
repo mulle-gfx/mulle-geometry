@@ -1,3 +1,37 @@
+//
+//  CAAngle.h
+//  mulle-geometry
+//
+//  Copyright (c) 2021 Nat! - Mulle kybernetiK.
+//  All rights reserved.
+//
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//  Redistributions of source code must retain the above copyright notice, this
+//  list of conditions and the following disclaimer.
+//
+//  Redistributions in binary form must reproduce the above copyright notice,
+//  this list of conditions and the following disclaimer in the documentation
+//  and/or other materials provided with the distribution.
+//
+//  Neither the name of Mulle kybernetiK nor the names of its contributors
+//  may be used to endorse or promote products derived from this software
+//  without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
 #ifndef ca_angle_h__
 #define ca_angle_h__
 
@@ -11,7 +45,8 @@
 #include <math.h>
 #include <assert.h>
 
-#define CA_EPSILON   0.0001f
+// legacy name — use CA_DISTANCE_EPSILON or CA_ANGLE_EPSILON for new code
+#define CA_EPSILON   CA_DISTANCE_EPSILON
 
 
 //
@@ -163,19 +198,47 @@ typedef CARotation   CARotationAsAngle;
 
 
 //
-// normalization destroys the "amounts" to turn information, which can be
-// useful in animations. It is used when converting to CGFloat mainly.
-// Turns: 2.5 -> 0.5,  -10.0 -> -1.0, 1.0 -> 1.0
+// CARotationGetSweep answers "how much arc does this rotation trace", as a
+// signed value in [-1, 1]. Whole turns are dropped, because sweeping 2.5
+// turns draws the same path as sweeping 0.5. The sign is kept, because it
+// picks the direction of the sweep. A full turn stays 1.0 (it traces a whole
+// circle) and only a zero rotation gives 0.0 (it traces nothing) — this is
+// where it differs from CARotationNormalize, which reports orientation and
+// so maps a full turn back to 0.0.
+// Turns: 2.5 -> 0.5,  -10.0 -> -1.0,  1.0 -> 1.0,  0.0 -> 0.0
+static inline CARotation   CARotationGetSweep( CARotation v)
+{
+   CARotation a;
+
+   assert( ! isnan(v));
+
+   a = fmodf( v, 1.0f);
+   if( a != 0.0f)
+      return( a); // keep the fractional part, with the sign of v
+   if( v == 0.0f)
+      return( 0.0f);
+   return( v < 0.0f ? -1.0f : 1.0f); // exact integer turns keep their sign
+}
+
+
+//
+// CARotationNormalize reduces a rotation to its canonical orientation in
+// [0, 1), matching the CARadiansNormalize convention for CAAngle: a full turn
+// and no turn at all leave you facing the same way, so they normalize to the
+// same value. This is what you want for comparing or rendering an orientation,
+// but it destroys "amount and direction to turn" information — use
+// CARotationGetSweep when you need the arc traced rather than the facing.
+// Turns: 2.5 -> 0.5,  -10.0 -> 0.0,  1.0 -> 0.0,  -0.25 -> 0.75
 static inline CARotation   CARotationNormalize( CARotation v)
 {
    CARotation a;
 
    assert( ! isnan(v));
 
-   a = fmodf( v, 1.0);
-   if( v - a == 0.0f)
-       return( a == 0.0f ? 0.0f : a); // get rid of sign
-   return( (a < 0.0f || (a == 0.0f && v < 0.0f)) ? -1.0f : 1.0f);
+   a = fmodf( v, 1.0f);
+   if( a < 0.0f)
+      a += 1.0f;
+   return( a == 0.0f || a == 1.0f ? 0.0f : a); // avoid -0.0f and the 1.0 edge case
 }
 
 
@@ -293,7 +356,7 @@ static inline CARotation   CAAngleToRotation( CAAngle angle)
    assert( angle >= 0 && angle < CA_2xPI);
 
    rotation = angle + M_PI_2f;
-   if( rotation > CA_2xPI)
+   if( rotation >= CA_2xPI)
       rotation -= CA_2xPI;
    return( rotation / CA_2xPI);
 }
@@ -336,7 +399,7 @@ static inline CARotation   CARadiansAsAngleToRotation( CGFloat radians)
 
    // Add π/2 offset
    rotation = normalized + M_PI_2f;
-   if( rotation > CA_2xPI)
+   if( rotation >= CA_2xPI)
       rotation -= CA_2xPI;
 
    // Convert to [0, 1) range
@@ -436,6 +499,30 @@ static inline CAAngle   CAAngleSubtractRadians( CAAngle a, CGFloat b)
 }
 
 
+//
+// Returns the shortest signed rotation from angle `a` to angle `b`.
+// The result is in [-0.5, 0.5], where positive means clockwise (in the
+// CARotation convention: clockwise = increasing angle).
+// This is the most common animation helper: "which way and how far should
+// I rotate to get from my current heading to the target?"
+//
+static inline CARotation   CAAngleShortestRotationToAngle( CAAngle a, CAAngle b)
+{
+   CARotation   d;
+
+   assert( a >= 0 && a < CA_2xPI);
+   assert( b >= 0 && b < CA_2xPI);
+
+   d = (b - a) / CA_2xPI;
+   if( d > 0.5f)
+      d -= 1.0f;
+   else
+      if( d < -0.5f)
+         d += 1.0f;
+   return( d);
+}
+
+
 // if a < b, then midAngle is clockwise otherwise counterClockwise
 // e.g. CADegreesToAngle( 40), CADegreesToAngle( 60) -> CADegreesToAngle( 50)
 // e.g. CADegreesToAngle( 60), CADegreesToAngle( 60) -> CADegreesToAngle( 230)
@@ -444,7 +531,7 @@ static inline CAAngle   CAAngleSubtractRadians( CAAngle a, CGFloat b)
 static inline CAAngle   CAAngleGetMidAngle( CAAngle a, CGFloat b)
 {
    assert( a >= 0 && a < CA_2xPI);
-   assert( b >= 0 && a < CA_2xPI);
+   assert( b >= 0 && b < CA_2xPI);
 
    CGFloat   radians;
 
@@ -465,7 +552,7 @@ static inline CGFloat   CAAngleToSlope( CAAngle angle)
 
 static inline CAAngle   CASlopeToAngle( CGFloat slope)
 {
-   return( CARadiansToAngle( atanf( CAAngleToRadians( slope))));
+   return( CARadiansToAngle( atanf( slope)));
 }
 
 
@@ -521,13 +608,9 @@ static inline CGFloat   CADegreesNormalize( CGFloat degrees)
    CGFloat   result;
 
    result = fmodf( degrees, 360.0f);
-   if( result <= 0.0f)
-   {
-      if( degrees == 0.0f) // CARadiansToAngle
-         return( 0.0f);
+   if( result < 0.0f)
       result += 360.0f;
-   }
-   return( result);
+   return( result + 0.0f);  // avoid -0.0f from fmodf
 }
 
 
@@ -613,7 +696,7 @@ static inline CGFloat   CAHourNormalize( CGFloat value)
 
 static inline CARotation   CAHourToRotation( CGFloat hour)
 {
-   assert( hour > 0.0f && hour <= 360.0f);
+   assert( hour > 0.0f && hour <= 12.0f);
 
    return( hour == 12.0f ? 0.0f : hour / 12.0f);
 }

@@ -3,7 +3,6 @@
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
    NSUInteger          i;
@@ -15,7 +14,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGFloat             dir;
    CGFloat             rotation;
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 
@@ -29,6 +27,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGContextBeginPath( context);
    startAngle = CARadiansToAngle( CAAngleNorth + (i / 359.0) * 2 * M_PI_f);
    rotation   = i / 359.0 * dir;
+   endAngle   = CARadiansToAngle( CAAngleRotateToRadiansAsAngle( startAngle, rotation));
 
    CGContextMoveTo( context, CGPointMake( 0, 0));
    p1 = CGPointMake( cosf( CAAngleToRadians( startAngle)) * radius, sinf( CAAngleToRadians( startAngle)) * radius);

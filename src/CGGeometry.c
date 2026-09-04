@@ -33,7 +33,7 @@ CGFloat   CGFloatSnap( CGFloat value, CGFloat multiple, CGFloat epsilon)
     rounded_ratio = roundf( ratio);
     snapped       = rounded_ratio * multiple;
 
-    return( fabs( value - snapped) <= epsilon) ? snapped : value;
+    return( fabsf( value - snapped) <= epsilon) ? snapped : value;
 }
 
 
@@ -169,11 +169,12 @@ CGRect   CGRectIntersection(CGRect r1, CGRect r2)
 CGRect CGRectUnion(CGRect r1, CGRect r2) {
     CGFloat x1, y1, x2, y2;
 
+    // union with infinity is infinity
     if (CGRectIsInfinite(r1)) {
-        return r2;
+        return r1;
     }
     if (CGRectIsInfinite(r2)) {
-        return r1;
+        return r2;
     }
 
     r1 = CGRectStandardize(r1);

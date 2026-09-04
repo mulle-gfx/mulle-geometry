@@ -36,6 +36,7 @@ src/generic/include-private.h
 set( PUBLIC_GENERATED_HEADERS
 src/reflect/_mulle-geometry-include.h
 src/reflect/_mulle-geometry-provide.h
+src/reflect/_mulle-geometry-versioncheck.h
 )
 
 #

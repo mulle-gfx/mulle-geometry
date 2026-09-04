@@ -1,5 +1,5 @@
-Sector 0-90: origin=(-10.00, -10.00), size=(20.00, 20.00)
-Sector 45-135: origin=(-10.00, -10.00), size=(17.07, 20.00)
+Sector 0-90: origin=(0.00, -10.00), size=(10.00, 10.00)
+Sector 45-135: origin=(7.07, -7.07), size=(2.93, 14.14)
 Sector 180-270: origin=(-10.00, 0.00), size=(10.00, 10.00)
 Sector 0-360: origin=(0.00, 0.00), size=(0.00, 0.00)
 Sector 45-45: origin=(0.00, 0.00), size=(0.00, 0.00)

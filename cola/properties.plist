@@ -10,6 +10,7 @@
       repo="mulle-geometry";
       homepage="https://github.com/mulle-gfx/mulle-geometry";
       license="UNLICENSED";
+      version="0.1.0";
    };
    dependencies =
    (

@@ -25,7 +25,7 @@ static void   drawRectBehindText( CGContext *context,
    CGContextTextColor( context, CGColorMakeWhite());
    CGContextTextBackgroundColor( context, CGColorMakeGray());
 
-   CGContextTextAlign( context, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+   CGContextCombinedTextAlignment( context, CGTextAlignLeft | CGTextAlignTop);
    CGContextText( context, info.bounds.origin, label, (size_t) -1);
 }
 
@@ -58,7 +58,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    CGContextFill( context);
 
    // Calculate animation factor and setup
-   rect = CGSizePlaceInRect( CGSizeMake( 1, 1), canvas, CGContentModeScaleAspectFit|CGRectGetCenterPoint);
+   rect = CGSizePlaceInRect( CGSizeMake( 1, 1), canvas, CGContentModeScaleAspectFit|CGContentModeCenterPoint);
    rect = CGRectInset( rect, 75, 75);
 
    // Draw original rectangle with yellow stroke
@@ -108,7 +108,7 @@ static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
    CGContextStrokeRectWithColor( context, rect, 0.75, CGColorMakeRed());
 
    label = MulleObjC_asprintf( "Intersection points: %d", count);
-   drawRectBehindText( context, rect, label, CGRectGetCenterPoint);
+   drawRectBehindText( context, rect, label, CGContentModeCenterPoint);
 
    return( YES);
 }

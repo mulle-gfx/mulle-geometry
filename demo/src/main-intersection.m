@@ -3,9 +3,7 @@
 
 static void  drawDot( CGContext *context, CGPoint p, CGColor color)
 {
-   struct NVGcontext   *vg;
 
-   vg = CGContextGetNVGContext( context);
 
    CGContextBeginPath( context);
    CGContextCircle( context, CACircleMakeWithCenterAndRadius( p, 3.0));
@@ -16,7 +14,6 @@ static void  drawDot( CGContext *context, CGPoint p, CGColor color)
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
    CACircle            bigCircle;
@@ -31,7 +28,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    NSUInteger          numberOfFrames;
    CGFloat             factor;
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 

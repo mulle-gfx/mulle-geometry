@@ -9,7 +9,12 @@ accumulated rotation amounts.
 From `src/CAAngle.h:17-36`:
 - `CAAngle` does NOT have a `CA_2xPI` sentinel — `0.0` is both 0 and 2π.
   This avoids animation jitter at the wrap boundary.
-- `CARotationNormalize` destroys turn-count info: `2.5 → 0.5, -10 → -1.0`.
+- `CARotationNormalize` reduces to the canonical orientation in `[0, 1)`:
+  `2.5 → 0.5, -10 → 0.0, 1.0 → 0.0`. Use when you want the facing.
+- `CARotationGetSweep` answers "how much arc is traced", signed, in `[-1, 1]`:
+  `2.5 → 0.5, -10 → -1.0, 1.0 → 1.0`. A full turn stays `1.0` because it
+  traces a whole circle; only `0.0` traces nothing. Use for animations and
+  arc-sweeping (e.g. `mulle-path`'s arc drawing).
 - Assertions guard domain: `CAAngle` functions assert `a >= 0 && a < CA_2xPI`.
 
 ## CAAngle origin is East (3 o'clock), not North

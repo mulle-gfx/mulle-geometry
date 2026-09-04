@@ -27,11 +27,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #include <assert.h>
 
 
-// Basically the EPSILON is only used in distance calculations
-
+// legacy name — use CG_LENGTH_EPSILON for new code
 // https://randomascii.wordpress.com/category/floating-point/
 #ifndef CG_VECTOR_EPSILON
-# define CG_VECTOR_EPSILON  0.0001f
+# define CG_VECTOR_EPSILON  CG_LENGTH_EPSILON
 #endif
 
 
@@ -41,7 +40,7 @@ static inline CGVector   CGVectorMakeWithRadians( CGFloat radians)
 {
    assert( ! isnan( radians));
 
-   return( CGVectorMake( sinf( radians), cosf( radians)));
+   return( CGVectorMake( cosf( radians), sinf( radians)));
 }
 
 
@@ -62,12 +61,12 @@ static inline CGVector   CGVectorMakeWithAngle( CAAngle angle)
 
 static inline CGVector   CGVectorMakeWithRotation( CARotation rotation)
 {
-   CGFloat   radians;
+   CAAngle   angle;
 
    assert( ! isnan( rotation));
 
-   radians = -rotation * 2.0f * M_PI_f;
-   return( CGVectorMake( sinf( radians), cosf( radians)));
+   angle = CARotationToAngle( rotation);
+   return( CGVectorMakeWithAngle( angle));
 }
 
 
@@ -120,9 +119,35 @@ static inline CGVector   CGVectorScale( CGVector p, CGFloat scale)
 }
 
 
+static inline CGVector   CGVectorNormalize( CGVector v)
+{
+   CGFloat   length;
 
-/**
-*/
+   length = CGVectorLength( v);
+   if( length == 0.0f)
+      return( CGVectorZero);
+   return( CGVectorMake( v.dx / length, v.dy / length));
+}
+
+
+// returns a perpendicular vector rotated 90° counter-clockwise
+static inline CGVector   CGVectorPerpendicular( CGVector v)
+{
+   return( CGVectorMake( -v.dy, v.dx));
+}
+
+
+
+// Equality truth table (under -0.0 sanitization contract):
+//
+//   Case                 Result   Reason
+//   +0.0 == +0.0         YES     == comparison
+//   +0.0 == -0.0         n/a     -0.0 cannot exist (Make sanitizes)
+//   NaN  == NaN          YES     isnan fallback (CGPointNull == CGPointNull)
+//   NaN  == finite       NO      == fails, isnan(finite) fails
+//   +INF == +INF         YES     == comparison
+//   +INF == -INF         NO      == comparison
+//
 static inline int   CGPointEqualToPoint( CGPoint a, CGPoint b)
 {
    if( (a.x == b.x) && (a.y == b.y))
@@ -366,7 +391,7 @@ static inline CGPoint   CGPointIntegral( CGPoint p)
 }
 
 
-// ceilf is compatible with CGRectIntegral
+// floorf with fuzz is compatible with CGRectIntegral
 static inline CGPoint   CGPointIntegralFuzzy( CGPoint p, CGFloat fuzz)
 {
    return( CGPointMake( floorf( p.x + fuzz),
@@ -384,8 +409,15 @@ static inline CGFloat   CGPointGetAspectRatio( CGPoint a)
 
 
 
-/**
-*/
+// Equality truth table (under -0.0 sanitization contract):
+//
+//   Case                 Result   Reason
+//   +0.0 == +0.0         YES     == comparison
+//   +0.0 == -0.0         n/a     -0.0 cannot exist (Make sanitizes)
+//   NaN  == NaN          NO      == always fails for NaN (no sentinel sizes)
+//   +INF == +INF         YES     == comparison
+//   +INF == -INF         NO      == comparison
+//
 static inline int   CGSizeEqualToSize( CGSize a, CGSize b)
 {
    return( a.width == b.width && a.height == b.height);
@@ -947,6 +979,18 @@ static inline CGRect   CGRectSnapDefault( CGRect rect)
 MULLE__GEOMETRY_GLOBAL
 int CGRectContainsPoint( CGRect rect, CGPoint point);
 
+//
+// Like CGRectContainsPoint, but uses closed intervals on all edges (inclusive).
+// The standard CGRectContainsPoint uses half-open intervals [min, max) which
+// excludes points on the max edge — this variant includes them, which is
+// often needed for hit-testing.
+//
+static inline int   CGRectContainsPointInclusive( CGRect rect, CGPoint point)
+{
+   return( point.x >= CGRectGetMinX( rect) && point.x <= CGRectGetMaxX( rect)) &&
+         ( point.y >= CGRectGetMinY( rect) && point.y <= CGRectGetMaxY( rect));
+}
+
 
 /**
 */
@@ -955,19 +999,22 @@ static inline int   CGRectIsEmpty( CGRect rect)
    return ((rect.size.width == 0.0f) || (rect.size.height == 0.0f));
 }
 
-/**
-*/
-// YES if the two specified rectangles have equal size and origin values,
-// or if both rectangles are null rectangles.
+// Equality truth table (under -0.0 sanitization contract):
+//
+//   Case                 Result   Reason
+//   +0.0 == +0.0         YES     memcmp: identical bits
+//   +0.0 == -0.0         n/a     -0.0 cannot exist (Make sanitizes)
+//   NaN  == NaN          YES     memcmp: same bit pattern
+//   NaN  == finite       NO      memcmp: different bits
+//   +INF == +INF         YES     memcmp: same bit pattern
+//   +INF == -INF         NO      memcmp: different sign bit
+//
+// Two CGRectNull are equal (both are all-NaN with same payload from INFINITY-INFINITY).
+// CGRectInfinite == CGRectInfinite likewise (same -INF/-INF/INF/INF pattern).
+//
 static inline int   CGRectEqualToRect( CGRect a, CGRect b)
 {
-   // With memcmp we don't need special code to check for isnan. The produced
-   // code is still small enough for inlining IMI
    return( ! memcmp( &a, &b, sizeof( CGRect)));
-
-//   if( ! CGSizeEqualToSize( a.size, b.size))
-//      return( 0);
-//   return( CGPointEqualToPoint( a.origin, b.origin));
 }
 
 
@@ -1154,9 +1201,8 @@ static inline CGRect   CGRectBySettingMidX( CGRect rect, CGFloat x)
 {
    CGFloat   diff;
 
-   diff             = x - CGRectGetMidX( rect);
-   rect.origin.x   -= diff / 2.0;
-   rect.size.width += diff;
+   diff           = x - CGRectGetMidX( rect);
+   rect.origin.x += diff;
    return( rect);
 }
 
@@ -1165,9 +1211,8 @@ static inline CGRect   CGRectBySettingMidY( CGRect rect, CGFloat y)
 {
    CGFloat   diff;
 
-   diff              = y - CGRectGetMidY( rect);
-   rect.origin.y    -= diff / 2.0;
-   rect.size.height += diff;
+   diff           = y - CGRectGetMidY( rect);
+   rect.origin.y += diff;
    return( rect);
 }
 
@@ -1182,7 +1227,7 @@ static inline CGRect   CGRectBySettingMaxX( CGRect rect, CGFloat x)
 
 static inline CGRect   CGRectBySettingMaxY( CGRect rect, CGFloat y)
 {
-   rect.size.width += y - CGRectGetMaxY( rect);
+   rect.size.height += y - CGRectGetMaxY( rect);
    return( rect);
 }
 
@@ -1284,7 +1329,7 @@ static inline CGSize   CGSizeMakeRandom( CGSize minSize, CGSize maxSize)
    assert( minSize.height <= maxSize.height);
 
    return( CGSizeMake( minSize.width  + (maxSize.width - minSize.width)  * CGFloatMakeRandom(),
-                       minSize.height + (maxSize.height - minSize.width) * CGFloatMakeRandom()));
+                       minSize.height + (maxSize.height - minSize.height) * CGFloatMakeRandom()));
 }
 
 

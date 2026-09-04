@@ -59,6 +59,30 @@ Polar points are invaluable for animations of circular motions.
 
 
 
+## Documentation & Guides
+
+* [API Summary](asset/dox/api/toc)
+* [Coder Guide](asset/howto/coder/mulle-geometry)
+
+## Usage
+
+Place points on a circle with `CAPolarPoint` — invaluable for circular
+animations. Rotation `0` is "North", `0.25` is 90° right:
+
+``` c
+#include <mulle-geometry/mulle-geometry.h>
+
+int  main( void)
+{
+   for( int i = 0; i < 12; i++)
+   {
+      CGPoint  p = CGPointMakeWithPolarPoint(
+                      CAPolarPointMakeWithRotation( 100.0, i / 12.0));
+      printf( "(%6.1f, %6.1f)\n", p.x, p.y);
+   }
+   return( 0);
+}
+```
 
 
 ### You are here

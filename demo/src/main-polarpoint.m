@@ -5,7 +5,6 @@
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGFloat             deg;
    CAPolarPoint        pPoint;
    CGPoint             point;
@@ -15,7 +14,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    NSUInteger          numberOfFrames;
 
    canvas         = [layer canvas];
-   vg             = CGContextGetNVGContext( context);
    numberOfFrames = [context numberOfFrames];
 
    CGContextSave( context);

@@ -1,5 +1,36 @@
 //
-// Copyright (c) 2023 Nat!, Mulle kybernetiK
+//  CACircle.h
+//  mulle-geometry
+//
+//  Copyright (c) 2023 Nat! - Mulle kybernetiK.
+//  All rights reserved.
+//
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//  Redistributions of source code must retain the above copyright notice, this
+//  list of conditions and the following disclaimer.
+//
+//  Redistributions in binary form must reproduce the above copyright notice,
+//  this list of conditions and the following disclaimer in the documentation
+//  and/or other materials provided with the distribution.
+//
+//  Neither the name of Mulle kybernetiK nor the names of its contributors
+//  may be used to endorse or promote products derived from this software
+//  without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
 //
 #ifndef ca_circle_h__
 #define ca_circle_h__
@@ -56,7 +87,7 @@ static inline CACircle  CACircleMakeWithCenterAndPerimeter( CGPoint center, CGPo
 
    dx     = perimeterPoint.x - center.x;
    dy     = perimeterPoint.y - center.y;
-   radius = sqrt( dx * dx + dy * dy);
+   radius = sqrtf( dx * dx + dy * dy);
 
    return( CACircleMakeWithCenterAndRadius( center, radius));
 }
@@ -160,9 +191,14 @@ static inline CGFloat  CARadiusDistanceBetweenAngles( CGFloat radius,
    CGFloat   radians;
    CGFloat   distance;
 
+   // NOTE: angle sweeps in clockwise direction (see CAAngle.h), so
+   //       going clockwise from a to b means radians increases, while
+   //       going counter clockwise means radians decreases. This must
+   //       stay in sync with CARadiusAngleByAddingDistance below, which
+   //       treats CounterClockWise as decreasing the angle.
    radians = CAAngleToRadians( b) - CAAngleToRadians( a);
 
-   if( direction == CARotationDirectionCounterClockWise)
+   if( direction == CARotationDirectionClockWise)
    {
        if( radians < 0.0)
          radians += CA_2xPI;
@@ -422,7 +458,7 @@ static inline CGVector   CACircleCollisionNormal( CACircle a, CACircle b)
 
    diff = CGPointSubtract( b.center, a.center);
    dist = CGPointGetPolarRadius( diff);
-   if( dist < 0.001)
+   if( dist < CG_LENGTH_EPSILON)
       return( CGVectorMake( 1.0, 0.0));
    return( CGVectorMake( diff.x / dist, diff.y / dist));
 }

@@ -1,0 +1,8 @@
+angle<->rotation: ok
+degrees<->angle: ok
+angle<->radians: ok
+rotation<->degrees: ok
+hour<->rotation: ok
+vector<->angle: ok
+vector<->rotation: ok
+polar<->cartesian: ok

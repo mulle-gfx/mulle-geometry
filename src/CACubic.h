@@ -1,3 +1,37 @@
+//
+//  CACubic.h
+//  mulle-geometry
+//
+//  Copyright (c) 2025 Nat! - Mulle kybernetiK.
+//  All rights reserved.
+//
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//  Redistributions of source code must retain the above copyright notice, this
+//  list of conditions and the following disclaimer.
+//
+//  Redistributions in binary form must reproduce the above copyright notice,
+//  this list of conditions and the following disclaimer in the documentation
+//  and/or other materials provided with the distribution.
+//
+//  Neither the name of Mulle kybernetiK nor the names of its contributors
+//  may be used to endorse or promote products derived from this software
+//  without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+//  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+//  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+//  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+//  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+//  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+//  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
 #ifndef ca_cubic_h__
 #define ca_cubic_h__
 
@@ -7,6 +41,7 @@
 #include <assert.h>
 
 #include "CGGeometry.h"
+#include "CAPose.h"
 
 //
 // A cubic Bezier curve. You need this for EaseIn/EaseOut
@@ -35,11 +70,6 @@ static inline void   CACubicInit( CACubic *q,
                                   CGFloat p2,
                                   CGFloat p3)
 {
-   assert( p0 >= 0.0 && p0 <= 1.0);
-   assert( p1 >= 0.0 && p1 <= 1.0);
-   assert( p2 >= 0.0 && p2 <= 1.0);
-   assert( p3 >= 0.0 && p3 <= 1.0);
-
    q->value[ 0] = p0;
    q->value[ 1] = p1;
    q->value[ 2] = p2;
@@ -108,6 +138,30 @@ static inline void   CACubicBezierInit( CACubicBezier *b,
 
 MULLE__GEOMETRY_GLOBAL
 CGPoint   CACubicBezierGetPoint( CACubicBezier *b, CGFloat t);
+
+//
+// Returns the tangent (first derivative) of the cubic bezier at parameter t.
+// The vector is NOT normalized — its magnitude reflects the parametric speed.
+//
+MULLE__GEOMETRY_GLOBAL
+CGVector   CACubicBezierGetTangent( CACubicBezier *b, CGFloat t);
+
+//
+// De Casteljau split: splits the cubic bezier at parameter t into two
+// sub-curves [0,t] and [t,1] stored in left and right respectively.
+// Either left or right may be NULL if you only need one half.
+//
+MULLE__GEOMETRY_GLOBAL
+void   CACubicBezierSplit( CACubicBezier *b, CGFloat t,
+                           CACubicBezier *left,
+                           CACubicBezier *right);
+
+//
+// Convenience: get a CAPose (position + normal) at parameter t.
+// The normal is the normalized tangent vector at that point.
+//
+MULLE__GEOMETRY_GLOBAL
+CAPose   CACubicBezierGetPose( CACubicBezier *b, CGFloat t);
 
 
 typedef CGFloat   CATweenFunction( struct CACubic *q, CGFloat t);

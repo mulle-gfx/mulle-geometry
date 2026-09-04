@@ -64,7 +64,7 @@ static inline CAWedge   CAWedgeMakeWithDistanceRadians( CACircle   circle,
    innerStartAngle = startAngle;
    innerEndAngle   = endAngle;
 
-   distance = CARadiusDistanceBetweenAngles( innerRadius, spaceStartMidAngle, innerStartAngle);
+   distance = CARadiusDistanceBetweenAngles( innerRadius, spaceStartMidAngle, innerStartAngle, CARotationDirectionClockWise);
    if( distance >= 0.5)
    {
       p0 = CACirclePointAtDistance( CACircleMakeWithCenterAndRadius( CGPointZero, circle.radius), spaceStartMidAngle, distance);
@@ -144,9 +144,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    outerCircle = CACircleInset( circle, 20);
    innerCircle = CACircleInset( outerCircle, 20 + (outerCircle.radius - 30.0) * factor);
 
-//   mvgFillCircleWithColor( vg, innerCircle.center, innerCircle.radius, 1.0, CGColorMakeGray());
-//   mvgStrokeCircleWithColor( vg, outerCircle.center, outerCircle.radius, 1.0, CGColorMakeGray());
-
    [context useDefaultFont];
    CGContextTextColor( context, CGColorMakeBlack());
    CGContextTextBackgroundColor( context, CGColorMakeWhite());
@@ -184,7 +181,7 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
                                               CADegreesToRadiansAsRotation( WEDGE_OFFSET_DEGREES / 2.0f));
 
       CGContextWedgePath( context, &wedge);
-      CGContextPathWinding( context, NVG_HOLE);
+      CGContextPathWinding( context, CGPathFillStyleHole);
 
 //      drawLabel( context, CACirclePointAtAngle( outerCircle,
 //                                       CADegreesToAngle( rotDeg + WEDGE_OFFSET_DEGREES + WEDGE_DEGREES / 2.0)),

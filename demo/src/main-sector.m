@@ -20,7 +20,7 @@ static void   CGContextSectorPath( CGContext *context,
       CGContextBeginPath( context);
       CGContextMoveTo( context, p0);
       CGContextArcRadians( context, innerCircle, startAngle, endAngle, CARotationDirectionClockWise);
-      // amusingly mvgArc already draws a line up to p2
+      // amusingly the arc already draws a line up to p2
       CGContextArcRadians( context, circle, endAngle, startAngle, CARotationDirectionCounterClockWise);
       CGContextClosePath( context);
    }
@@ -68,7 +68,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGRect              canvas;
    CGRect              rect;
    NSUInteger          numberOfFrames;
-   struct NVGcontext   *vg;
 
    numberOfFrames = [context numberOfFrames] % 240;
    if( numberOfFrames >= 120)
@@ -78,7 +77,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    factor = _CACubicGetValue( ((struct CACubic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
 
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 

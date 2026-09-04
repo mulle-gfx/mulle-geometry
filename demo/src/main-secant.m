@@ -3,11 +3,9 @@
 
 static void  drawDotWithLabel( CGContext *context, CGPoint p, CGFloat radians, CGColor color)
 {
-   struct NVGcontext   *vg;
 
    [context useDefaultFont];
 
-   vg = CGContextGetNVGContext( context);
 
    CGContextFontSize( context, 10.0);
    CGContextTextColor( context, CGColorMakeBlack());
@@ -23,7 +21,6 @@ static void  drawDotWithLabel( CGContext *context, CGPoint p, CGFloat radians, C
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
    CACircle            outerCircle;
@@ -39,7 +36,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGColor             color;
    NSUInteger          numberOfFrames;
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 

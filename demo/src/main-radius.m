@@ -3,11 +3,9 @@
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
 

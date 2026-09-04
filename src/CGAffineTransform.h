@@ -123,7 +123,7 @@ static inline CGAffineTransform   CGAffineTransformMakeSkewYInline( CAAngle sy)
 }
 
 
-#define CG_ANGLE_IS_NEAR( val, comp, amt) (fabs((val) - (comp)) <= (amt))
+#define CG_ANGLE_IS_NEAR( val, comp, amt) (fabsf((val) - (comp)) <= (amt))
 
 //
 // Many of these functions are actually too big for inlining
@@ -245,9 +245,24 @@ static inline CGAffineTransform
 {
    CGAffineTransform   ret;
    float               determinant;
+   float               scale;
 
    determinant = (t.a * t.d - t.c * t.b);
-   if( determinant > tooSmall && determinant < tooSmall)
+
+   // NOTE: tooSmall is meant to be an epsilon relative to the matrix's own
+   //       scale, not an absolute cutoff. The determinant scales
+   //       quadratically with the magnitude of the matrix coefficients
+   //       (e.g. a transform that just scales down by 1000x has a tiny
+   //       determinant despite being perfectly well-conditioned and
+   //       invertible). So scale the threshold by the largest coefficient
+   //       magnitude squared, to avoid false positives on legitimate
+   //       small- or large-scale transforms while still catching truly
+   //       singular ones (determinant is zero regardless of scale).
+   scale = CGFloatMaximum( CGFloatMaximum( fabsf( t.a), fabsf( t.b)),
+                           CGFloatMaximum( fabsf( t.c), fabsf( t.d)));
+   tooSmall *= CGFloatMaximum( scale * scale, tooSmall);
+
+   if( fabsf( determinant) < tooSmall)
    {
       return( CGAffineTransformMakeIdentityInline());
    }
@@ -314,6 +329,19 @@ static inline CGRect
    result.size   = CGSizeApplyAffineTransformInline( rect.size, t);
 
    return( result);
+}
+
+
+//
+// Applies only the linear part (rotation/scale/skew) of the affine transform
+// to a vector, ignoring the translation component. This is correct for
+// transforming direction vectors, normals, or deltas.
+//
+static inline CGVector
+   CGVectorApplyAffineTransform( CGVector v, CGAffineTransform t)
+{
+   return( CGVectorMake( t.a * v.dx + t.c * v.dy,
+                         t.b * v.dx + t.d * v.dy));
 }
 
 
@@ -511,6 +539,74 @@ CGRect   _CGRectRotate( CGRect rect, CARotation rotation);
 static inline CGRect  CGRectRotate( CGRect rect, CARotation rotation)
 {
    return( rotation == 0.0f ? rect : _CGRectRotate( rect, rotation));
+}
+
+
+//
+// Decomposition of a 2D affine transform into rotation, scale, and skew.
+// The decomposition follows the QR / polar approach:
+//   T = Translation * Rotation * Skew * Scale
+//
+typedef struct CGAffineTransformComponents
+{
+   CGVector     scale;      // (sx, sy) scale factors
+   CARotation   rotation;   // rotation as CARotation [0, 1)
+   CGFloat      skew;       // skew factor (shear along x after rotation)
+   CGPoint      translation;
+} CGAffineTransformComponents;
+
+
+static inline CGAffineTransformComponents
+   CGAffineTransformDecompose( CGAffineTransform t)
+{
+   CGAffineTransformComponents   result;
+   CGFloat                       a, b, c, d;
+   CGFloat                       sx, sy;
+   CGFloat                       radians;
+
+   a = t.a;
+   b = t.b;
+   c = t.c;
+   d = t.d;
+
+   // scale X = length of first column vector (a, b)
+   sx = sqrtf( a * a + b * b);
+   if( sx > 0.0f)
+   {
+      a /= sx;
+      b /= sx;
+   }
+
+   // skew = dot product of first and second column (after normalizing first)
+   result.skew = a * c + b * d;
+   c -= result.skew * a;
+   d -= result.skew * b;
+
+   // scale Y = length of (now orthogonalized) second column
+   sy = sqrtf( c * c + d * d);
+   if( sy > 0.0f)
+   {
+      result.skew /= sy;
+      c           /= sy;
+      d           /= sy;
+   }
+
+   // if the determinant is negative, negate sx (convention: flip on X axis)
+   if( a * d - b * c < 0.0f)
+   {
+      sx = -sx;
+      a  = -a;
+      b  = -b;
+   }
+
+   // rotation angle from the normalized first column
+   radians = atan2f( b, a);
+
+   result.scale       = CGVectorMake( sx, sy);
+   result.rotation    = CARadiansAsRotationToRotation( radians);
+   result.translation = CGPointMake( t.tx, t.ty);
+
+   return( result);
 }
 
 

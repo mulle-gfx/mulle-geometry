@@ -1,12 +1,12 @@
 {
    "name" : "mulle-geometry",
-   "version" : "0.0.1",
+   "version" : "0.1.0",
    "description" : "🔭 Basic geometric types",
    "keywords" : [],
    "license" : "UNLICENSED",
    "repo" : "mulle-gfx/mulle-geometry",
    "src" : [
-      "asset/dox/TOC.md",
+      "asset/dox/api/toc/index.md",
       "src/CAAngle.c",
       "src/CAAngle.h",
       "src/CACircle.c",
@@ -31,7 +31,8 @@
       "src/mulle-geometry.h",
       "src/reflect/_mulle-geometry-include-private.h",
       "src/reflect/_mulle-geometry-include.h",
-      "src/reflect/_mulle-geometry-provide.h"
+      "src/reflect/_mulle-geometry-provide.h",
+      "src/reflect/_mulle-geometry-versioncheck.h"
    ],
    "dependencies" : {
       "mulle-core/mulle-core": "*"

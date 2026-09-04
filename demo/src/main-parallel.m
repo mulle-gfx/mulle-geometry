@@ -54,7 +54,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    CGRect              canvas;
    CGRect              rect;
    NSUInteger          numberOfFrames;
-   struct NVGcontext   *vg;
 
    numberOfFrames = [context numberOfFrames] % 240;
    if( numberOfFrames >= 120)
@@ -64,7 +63,6 @@ static BOOL   drawStuff( CALayer *layer, CGContext *context)
    factor = _CACubicGetValue( ((struct CACubic) { 0.0f, 0.010f, 0.990f, 1.0f }), factor);
 
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 100, 100);
 

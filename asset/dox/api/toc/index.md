@@ -297,7 +297,8 @@ This header extends `CGBase.h` with additional geometric operations:
   - `CARadiansAsAngleToRotation(radians)` - From radians (with offset)
   - `CARadiansAsRotationToRotation(radians)` - From raw radians (÷2π)
 - **Operations:**
-  - `CARotationNormalize(rotation)` - Clamp to [-1, 1] keeping sign
+  - `CARotationNormalize(rotation)` - Reduce to canonical orientation [0, 1)
+  - `CARotationGetSweep(rotation)` - Arc traced, signed [-1, 1] (2.5→0.5, -10→-1.0, 1.0→1.0)
   - `CARotationAdd(a, b)`, `CARotationSubtract(a, b)` - Arithmetic (no wrapping)
   - `CARotationTurn45/90/180/270ClockWise(rotation)` - Add fixed amounts
   - `CARotationTurn45/90/270CounterClockWise(rotation)` - Subtract fixed amounts

@@ -43,7 +43,28 @@
 #define CA_2xPI     ((float) (3.141592653589793238462643383279502884L * 2.0))
 
 
+//
+// Epsilons — named by domain so they can be tuned independently.
+// All currently 0.0001f but kept separate for future adjustment.
+//
+#ifndef CA_DISTANCE_EPSILON
+# define CA_DISTANCE_EPSILON   0.0001f   // arc/linear distance snap-to-zero
+#endif
+#ifndef CA_ANGLE_EPSILON
+# define CA_ANGLE_EPSILON      0.0001f   // angular dead-zone
+#endif
+#ifndef CG_LENGTH_EPSILON
+# define CG_LENGTH_EPSILON     0.0001f   // vector/point length too-short-to-normalize
+#endif
+
+
 typedef float CGFloat;
+
+
+static inline int   CGFloatEqualWithTolerance( CGFloat a, CGFloat b, CGFloat tolerance)
+{
+   return( fabsf( a - b) <= tolerance);
+}
 
 #define CGFLOAT_MIN         FLT_MIN
 #define CGFLOAT_MAX         FLT_MAX
@@ -63,9 +84,19 @@ typedef struct CGFloat2
 
 static inline CGFloat2   CGFloat2Make( CGFloat a, CGFloat b)
 {
-   return( (CGFloat2){ .v0 = a, .v1 = b });
+   return( (CGFloat2){ .v0 = a + 0.0f, .v1 = b + 0.0f });
 }
 
+// Equality truth table (under -0.0 sanitization contract):
+//
+//   Case                 Result   Reason
+//   +0.0 == +0.0         YES     identical bits
+//   +0.0 == -0.0         n/a     -0.0 cannot exist (Make sanitizes)
+//   NaN  == NaN          YES     both all-NaN → isnan fallback
+//   NaN  == finite       NO      first check fails, isnan(b) fails
+//   +INF == +INF         YES     same bit pattern
+//   +INF == -INF         NO      different sign bit
+//
 static inline int   CGFloat2EqualToFloat2( CGFloat2 a, CGFloat2 b)
 {
    // compatible to CGPoint but not neccessarily to CGSize.. is this ba
@@ -86,9 +117,22 @@ typedef struct CGFloat3
 
 static inline CGFloat3   CGFloat3Make( CGFloat a, CGFloat b, CGFloat c)
 {
-   return( (CGFloat3){ .v0 = a, .v1 = b, .v2 = c });
+   return( (CGFloat3){ .v0 = a + 0.0f, .v1 = b + 0.0f, .v2 = c + 0.0f });
 }
 
+// Equality truth table (under -0.0 sanitization contract):
+//
+//   Case                 Result   Reason
+//   +0.0 == +0.0         YES     memcmp: identical bits
+//   +0.0 == -0.0         n/a     -0.0 cannot exist (Make sanitizes)
+//   NaN  == NaN          YES     memcmp: same bit pattern (all NaN are quiet)
+//   NaN  == finite       NO      memcmp: different bits
+//   +INF == +INF         YES     memcmp: same bit pattern
+//   +INF == -INF         NO      memcmp: different sign bit
+//
+// NOTE: two CGFloat3 created with different NaN payloads would compare
+//       unequal — but no Make function produces distinct NaN payloads.
+//
 static inline int   CGFloat3EqualToFloat3( CGFloat3 a, CGFloat3 b)
 {
    return( ! memcmp( &a, &b, sizeof( CGFloat3)));
@@ -107,19 +151,14 @@ typedef struct CGFloat4
 
 static inline CGFloat4   CGFloat4Make( CGFloat a, CGFloat b, CGFloat c, CGFloat d)
 {
-   return( (CGFloat4){ .v0 = a, .v1 = b, .v2 = c, .v3 = d });
+   return( (CGFloat4){ .v0 = a + 0.0f, .v1 = b + 0.0f, .v2 = c + 0.0f, .v3 = d + 0.0f });
 }
 
 
+// Equality: same memcmp semantics as CGFloat3EqualToFloat3 (see above).
 static inline int   CGFloat4EqualToFloat4( CGFloat4 a, CGFloat4 b)
 {
-   // With memcmp we don't need special code to check for isnan. The produced
-   // code is still small enough for inlining IMI
    return( ! memcmp( &a, &b, sizeof( CGFloat4)));
-
-//   if( ! CGSizeEqualToSize( a.size, b.size))
-//      return( 0);
-//   return( CGPointEqualToPoint( a.origin, b.origin));
 }
 
 
@@ -237,7 +276,7 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 {
    CGFloat   projected;
 
-   projected = CGFloatProject( value, start1, stop1, start1, stop2);
+   projected = CGFloatProject( value, start1, stop1, start2, stop2);
    if( start2 < stop2)
       return( CGFloatClamp( projected, start2, stop2));
    return( CGFloatClamp( projected, stop2, start2));
@@ -254,7 +293,7 @@ static inline CGFloat   CGFloatProjectClamped( CGFloat value,
 static inline int  CGFloatIsNegativeZero( CGFloat x)
 {
    if( x != 0.0f)
-      return( 1);
+      return( 0);
 
    if( sizeof( CGFloat) == sizeof( int32_t))
    {
@@ -265,6 +304,7 @@ static inline int  CGFloatIsNegativeZero( CGFloat x)
       return( (*(int64_t *) &x) < 0);
    }
    assert( 0);
+   return( 0);
 }
 
 
@@ -280,10 +320,10 @@ static inline CGFloatRange   CGFloatRangeMake( CGFloat min, CGFloat max)
    assert( ! isnan( min));
    assert( ! isnan( max));
 
-   return( (CGFloatRange){ .min = min, .max = max });
+   return( (CGFloatRange){ .min = min + 0.0f, .max = max + 0.0f });
 }
 
-#define CGFloatRangeData( minvalue, maxvalue) ((CGPoint){ .min = minvalue, max = maxvalue })
+#define CGFloatRangeData( minvalue, maxvalue) ((CGFloatRange){ .min = (minvalue) + 0.0f, .max = (maxvalue) + 0.0f })
 
 
 static inline int  CGFloatRangeContains( CGFloatRange range, CGFloat value)
@@ -325,10 +365,10 @@ static inline CGPoint   CGPointMake( CGFloat x, CGFloat y)
    assert( ! isnan( x));
    assert( ! isnan( y));
 
-   return( (CGPoint){ .x = x, .y = y });
+   return( (CGPoint){ .x = x + 0.0f, .y = y + 0.0f });
 }
 
-#define CGPointData( xvalue, yvalue) ((CGPoint){ .x = xvalue, .y = yvalue })
+#define CGPointData( xvalue, yvalue) ((CGPoint){ .x = (xvalue) + 0.0f, .y = (yvalue) + 0.0f })
 
 
 
@@ -355,11 +395,11 @@ static inline CGPointU   CGPointUMake(CGFloat x, CGFloat y)
    assert( ! isnan( x));
    assert( ! isnan( y));
 
-   return( (CGPointU){ .x = x, .y = y });
+   return( (CGPointU){ .x = x + 0.0f, .y = y + 0.0f });
 }
 
 
-#define CGPointUData( xvalue, yvalue) ((CGPointU){ .x = (xvalue), .y = (yvalue) })
+#define CGPointUData( xvalue, yvalue) ((CGPointU){ .x = (xvalue) + 0.0f, .y = (yvalue) + 0.0f })
 
 
 
@@ -385,11 +425,11 @@ static inline CGSize   CGSizeMake( CGFloat w, CGFloat h)
    assert( ! isnan( w));
    assert( ! isnan( h));
 
-   return( (CGSize){ .width = w, .height = h });
+   return( (CGSize){ .width = w + 0.0f, .height = h + 0.0f });
 }
 
 
-#define CGSizeData( w, h) ((CGSize){ .width = (w), .height = (h) })
+#define CGSizeData( w, h) ((CGSize){ .width = (w) + 0.0f, .height = (h) + 0.0f })
 
 //
 // this can be used for variable axis code like:
@@ -416,11 +456,11 @@ static inline CGSizeU   CGSizeUMake( CGFloat w, CGFloat h)
    assert( ! isnan( w));
    assert( ! isnan( h));
 
-   return( (CGSizeU){ .width = w, .height = h });
+   return( (CGSizeU){ .width = w + 0.0f, .height = h + 0.0f });
 }
 
 
-#define CGSizeUData( w, h) ((CGSize){ .width = (w), .height = (height) })
+#define CGSizeUData( w, h) ((CGSizeU){ .width = (w) + 0.0f, .height = (h) + 0.0f })
 
 //
 // hardly ever used. Use CAPolarPoint for real vector stuff
@@ -437,11 +477,11 @@ static inline CGVector   CGVectorMake( CGFloat dx, CGFloat dy)
    assert( ! isnan( dx));
    assert( ! isnan( dy));
 
-   return( (CGVector){ .dx = dx, .dy = dy });
+   return( (CGVector){ .dx = dx + 0.0f, .dy = dy + 0.0f });
 }
 
 
-#define CGVectorData( xvalue, yvalue) ((CGSize){ .dx = (xvalue), .dy = (yvalue) })
+#define CGVectorData( xvalue, yvalue) ((CGVector){ .dx = (xvalue) + 0.0f, .dy = (yvalue) + 0.0f })
 
 
 
@@ -465,11 +505,11 @@ static inline CGVectorU   CGVectorUMake( CGFloat dx, CGFloat dy)
    assert( ! isnan( dx));
    assert( ! isnan( dy));
 
-   return( (CGVectorU){ .dx = dx, .dy = dy });
+   return( (CGVectorU){ .dx = dx + 0.0f, .dy = dy + 0.0f });
 }
 
 
-#define CGVectorUData( xvalue, yvalue) ((CGSize){ .dx = (xvalue), .dy = (yvalue) })
+#define CGVectorUData( xvalue, yvalue) ((CGVectorU){ .dx = (xvalue) + 0.0f, .dy = (yvalue) + 0.0f })
 
 
 //
@@ -499,17 +539,17 @@ static inline CGRect   CGRectMake(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
    assert( ! isnan( h));
 
    return( (CGRect){
-                     .origin = (CGPoint) { .x = x, .y = y },
-                     .size   = (CGSize)  { .width = w, .height = h }
+                     .origin = (CGPoint) { .x = x + 0.0f, .y = y + 0.0f },
+                     .size   = (CGSize)  { .width = w + 0.0f, .height = h + 0.0f }
                    });
 }
 
 
-#define CGRectData( xvalue, yvalue, w, h)                   \
-((CGRect)                                                   \
-{                                                           \
-   .origin = (CGPoint) { .x = (xvalue), .y = (yvalue) },    \
-   .size   = (CGSize)  { .width = (w), .height = (h) }      \
+#define CGRectData( xvalue, yvalue, w, h)                                   \
+((CGRect)                                                                   \
+{                                                                           \
+   .origin = (CGPoint) { .x = (xvalue) + 0.0f, .y = (yvalue) + 0.0f },      \
+   .size   = (CGSize)  { .width = (w) + 0.0f, .height = (h) + 0.0f }        \
 })
 
 
@@ -549,24 +589,24 @@ static inline CGRect   CGRectMakeWithPoints( CGPoint a, CGPoint b)
 
    if( a.x >= b.x)
    {
-      r.origin.x   = b.x;
-      r.size.width = a.x - b.x;
+      r.origin.x   = b.x + 0.0f;
+      r.size.width = (a.x - b.x) + 0.0f;
    }
    else
    {
-      r.origin.x   = a.x;
-      r.size.width = b.x - a.x;
+      r.origin.x   = a.x + 0.0f;
+      r.size.width = (b.x - a.x) + 0.0f;
    }
 
    if( a.y >= b.y)
    {
-      r.origin.y    = b.y;
-      r.size.height = a.y - b.y;
+      r.origin.y    = b.y + 0.0f;
+      r.size.height = (a.y - b.y) + 0.0f;
    }
    else
    {
-      r.origin.y    = a.y;
-      r.size.height = b.y - a.y;
+      r.origin.y    = a.y + 0.0f;
+      r.size.height = (b.y - a.y) + 0.0f;
    }
    return( r);
 }
@@ -587,17 +627,17 @@ static inline CGRectU   CGRectUMake( CGFloat x, CGFloat y, CGFloat w, CGFloat h)
    assert( ! isnan( h));
 
    return( (CGRectU){
-                     .origin = (CGPointU) { .x = x, .y = y },
-                     .size   = (CGSizeU)  { .width = w, .height = h }
+                     .origin = (CGPointU) { .x = x + 0.0f, .y = y + 0.0f },
+                     .size   = (CGSizeU)  { .width = w + 0.0f, .height = h + 0.0f }
                     });
 }
 
 
-#define CGRectUData( xvalue, yvalue, w, h)                   \
-((CGRect)                                                    \
-{                                                            \
-   .origin = (CGPointU) { .x = (xvalue), .y = (yvalue) },    \
-   .size   = (CGSizeU)  { .width = (w), .height = (h) }      \
+#define CGRectUData( xvalue, yvalue, w, h)                                  \
+((CGRectU)                                                                  \
+{                                                                           \
+   .origin = (CGPointU) { .x = (xvalue) + 0.0f, .y = (yvalue) + 0.0f },     \
+   .size   = (CGSizeU)  { .width = (w) + 0.0f, .height = (h) + 0.0f }       \
 })
 
 
@@ -625,12 +665,12 @@ static inline CGRectU   CGRectUMake( CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 #define CGVectorZero      CGVectorMake( 0, 0)
 #define CGVectorUZero     CGVectorUMake( 0, 0)
 #define CGVectorNull      ((CGVector){ .dx = NAN, .dy = NAN })
-#define CGVectorUNull     ((CGVector){ .dx = NAN, .dy = NAN })
+#define CGVectorUNull     ((CGVectorU){ .dx = NAN, .dy = NAN })
 
 #define CGRectZero        CGRectMake( 0, 0, 0, 0)
 #define CGRectUZero       CGRectUMake( 0, 0, 0, 0)
 #define CGRectNull        ((CGRect){ .origin = CGPointNull })
-#define CGRectUNull       ((CGRect){ .origin = CGPointUNull })
+#define CGRectUNull       ((CGRectU){ .origin = CGPointUNull })
 #define CGRectInfinite    CGRectMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 #define CGRectUInfinite   CGRectUMake( -INFINITY, -INFINITY, INFINITY, INFINITY)
 

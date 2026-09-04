@@ -64,7 +64,7 @@ void   drawGradientRectangle( CGContext* context, CGRect rect, CGPaint *paint)
     CGContextFill( context);
 
     // stroke an outline, because why not
-    CGContextStrokeColor( context, nvgRGBA( 255, 255, 255, 255));
+    CGContextStrokeColor( context, CGColorMakeWithRGBABytes( 255, 255, 255, 255));
     CGContextStrokeWidth( context, 1.0);
     CGContextStroke( context);
 }
@@ -87,25 +87,21 @@ static void   drawFourCircleSegments( CGContext *context,
    CGContextBeginPath( context);
    CGContextMoveTo( context, CACircleGetCenter( circle));
    CGContextArcRadians( context, circle, CAAngleNorthWest, CAAngleNorthEast, CARotationDirectionClockWise);
-//   mvgStrokeColor( vg, CGColorMakeRed());
    CGContextStroke( context);
 
    CGContextBeginPath( context);
    CGContextMoveTo( context, CACircleGetCenter( circle));
    CGContextArcRadians( context, circle, CAAngleNorthEast, CAAngleSouthEast, CARotationDirectionClockWise);
-//   mvgStrokeColor( vg, CGColorMakeYellow());
    CGContextStroke( context);
 
    CGContextBeginPath( context);
    CGContextMoveTo( context, CACircleGetCenter( circle));
    CGContextArcRadians( context, circle, CAAngleSouthEast, CAAngleSouthWest, CARotationDirectionClockWise);
-//   mvgStrokeColor( vg, CGColorMakeGreen());
    CGContextStroke( context);
 
    CGContextBeginPath( context);
    CGContextMoveTo( context, CACircleGetCenter( circle));
    CGContextArcRadians( context, circle, CAAngleSouthWest, CAAngleNorthWest, CARotationDirectionClockWise);
-//   mvgStrokeColor( vg, CGColorMakeBlue());
    CGContextStroke( context);
 }
 
@@ -113,13 +109,11 @@ static void   drawFourCircleSegments( CGContext *context,
 
 static BOOL   drawStuff( CGGraphicsLayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
    CACircle            circle;
-   CGImage             *image;
+   static CGImage      *image;
 
-   vg     = CGContextGetNVGContext( context);
 
 #define TEX_W  8
 #define TEX_H  8

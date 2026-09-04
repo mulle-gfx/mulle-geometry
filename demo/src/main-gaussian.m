@@ -15,13 +15,11 @@ static int   CGFloatPointerInvCompare( CGFloat *a, CGFloat *b, void *unused)
 
 static BOOL   drawStuff( CALayer *layer, CGContext *context)
 {
-   struct NVGcontext   *vg;
    CGRect              canvas;
    CGRect              rect;
    NSUInteger          n;
    NSUInteger          i;
 
-   vg     = CGContextGetNVGContext( context);
    canvas = [layer canvas];
    rect   = CGRectInset( canvas, 50, 50);
    rect   = CGSizeCenterInRect( CGRectGetLargestSquareSize( rect), rect);;
