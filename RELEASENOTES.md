@@ -1,13 +1,12 @@
-### 0.1.0
+## 0.1.0
 
-- Add cubic bezier navigation, rotation sweep, and affine decomposition helpers
-- New `CACubicBezierGetTangent`, `CACubicBezierSplit` (De Casteljau), and `CACubicBezierGetPose` APIs
-- New `CARotationGetSweep` and `CAAngleShortestRotationToAngle` helpers
-- Add `CGAffineTransformDecompose`, `CGVectorApplyAffineTransform`, `CGVectorNormalize`, `CGVectorPerpendicular`
-- **BREAKING**: `CADirectionTurn180CounterClockWise` renamed to `CADirectionTurn180`
-- Improve rotation/angle normalization and fix `-0.0` edge cases
-- Introduce generated public header manifest and reorganize docs
 
-### 0.0.1
 
-Various small improvements
+feature: add cubic bezier navigation, rotation sweep, and affine decomposition helpers
+
+* new CACubicBezierGetTangent, CACubicBezierSplit (De Casteljau), and CACubicBezierGetPose APIs for evaluating bezier direction and splitting curves
+* new CARotationGetSweep and CAAngleShortestRotationToAngle helpers for arc tracing and animation
+* CGAffineTransformDecompose splits a transform into scale/rotation/skew/translation; add CGVectorApplyAffineTransform and CGVectorNormalize/Perpendicular helpers
+* **BREAKING**: CADirectionTurn180CounterClockWise renamed to CADirectionTurn180
+* rotation/angle normalization reworked to drop -0.0 edge cases; fixes for CASlopeToAngle and CAHourToRotation asserts
+* cross-platform test stdout baselines (darwin/windows/linux) and new angle roundtrip, float, and pose tests
