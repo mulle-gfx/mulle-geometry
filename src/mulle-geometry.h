@@ -42,7 +42,7 @@
 #include "include.h"
 
 
-#define MULLE__GEOMETRY_VERSION   ((0UL << 20) | (1 << 8) | 0)
+#define MULLE__GEOMETRY_VERSION   ((0UL << 20) | (1 << 8) | 1)
 
 #include "_mulle-geometry-provide.h"
 
